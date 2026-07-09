@@ -110,7 +110,7 @@ def run_change_detection(
     )
     log("finished detect feature change process")
 
-    log("begin creating separate feature class named RoadCenterline_Recents")
+    log(f"begin creating separate feature class named {recents_name}")
     arcpy.env.qualifiedFieldNames = False
 
     roads_layer = "roads_lyr"
@@ -212,3 +212,20 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# Command to run the feature compare:
+
+# arcpy.management.FeatureCompare(
+#     in_base_features="RoadCenterline_Recents",
+#     in_test_features="RoadCenterline_Recents_07_06_26",
+#     sort_field="NAME",
+#     compare_type="ALL",
+#     ignore_options=None,
+#     xy_tolerance="0.003280833333 Feet",
+#     m_tolerance=0.001,
+#     z_tolerance=0.001,
+#     attribute_tolerances=None,
+#     omit_field="OBJECTID;OBJECTID_1;UPDATE_FID",
+#     continue_compare="NO_CONTINUE_COMPARE",
+#     out_compare_file=None
+# )
