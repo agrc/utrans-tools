@@ -1,123 +1,214 @@
-# Name:        (PiuteCo's script to compare their data with what they sent us last time)
-# Description: Perform change detection between newly received road data and
-#              existing road data and find the number of new roads and the
-#              total length of them.
-# Author:      gbunce
-# -----------------------------------------------------------------------
+"""Piute County recent edits detection for ArcGIS Pro (Python 3).
 
-# NOTE
-### three ### pound signs indicates that the user needs to change a variable before running this code
+Compares current county roads against a prior delivery using Detect Feature Changes,
+then exports changed features into a fixed output feature class.
+"""
 
-# Import system modules
+import argparse
 import os
-import arcpy
-from arcpy import env
 import time
 
-# Set environment settings
-env.overwriteOutput = True
-# env.workspace = r"D:\UTRANS\Updates\SummitCenterlines_16_02_17.gdb" ### change database name ###
-
-# strTimeNow = time.strftime("%c")
-
-# Set local variables
-updateFeatures = r"L:\agrc\data\county_obtained\Piute\PiuteCo_20260414.gdb\Roads_2026_April"  ### THIS WOULD BE THE NEWEST DATA
-baseFeatures = r"L:\agrc\data\county_obtained\Piute\PiuteCo_20251020.gdb\Roads"  ### THIS IS THE DATA THEY SENT US LAST TIME
-
-dirname = os.path.dirname(arcpy.Describe(updateFeatures).catalogPath)
-desc = arcpy.Describe(dirname)
-if hasattr(desc, "datasetType") and desc.datasetType == "FeatureDataset":
-    dirname = os.path.dirname(dirname)
-
-# dfcOutput = "DFC_RESULT"
-# dfcResult = arcpy.Describe(updateFeatures).catalogPath + "\\DFC_RESULT"
-# dfcOutput = arcpy.Describe(updateFeatures).catalogPath + "\\DFC_RESULT"
-dfcOutput = dirname + "\\DFC_PiuteToPiute"
-
-print("begin converting nulls to emtpy")
-# convert nulls to empty in both the update fc and basefeatures fc
-list = [updateFeatures, baseFeatures]
-for item in list:
-    rows = arcpy.UpdateCursor(item)
-    for row in rows:
-        if row.PREDIR == " " or row.PREDIR == None or row.PREDIR is None:
-            row.PREDIR = ""
-        if row.NAME == " " or row.NAME == None or row.NAME is None:
-            row.NAME = ""
-        if row.POSTTYPE == " " or row.POSTTYPE == None or row.POSTTYPE is None:
-            row.POSTTYPE = ""
-        if row.POSTDIR == " " or row.POSTDIR == None or row.POSTDIR is None:
-            row.POSTDIR = ""
-        if row.FROMADDR_L == " " or row.FROMADDR_L == None or row.FROMADDR_L is None:
-            row.FROMADDR_L = 0
-        if row.TOADDR_L == " " or row.TOADDR_L == None or row.TOADDR_L is None:
-            row.TOADDR_L = 0
-        if row.FROMADDR_R == " " or row.FROMADDR_R == None or row.FROMADDR_R is None:
-            row.FROMADDR_R = 0
-        if row.TOADDR_R == " " or row.TOADDR_R == None or row.TOADDR_R is None:
-            row.TOADDR_R = 0
-
-        rows.updateRow(row)
-del row
-del rows
+import arcpy
 
 
-print("begin dfc")
-# search_distance = "300 Feet" # 300 feet is about 90 meters \ 40 meters = 131.234 feet
-search_distance = "200 Feet"  # The distance used to search for match candidates. A distance must be specified and it must be greater than zero. You can choose a preferred unit; the default is the feature unit.
-# match values
-match_fields = "NAME NAME"
-statsTable = arcpy.Describe(updateFeatures).catalogPath + "\\new_roads_stats_piute"
-# change_tolerance = "300 Feet"
-change_tolerance = "40"  # The Change Tolerance serves as the width of a buffer zone around the update features or the base features.  It's the distance used to determine if there is a spatial change. All matched update features and base features are checked against this tolerance. If any portions of update or base features fall outside the zone around the matched feature, it is considered a spatial change.
-
-## compare values
-compare_fields = "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R"
-
-arcpy.AddMessage(
-    "Begining detect feature change process for PiuteCo at: " + time.strftime("%c")
+DEFAULT_COMPARE_FIELDS = (
+    "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; "
+    "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; "
+    "FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R"
 )
-# print "begining detect feature change process..."
-# Perform spatial change detection
-arcpy.DetectFeatureChanges_management(
-    updateFeatures,
-    baseFeatures,
-    dfcOutput,
+TEXT_FIELDS = ["PREDIR", "NAME", "POSTTYPE", "POSTDIR"]
+NUMERIC_FIELDS = ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"]
+
+
+def log(message):
+    print(message)
+
+
+def get_output_workspace(update_features):
+    """Return the parent geodatabase for an update feature class path."""
+    dirname = os.path.dirname(arcpy.Describe(update_features).catalogPath)
+    desc = arcpy.Describe(dirname)
+    if hasattr(desc, "datasetType") and desc.datasetType == "FeatureDataset":
+        dirname = os.path.dirname(dirname)
+    return dirname
+
+
+def ensure_detect_feature_changes_license():
+    """Fail early with a clear message if Advanced licensing is not active."""
+    product_info = str(arcpy.ProductInfo()).strip()
+    product_norm = product_info.lower()
+
+    # ArcGIS Pro typically reports Advanced as ArcInfo.
+    if product_norm in {"arcinfo", "advanced"}:
+        return
+
+    arcinfo_status = str(arcpy.CheckProduct("ArcInfo")).strip()
+    raise RuntimeError(
+        "Detect Feature Changes requires an ArcGIS Pro Advanced license. "
+        f"Current ProductInfo is '{product_info}' and CheckProduct('ArcInfo') is "
+        f"'{arcinfo_status}'. Ask your GIS admin to assign an Advanced seat, "
+        "then rerun this script."
+    )
+
+
+def normalize_fields(feature_class):
+    """Convert null and blank values to deterministic values before DFC."""
+    field_names = TEXT_FIELDS + NUMERIC_FIELDS
+    with arcpy.da.UpdateCursor(feature_class, field_names) as rows:
+        for row in rows:
+            updated = False
+
+            for idx in range(len(TEXT_FIELDS)):
+                value = row[idx]
+                if value is None or str(value).strip() == "":
+                    row[idx] = ""
+                    updated = True
+
+            for idx in range(len(TEXT_FIELDS), len(field_names)):
+                value = row[idx]
+                if value is None or str(value).strip() == "":
+                    row[idx] = 0
+                    updated = True
+
+            if updated:
+                rows.updateRow(row)
+
+
+def run_change_detection(
+    update_features,
+    base_features,
     search_distance,
     match_fields,
-    statsTable,
     change_tolerance,
     compare_fields,
-)
-print("finished detect feature change process!")
+    dfc_output_name,
+    stats_table_name,
+    recents_name,
+):
+    arcpy.env.overwriteOutput = True
+    output_workspace = get_output_workspace(update_features)
+
+    dfc_output = os.path.join(output_workspace, dfc_output_name)
+    stats_table = os.path.join(output_workspace, stats_table_name)
+    out_feature = os.path.join(output_workspace, recents_name)
+
+    log("begin converting nulls to empty")
+    for feature_class in [update_features, base_features]:
+        normalize_fields(feature_class)
+
+    log("begin detect feature changes")
+    log("Beginning detect feature change process for PiuteCo at: " + time.strftime("%c"))
+    arcpy.management.DetectFeatureChanges(
+        update_features,
+        base_features,
+        dfc_output,
+        search_distance,
+        match_fields,
+        stats_table,
+        change_tolerance,
+        compare_fields,
+    )
+    log("finished detect feature change process")
+
+    log("begin creating separate feature class named RoadCenterline_Recents")
+    arcpy.env.qualifiedFieldNames = False
+
+    roads_layer = "roads_lyr"
+    dfc_layer = "dfc_lyr"
+    arcpy.management.MakeFeatureLayer(update_features, roads_layer)
+    arcpy.management.MakeFeatureLayer(dfc_output, dfc_layer)
+
+    join_field_roads = arcpy.Describe(roads_layer).OIDFieldName
+    join_field_dfc = "UPDATE_FID"
+    arcpy.management.AddJoin(roads_layer, join_field_roads, dfc_layer, join_field_dfc)
+
+    dfc_name = arcpy.Describe(dfc_output).name
+    expression = f"{dfc_name}.CHANGE_TYPE <> 'NC'"
+    arcpy.management.SelectLayerByAttribute(roads_layer, "NEW_SELECTION", expression)
+    arcpy.management.CopyFeatures(roads_layer, out_feature)
+
+    log("Finished detect feature change process at: " + time.strftime("%c"))
+    log("done at: " + time.strftime("%c"))
 
 
-print("begin creating seperate feature class named RoadsCenterlines_Recents")
-# join the dfc output to the newest county data to see what changes have been made
-arcpy.env.qualifiedFieldNames = False
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Detect recent edits between Piute update and baseline roads."
+    )
+    parser.add_argument(
+        "--update-features",
+        required=True,
+        help="Path to the newest county road feature class.",
+    )
+    parser.add_argument(
+        "--base-features",
+        required=True,
+        help="Path to the previous county road feature class.",
+    )
+    parser.add_argument(
+        "--search-distance",
+        default="200 Feet",
+        help="Search distance for candidate matches in Detect Feature Changes.",
+    )
+    parser.add_argument(
+        "--match-fields",
+        default="NAME NAME",
+        help="Semicolon-delimited field mapping string used for matching.",
+    )
+    parser.add_argument(
+        "--change-tolerance",
+        default="40",
+        help="Change tolerance distance used by Detect Feature Changes.",
+    )
+    parser.add_argument(
+        "--compare-fields",
+        default=DEFAULT_COMPARE_FIELDS,
+        help="Semicolon-delimited field mapping string used for compare attributes.",
+    )
+    parser.add_argument(
+        "--dfc-output-name",
+        default="DFC_PiuteToPiute",
+        help="Output feature class name for Detect Feature Changes result.",
+    )
+    parser.add_argument(
+        "--stats-table-name",
+        default="new_roads_stats_piute",
+        help="Output table name for Detect Feature Changes statistics.",
+    )
+    parser.add_argument(
+        "--recents-name",
+        default="RoadCenterline_Recents",
+        help="Output feature class name for selected changed roads.",
+    )
+    return parser.parse_args()
 
-# Set local variables
-# Make a layer from the feature class
-arcpy.MakeFeatureLayer_management(updateFeatures, "roads_lyr")
 
-# Make a layer from the feature class
-arcpy.MakeFeatureLayer_management(dfcOutput, "dfc_lyr")
+def main():
+    start_time = time.time()
+    args = parse_args()
 
-# joinField_roads = "OBJECTID"
-joinField_roads = arcpy.Describe("roads_lyr").OIDFieldName
-joinField_dfc = "UPDATE_FID"
+    try:
+        ensure_detect_feature_changes_license()
 
-# Join the feature layer to a table
-arcpy.AddJoin_management("roads_lyr", joinField_roads, "dfc_lyr", joinField_dfc)
+        run_change_detection(
+            update_features=args.update_features,
+            base_features=args.base_features,
+            search_distance=args.search_distance,
+            match_fields=args.match_fields,
+            change_tolerance=args.change_tolerance,
+            compare_fields=args.compare_fields,
+            dfc_output_name=args.dfc_output_name,
+            stats_table_name=args.stats_table_name,
+            recents_name=args.recents_name,
+        )
+    except RuntimeError as exc:
+        log(str(exc))
+        return 2
 
-# Select desired features from veg_layer
-expression = r"DFC_PiuteToPiute.CHANGE_TYPE <> 'NC'"
-layerName = "roads_lyr"
-arcpy.SelectLayerByAttribute_management(layerName, "NEW_SELECTION", expression)
+    elapsed = time.time() - start_time
+    log("Time elapsed: {:.2f}s".format(elapsed))
+    return 0
 
-# Copy the layer to a new permanent feature class
-outFeature = dirname + "\\RoadCenterline_Recents"
-arcpy.CopyFeatures_management(layerName, outFeature)
 
-arcpy.AddMessage("Finished detect feature change process at: " + time.strftime("%c"))
-print("done at: ") + time.strftime("%c")
+if __name__ == "__main__":
+    raise SystemExit(main())
