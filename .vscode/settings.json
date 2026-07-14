@@ -1,4 +1,4 @@
 {
   "python-envs.defaultEnvManager": "ms-python.python:conda",
-  "cSpell.words": ["UTRANS"]
+  "cSpell.words": ["daml", "MVVM", "UGRC", "UTRANS"]
 }
