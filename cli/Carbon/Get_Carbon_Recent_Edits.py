@@ -1,4 +1,4 @@
-"""Piute County recent edits detection for ArcGIS Pro (Python 3).
+"""Carbon County recent edits detection for ArcGIS Pro (Python 3).
 
 Compares current county roads against a prior delivery using Detect Feature Changes,
 then exports changed features into a fixed output feature class.
@@ -16,7 +16,7 @@ DEFAULT_COMPARE_FIELDS = (
     "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; "
     "FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R"
 )
-TEXT_FIELDS = ["PREDIR", "NAME", "POSTTYPE", "POSTDIR"]
+TEXT_FIELDS = ["PREDIR", "NAME", "POSTTYPE", "POSTDIR", "AN_NAME"]
 NUMERIC_FIELDS = ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"]
 
 
@@ -97,7 +97,7 @@ def run_change_detection(
         normalize_fields(feature_class)
 
     log("begin detect feature changes")
-    log("Beginning detect feature change process for PiuteCo at: " + time.strftime("%c"))
+    log("Beginning detect feature change process for CarbonCo at: " + time.strftime("%c"))
     arcpy.management.DetectFeatureChanges(
         update_features,
         base_features,
@@ -133,17 +133,17 @@ def run_change_detection(
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Detect recent edits between Piute update and baseline roads.",
+        description="Detect recent edits between Carbon update and baseline roads.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Examples:\n"
-            "  python Get_Piute_Recent_Edits.py --help\n"
+            "  python Get_Carbon_Recent_Edits.py --help\n"
             "\n"
-            "  python Get_Piute_Recent_Edits.py "
-            "--update-features \"<parent>\\utrans-tools\\data\\Piute\\Piute_20260701.gdb\\Roads\" "
-            "--base-features \"<parent>\\utrans-tools\\data\\Piute\\Piute_20260101.gdb\\Roads\"\n"
+            "  python Get_Carbon_Recent_Edits.py "
+            "--update-features \"<parent>\\utrans-tools\\data\\Carbon\\Carbon20240221.gdb\\Roads\" "
+            "--base-features \"<parent>\\utrans-tools\\data\\Carbon\\Carbon20240221.gdb\\Roads\"\n"
             "\n"
-            "  python Get_Piute_Recent_Edits.py "
+            "  python Get_Carbon_Recent_Edits.py "
             "--update-features \"<update fc path>\" "
             "--base-features \"<base fc path>\" "
             "--search-distance \"200 Feet\" "
@@ -182,12 +182,12 @@ def parse_args():
     )
     parser.add_argument(
         "--dfc-output-name",
-        default="DFC_PiuteToPiute",
+        default="DFC_CarbonToCarbon",
         help="Output feature class name for Detect Feature Changes result.",
     )
     parser.add_argument(
         "--stats-table-name",
-        default="new_roads_stats_piute",
+        default="new_roads_stats_carbon",
         help="Output table name for Detect Feature Changes statistics.",
     )
     parser.add_argument(
@@ -228,19 +228,18 @@ def main():
 if __name__ == "__main__":
     raise SystemExit(main())
 
-
-# utrans-tools\cli\Piute: python Get_Piute_Recent_Edits.py --update-features "Z:\Documents\gdb\PiuteCo_20260414.gdb\Roads_2026_April" --base-features "Z:\Documents\gdb\PiuteCo_20251020.gdb\Roads" --dfc-output-name DFC_PiuteToPiute_07_06_26 --stats-table-name new_roads_stats_piute_07_06_26 --recents-name RoadCenterline_Recents_07_06_26
+# utrans-tools\cli\Carbon: python Get_Carbon_Recent_Edits.py --update-features "Z:\Documents\gdb\Carbon20231019.gdb\Roads" --base-features "Z:\Documents\gdb\Carbon20230208.gdb\CC_Roads" --dfc-output-name DFC_Carbon_to_Carbon_7_13_26 --stats-table-name new_roads_stats_carbon_7_13_26 --recents-name RoadCenterline_Recents_07_13_26
 # arcpy.management.FeatureCompare(
-#     in_base_features="RoadCenterline_Recents",
-#     in_test_features="RoadCenterline_Recents_07_06_26",
+#     in_base_features="RoadCenterline_Recents_Oct_2023",
+#     in_test_features="RoadCenterline_Recents_07_13_26",
 #     sort_field="NAME",
 #     compare_type="ALL",
 #     ignore_options=None,
-#     xy_tolerance="0.003280833333 Feet",
+#     xy_tolerance="0.001 Meters",
 #     m_tolerance=0.001,
 #     z_tolerance=0.001,
 #     attribute_tolerances=None,
-#     omit_field="OBJECTID;OBJECTID_1;UPDATE_FID",
+#     omit_field="OBJECTID;OBJECTID_1;UPDATE_FID;LEN_PCT;LEN_ABS",
 #     continue_compare="NO_CONTINUE_COMPARE",
 #     out_compare_file=None
 # )
