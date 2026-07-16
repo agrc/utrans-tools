@@ -1,4 +1,4 @@
-"""Grand County recent edits detection for ArcGIS Pro (Python 3).
+"""Garfield County recent edits detection for ArcGIS Pro (Python 3).
 
 Compares current county roads against a prior delivery using Detect Feature
 Changes, then exports changed features into a fixed output feature class.
@@ -12,13 +12,20 @@ import arcpy
 
 
 DEFAULT_COMPARE_FIELDS = (
-    "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; "
-    "STREETNAME STREETNAME; PREDIR PREDIR; SUFDIR SUFDIR; "
-    "STREETTYPE STREETTYPE; ACSALIAS ACSALIAS; ALIAS1 ALIAS1; ALIAS2 ALIAS2"
+    "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; "
+    "TOADDR_R TOADDR_R; NAME NAME; PREDIR PREDIR; POSTDIR POSTDIR; "
+    "POSTTYPE POSTTYPE; AN_NAME AN_NAME; A1_NAME A1_NAME; A2_NAME A2_NAME"
 )
-TEXT_FIELDS = ["STREETNAME", "PREDIR", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"]
-NUMERIC_FIELDS = ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
-UPPERCASE_NORMALIZE_FIELDS = {"STREETNAME", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"}
+TEXT_FIELDS = [
+    "NAME",
+    "PREDIR",
+    "POSTDIR",
+    "POSTTYPE",
+    "AN_NAME",
+    "A1_NAME",
+    "A2_NAME",
+]
+NUMERIC_FIELDS = ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"]
 
 
 def log(message):
@@ -80,17 +87,6 @@ def ensure_detect_feature_changes_license():
     )
 
 
-def normalize_text_value(value, force_uppercase):
-    """Normalize legacy text values the same way as the historical script."""
-    if value in ("", " ", "None", "NULL", None):
-        return ""
-
-    if force_uppercase:
-        return " ".join(str(value).split()).upper()
-
-    return value
-
-
 def normalize_fields(feature_class):
     """Convert legacy null/blank values to deterministic values before DFC."""
     field_map = get_field_name_map(feature_class)
@@ -106,18 +102,16 @@ def normalize_fields(feature_class):
             updated = False
 
             for idx in range(len(text_existing)):
-                field_name = text_existing[idx]
-                normalized = normalize_text_value(
-                    row[idx],
-                    force_uppercase=field_name.upper() in UPPERCASE_NORMALIZE_FIELDS,
-                )
-                if normalized != row[idx]:
-                    row[idx] = normalized
+                value = row[idx]
+                # Preserve legacy behavior: only NULL or a single-space string.
+                if value is None or value == " ":
+                    row[idx] = ""
                     updated = True
 
             for idx in range(len(text_existing), len(field_names)):
                 value = row[idx]
-                if value is None:
+                # Preserve legacy behavior: only NULL or a single-space string.
+                if value is None or value == " ":
                     row[idx] = 0
                     updated = True
 
@@ -164,7 +158,7 @@ def run_change_detection(
         normalize_fields(feature_class)
 
     log("begin detect feature changes")
-    log("Beginning detect feature change process for Grand at: " + time.strftime("%c"))
+    log("Beginning detect feature change process for Garfield at: " + time.strftime("%c"))
     arcpy.management.DetectFeatureChanges(
         update_features,
         base_features,
@@ -200,17 +194,17 @@ def run_change_detection(
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Detect recent edits between Grand update and baseline roads.",
+        description="Detect recent edits between Garfield update and baseline roads.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Examples:\n"
-            "  python Get_Grand_Recent_Edits.py --help\n"
+            "  python Get_Garfield_Recent_Edits.py --help\n"
             "\n"
-            "  python Get_Grand_Recent_Edits.py "
-            "--update-features \"Z:\\Documents\\gdb\\GRAND\\GrandCo_20260514.gdb\\GC__RDS_05_01_26\" "
-            "--base-features \"Z:\\Documents\\gdb\\GRAND\\GrandCo_20240812.gdb\\GRANDROADS_24\"\n"
+            "  python Get_Garfield_Recent_Edits.py "
+            "--update-features \"Z:\\Documents\\gdb\\GARFIELD\\Garfield20260427.gdb\\Garfield_Streets_Roads\" "
+            "--base-features \"Z:\\Documents\\gdb\\GARFIELD\\Garfield20250908.gdb\\Garfield_Streets_Roads\"\n"
             "\n"
-            "  python Get_Grand_Recent_Edits.py "
+            "  python Get_Garfield_Recent_Edits.py "
             "--update-features \"<update fc path>\" "
             "--base-features \"<base fc path>\" "
             "--search-distance \"200 Feet\" "
@@ -234,7 +228,7 @@ def parse_args():
     )
     parser.add_argument(
         "--match-fields",
-        default="STREETNAME STREETNAME",
+        default="NAME NAME",
         help="Semicolon-delimited field mapping string used for matching.",
     )
     parser.add_argument(
@@ -249,12 +243,12 @@ def parse_args():
     )
     parser.add_argument(
         "--dfc-output-name",
-        default="DFC_GrandtoGrand",
+        default="DFC_GarfieldToGarfield",
         help="Output feature class name for Detect Feature Changes result.",
     )
     parser.add_argument(
         "--stats-table-name",
-        default="stats_grand_to_grand",
+        default="stats_Garfield_to_Garfield",
         help="Output table name for Detect Feature Changes statistics.",
     )
     parser.add_argument(
@@ -296,4 +290,4 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-# utrans-tools\cli\Grand: python Get_Grand_Recent_Edits.py --update-features "Z:\Documents\gdb\GRAND\GrandCo_20260514.gdb\GC__RDS_05_01_26" --base-features "Z:\Documents\gdb\GRAND\GrandCo_20240812.gdb\GRANDROADS_24" --dfc-output-name DFC_GrandtoGrand_07_16_26 --stats-table-name stats_grand_to_grand_07_16_26 --recents-name RoadCenterline_Recents_07_16_26
+# utrans-tools\cli\Garfield: python Get_Garfield_Recent_Edits.py --update-features "Z:\Documents\gdb\GARFIELD\Garfield20260427.gdb\Garfield_Streets_Roads" --base-features "Z:\Documents\gdb\GARFIELD\Garfield20250908.gdb\Garfield_Streets_Roads" --dfc-output-name DFC_GarfieldToGarfield_07_16_26 --stats-table-name stats_Garfield_to_Garfield_07_16_26 --recents-name RoadCenterline_Recents_07_16_26
