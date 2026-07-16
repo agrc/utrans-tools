@@ -1,131 +1,297 @@
-# Name:        (Cache's script to compare their data with what they sent us last time)
-# Description: Perform change detection between newly received road data and
-#              existing road data and find the number of new roads and the
-#              total length of them.
-# Author:      gbunce
-# -----------------------------------------------------------------------
+"""Duchesne County recent edits detection for ArcGIS Pro (Python 3).
 
-# NOTE
-### three ### pound signs indicates that the user needs to change a variable before running this code
+Compares current county roads against a prior delivery using Detect Feature
+Changes, then exports changed features into a fixed output feature class.
+"""
 
-# Import system modules
+import argparse
 import os
-import arcpy
-from arcpy import env
 import time
-# Set environment settings
-env.overwriteOutput = True
-#env.workspace = r"D:\UTRANS\Updates\DuchesneCenterlines_16_02_17.gdb" ### change database name ###
 
-#strTimeNow = time.strftime("%c")
-
-# Set local variables
-updateFeatures = r"L:\agrc\data\county_obtained\Duchesne\DuchesneCo_20191009.gdb\Centerlines" ### THIS WOULD BE THE NEWEST DATA
-baseFeatures = r"L:\agrc\data\county_obtained\Duchesne\DuchesneCo_20190405.gdb\Centerlines" ### THIS IS THE DATA THEY SENT US LAST TIME
-
-dirname = os.path.dirname(arcpy.Describe(updateFeatures).catalogPath)
-desc = arcpy.Describe(dirname)
-if hasattr(desc, "datasetType") and desc.datasetType=='FeatureDataset':
-    dirname = os.path.dirname(dirname)
-
-print "Directory Name: " + str(dirname)
-print "Description: " + str(desc)
-#dfcOutput = "DFC_RESULT"
-#dfcResult = arcpy.Describe(updateFeatures).catalogPath + "\\DFC_RESULT"
-#dfcOutput = arcpy.Describe(updateFeatures).catalogPath + "\\DFC_RESULT"
-dfcOutput = dirname + "\\DFC_DuchesneToDuchesne"
-
-print "begin converting nulls to empty"
-# convert nulls to empty in both the update fc and basefeatures fc
-list = [updateFeatures, baseFeatures]
-for item in list:
-    rows = arcpy.UpdateCursor (item)
-    for row in rows:
-        if row.PREDIR == ' ' or row.PREDIR == None or row.PREDIR is None:
-            row.PREDIR = ""
-        if row.STREETNAME == ' ' or row.STREETNAME == None or row.STREETNAME is None:
-            row.STREETNAME = ""
-        if row.STREETTYPE == ' ' or row.STREETTYPE == None or row.STREETTYPE is None:
-            row.STREETTYPE = ""
-        if row.SUFDIR == ' ' or row.SUFDIR == None or row.SUFDIR is None:
-            row.SUFDIR = ""
-        if row.ALIAS1 == ' ' or row.ALIAS1 == None or row.ALIAS1 is None:
-            row.ALIAS1 = ""
-        if row.ALIAS1TYPE == ' ' or row.ALIAS1TYPE == None or row.ALIAS1TYPE is None:
-            row.ALIAS1TYPE = ""
-        if row.ALIAS2 == ' ' or row.ALIAS2 == None or row.ALIAS2 is None:
-            row.ALIAS2 = ""
-        if row.ALIAS2TYPE == ' ' or row.ALIAS2TYPE == None or row.ALIAS2TYPE is None:
-            row.ALIAS2TYPE = ""
-        if row.ACSNAME == ' ' or row.ACSNAME == None or row.ACSNAME is None:
-            row.ACSNAME = ""
-        if row.ACSSUF == ' ' or row.ACSSUF == None or row.ACSSUF is None:
-            row.ACSSUF = ""
-        if row.L_F_ADD == ' ' or row.L_F_ADD == None or row.L_F_ADD is None:
-            row.L_F_ADD = 0
-        if row.L_T_ADD == ' ' or row.L_T_ADD == None or row.L_T_ADD is None:
-            row.L_T_ADD = 0
-        if row.R_F_ADD == ' ' or row.R_F_ADD == None or row.R_F_ADD is None:
-            row.R_F_ADD = 0
-        if row.R_T_ADD == ' ' or row.R_T_ADD == None or row.R_T_ADD is None:
-            row.R_T_ADD = 0
-
-        rows.updateRow(row)
-del row
-del rows
+import arcpy
 
 
-print "begin dfc"
-#search_distance = "300 Feet" # 300 feet is about 90 meters \ 40 meters = 131.234 feet
-search_distance = "200 Feet" # The distance used to search for match candidates. A distance must be specified and it must be greater than zero. You can choose a preferred unit; the default is the feature unit.
-#match values
-match_fields = "STREETNAME STREETNAME"
-#statsTable = arcpy.Describe(updateFeatures).catalogPath + "\\stats_vecc"
-statsTable = dirname + "\\stats_cache_to_cache"
-print "StatsTable: " + str(statsTable)
-print "DFC Layer: " + str(dfcOutput)
-print
-#statsTable = None
-
-#change_tolerance = "300 Feet"
-change_tolerance = "40" # The Change Tolerance serves as the width of a buffer zone around the update features or the base features.  It's the distance used to determine if there is a spatial change. All matched update features and base features are checked against this tolerance. If any portions of update or base features fall outside the zone around the matched feature, it is considered a spatial change.
-
-## compare values
-compare_fields = "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; ACSNAME ACSNAME; ACSSUF ACSSUF; SUFDIR SUFDIR"
-
-arcpy.AddMessage("Begining detect feature change process for Duchesne at: " + time.strftime("%c"))
-#print "begining detect feature change process..."
-# Perform spatial change detection
-arcpy.DetectFeatureChanges_management(updateFeatures, baseFeatures, dfcOutput, search_distance, match_fields, statsTable, change_tolerance, compare_fields)
-print "finished detect feature change process!"
+DEFAULT_COMPARE_FIELDS = (
+    "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; "
+    "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; "
+    "ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; "
+    "ALIAS2TYPE ALIAS2TYPE; ACSNAME ACSNAME; ACSSUF ACSSUF; SUFDIR SUFDIR"
+)
+TEXT_FIELDS = [
+    "PREDIR",
+    "STREETNAME",
+    "STREETTYPE",
+    "SUFDIR",
+    "ALIAS1",
+    "ALIAS1TYPE",
+    "ALIAS2",
+    "ALIAS2TYPE",
+    "ACSNAME",
+    "ACSSUF",
+]
+NUMERIC_FIELDS = ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
 
 
-print "begin creating seperate feature class named RoadsCenterlines_Recents"
-# join the dfc output to the newest county data to see what changes have been made
-arcpy.env.qualifiedFieldNames = False
+def log(message):
+    print(message)
 
-# Set local variables
-# Make a layer from the feature class
-arcpy.MakeFeatureLayer_management(updateFeatures,"roads_lyr")
 
-# Make a layer from the feature class
-arcpy.MakeFeatureLayer_management(dfcOutput,"dfc_lyr")
+def get_field_name_map(feature_class):
+    """Return case-insensitive -> actual field name mapping for a feature class."""
+    return {field.name.lower(): field.name for field in arcpy.ListFields(feature_class)}
 
-#joinField_roads = "OBJECTID"
-joinField_roads = arcpy.Describe("roads_lyr").OIDFieldName
-joinField_dfc = "UPDATE_FID"
 
-# Join the feature layer to a table
-arcpy.AddJoin_management("roads_lyr", joinField_roads, "dfc_lyr", joinField_dfc)
+def parse_field_pairs(field_mapping):
+    """Parse a semicolon-delimited mapping string into field-name pairs."""
+    pairs = []
+    for token in field_mapping.split(";"):
+        parts = token.strip().split()
+        if len(parts) >= 2:
+            pairs.append((parts[0], parts[1]))
+    return pairs
 
-# Select desired features from veg_layer
-expression = r"DFC_DuchesneToDuchesne.CHANGE_TYPE <> 'NC'"
-layerName = "roads_lyr"
-arcpy.SelectLayerByAttribute_management(layerName, "NEW_SELECTION", expression)
 
-# Copy the layer to a new permanent feature class
-outFeature = dirname + "\\RoadCenterline_Recents"
-arcpy.CopyFeatures_management(layerName, outFeature)
+def resolve_field_pairs(update_features, base_features, field_mapping):
+    """Keep only mappings where both fields exist and return actual-cased names."""
+    update_map = get_field_name_map(update_features)
+    base_map = get_field_name_map(base_features)
 
-arcpy.AddMessage("Finished detect feature change process at: " + time.strftime("%c"))
-print "done at: " + time.strftime("%c")
+    resolved_pairs = []
+    for update_field, base_field in parse_field_pairs(field_mapping):
+        update_actual = update_map.get(update_field.lower())
+        base_actual = base_map.get(base_field.lower())
+        if update_actual and base_actual:
+            resolved_pairs.append((update_actual, base_actual))
+    return resolved_pairs
+
+
+def get_output_workspace(update_features):
+    """Return the parent geodatabase for an update feature class path."""
+    dirname = os.path.dirname(arcpy.Describe(update_features).catalogPath)
+    desc = arcpy.Describe(dirname)
+    if hasattr(desc, "datasetType") and desc.datasetType == "FeatureDataset":
+        dirname = os.path.dirname(dirname)
+    return dirname
+
+
+def ensure_detect_feature_changes_license():
+    """Fail early with a clear message if Advanced licensing is not active."""
+    product_info = str(arcpy.ProductInfo()).strip()
+    product_norm = product_info.lower()
+
+    if product_norm in {"arcinfo", "advanced"}:
+        return
+
+    arcinfo_status = str(arcpy.CheckProduct("ArcInfo")).strip()
+    raise RuntimeError(
+        "Detect Feature Changes requires an ArcGIS Pro Advanced license. "
+        f"Current ProductInfo is '{product_info}' and CheckProduct('ArcInfo') is "
+        f"'{arcinfo_status}'. Ask your GIS admin to assign an Advanced seat, "
+        "then rerun this script."
+    )
+
+
+def normalize_fields(feature_class):
+    """Convert legacy null/blank values to deterministic values before DFC."""
+    field_map = get_field_name_map(feature_class)
+    text_existing = [field_map[name.lower()] for name in TEXT_FIELDS if name.lower() in field_map]
+    numeric_existing = [field_map[name.lower()] for name in NUMERIC_FIELDS if name.lower() in field_map]
+    field_names = text_existing + numeric_existing
+
+    if not field_names:
+        return
+
+    with arcpy.da.UpdateCursor(feature_class, field_names) as rows:
+        for row in rows:
+            updated = False
+
+            for idx in range(len(text_existing)):
+                value = row[idx]
+                # Preserve legacy behavior: only NULL or a single-space string.
+                if value is None or value == " ":
+                    row[idx] = ""
+                    updated = True
+
+            for idx in range(len(text_existing), len(field_names)):
+                value = row[idx]
+                # Preserve legacy behavior: only NULL or a single-space string.
+                if value is None or value == " ":
+                    row[idx] = 0
+                    updated = True
+
+            if updated:
+                rows.updateRow(row)
+
+
+def run_change_detection(
+    update_features,
+    base_features,
+    search_distance,
+    match_fields,
+    change_tolerance,
+    compare_fields,
+    dfc_output_name,
+    stats_table_name,
+    recents_name,
+):
+    arcpy.env.overwriteOutput = True
+    output_workspace = get_output_workspace(update_features)
+
+    dfc_output = os.path.join(output_workspace, dfc_output_name)
+    stats_table = os.path.join(output_workspace, stats_table_name)
+    out_feature = os.path.join(output_workspace, recents_name)
+
+    resolved_match_pairs = resolve_field_pairs(update_features, base_features, match_fields)
+    if not resolved_match_pairs:
+        raise RuntimeError(
+            "No valid match field pairs found between update and base feature classes. "
+            "Pass --match-fields with fields that exist in both datasets."
+        )
+    match_fields = "; ".join(["{0} {1}".format(update_field, base_field) for update_field, base_field in resolved_match_pairs])
+
+    resolved_compare_pairs = resolve_field_pairs(update_features, base_features, compare_fields)
+    if not resolved_compare_pairs:
+        raise RuntimeError(
+            "No valid compare field pairs found between update and base feature classes. "
+            "Pass --compare-fields with fields that exist in both datasets."
+        )
+    compare_fields = "; ".join(["{0} {1}".format(update_field, base_field) for update_field, base_field in resolved_compare_pairs])
+
+    log("begin converting nulls to empty")
+    for feature_class in [update_features, base_features]:
+        normalize_fields(feature_class)
+
+    log("begin detect feature changes")
+    log("Beginning detect feature change process for Duchesne at: " + time.strftime("%c"))
+    arcpy.management.DetectFeatureChanges(
+        update_features,
+        base_features,
+        dfc_output,
+        search_distance,
+        match_fields,
+        stats_table,
+        change_tolerance,
+        compare_fields,
+    )
+    log("finished detect feature change process")
+
+    log(f"begin creating separate feature class named {recents_name}")
+    arcpy.env.qualifiedFieldNames = False
+
+    roads_layer = "roads_lyr"
+    dfc_layer = "dfc_lyr"
+    arcpy.management.MakeFeatureLayer(update_features, roads_layer)
+    arcpy.management.MakeFeatureLayer(dfc_output, dfc_layer)
+
+    join_field_roads = arcpy.Describe(roads_layer).OIDFieldName
+    join_field_dfc = "UPDATE_FID"
+    arcpy.management.AddJoin(roads_layer, join_field_roads, dfc_layer, join_field_dfc)
+
+    dfc_name = arcpy.Describe(dfc_output).name
+    expression = f"{dfc_name}.CHANGE_TYPE <> 'NC'"
+    arcpy.management.SelectLayerByAttribute(roads_layer, "NEW_SELECTION", expression)
+    arcpy.management.CopyFeatures(roads_layer, out_feature)
+
+    log("Finished detect feature change process at: " + time.strftime("%c"))
+    log("done at: " + time.strftime("%c"))
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Detect recent edits between Duchesne update and baseline roads.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Examples:\n"
+            "  python Get_Duchesne_Recent_Edits.py --help\n"
+            "\n"
+            "  python Get_Duchesne_Recent_Edits.py "
+            "--update-features \"Z:\\Documents\\gdb\\DUCHESNE\\DuchesneCo_20191009.gdb\\Centerlines\" "
+            "--base-features \"Z:\\Documents\\gdb\\DUCHESNE\\DuchesneCo_20190405.gdb\\Centerlines\"\n"
+            "\n"
+            "  python Get_Duchesne_Recent_Edits.py "
+            "--update-features \"<update fc path>\" "
+            "--base-features \"<base fc path>\" "
+            "--search-distance \"200 Feet\" "
+            "--change-tolerance 40"
+        ),
+    )
+    parser.add_argument(
+        "--update-features",
+        required=True,
+        help="Path to the newest county road feature class.",
+    )
+    parser.add_argument(
+        "--base-features",
+        required=True,
+        help="Path to the previous county road feature class.",
+    )
+    parser.add_argument(
+        "--search-distance",
+        default="200 Feet",
+        help="Search distance for candidate matches in Detect Feature Changes.",
+    )
+    parser.add_argument(
+        "--match-fields",
+        default="STREETNAME STREETNAME",
+        help="Semicolon-delimited field mapping string used for matching.",
+    )
+    parser.add_argument(
+        "--change-tolerance",
+        default="40",
+        help="Change tolerance distance used by Detect Feature Changes.",
+    )
+    parser.add_argument(
+        "--compare-fields",
+        default=DEFAULT_COMPARE_FIELDS,
+        help="Semicolon-delimited field mapping string used for compare attributes.",
+    )
+    parser.add_argument(
+        "--dfc-output-name",
+        default="DFC_DuchesneToDuchesne",
+        help="Output feature class name for Detect Feature Changes result.",
+    )
+    parser.add_argument(
+        "--stats-table-name",
+        default="stats_duchesne_to_duchesne",
+        help="Output table name for Detect Feature Changes statistics.",
+    )
+    parser.add_argument(
+        "--recents-name",
+        default="RoadCenterline_Recents",
+        help="Output feature class name for selected changed roads.",
+    )
+    return parser.parse_args()
+
+
+def main():
+    start_time = time.time()
+    args = parse_args()
+
+    try:
+        ensure_detect_feature_changes_license()
+
+        run_change_detection(
+            update_features=args.update_features,
+            base_features=args.base_features,
+            search_distance=args.search_distance,
+            match_fields=args.match_fields,
+            change_tolerance=args.change_tolerance,
+            compare_fields=args.compare_fields,
+            dfc_output_name=args.dfc_output_name,
+            stats_table_name=args.stats_table_name,
+            recents_name=args.recents_name,
+        )
+    except RuntimeError as exc:
+        log(str(exc))
+        return 2
+
+    elapsed = time.time() - start_time
+    log("Time elapsed: {:.2f}s".format(elapsed))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+
+# utrans-tools\cli\Duchesne: python Get_Duchesne_Recent_Edits.py --update-features "Z:\Documents\gdb\DUCHESNE\DuchesneCo_20191009.gdb\Centerlines" --base-features "Z:\Documents\gdb\DUCHESNE\DuchesneCo_20190405.gdb\Centerlines" --dfc-output-name DFC_DuchesneToDuchesne_07_16_26 --stats-table-name stats_duchesne_to_duchesne_07_16_26 --recents-name RoadCenterline_Recents_07_16_26
