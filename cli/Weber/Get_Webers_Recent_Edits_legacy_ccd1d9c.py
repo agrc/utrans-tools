@@ -36,7 +36,7 @@ print("Description: " + str(desc))
 #dfcOutput = arcpy.Describe(updateFeatures).catalogPath + "\\DFC_RESULT"
 dfcOutput = dirname + "\\DFC_WeberToWeber_legacy"
 
-print ("begin converting nulls to emtpy")
+print ("begin converting nulls to empty")
 # convert nulls to empty in both the update fc and basefeatures fc
 list = [updateFeatures, baseFeatures]
 for item in list:

@@ -35,7 +35,7 @@ print(f"Directory Name: {dirname}")
 print(f"Description: {desc}")
 dfcOutput = dirname + "\\DFC_SevierToSevier"
 
-print ("begin converting nulls to emtpy")
+print ("begin converting nulls to empty")
 # convert nulls to empty in both the update fc and basefeatures fc
 list = [updateFeatures, baseFeatures]
 for item in list:

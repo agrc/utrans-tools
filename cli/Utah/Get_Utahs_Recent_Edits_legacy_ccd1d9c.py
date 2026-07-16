@@ -34,7 +34,7 @@ if hasattr(desc, "datasetType") and desc.datasetType=='FeatureDataset':
 dfcOutput = dirname + "\\DFC_UtahToUtah_legacy"
 outFeature = dirname + "\\RoadCenterline_Recents_legacy"
 
-print ("begin converting nulls to emtpy")
+print ("begin converting nulls to empty")
 # convert nulls to empty in both the update fc and basefeatures fc
 list = [updateFeatures, baseFeatures]
 for item in list:

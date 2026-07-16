@@ -1,4 +1,4 @@
-# Name:        (Beaver's script to compare their data with what they sent us last time)
+# Name:        (Daggett's script to compare their data with what they sent us last time)
 # Description: Perform change detection between newly received road data and
 #              existing road data and find the number of new roads and the
 #              total length of them.
@@ -14,15 +14,48 @@ import arcpy
 from arcpy import env
 import time
 
+TEXT_FIELDS = ["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS"]
+NUMERIC_FIELDS = ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
+
+
+def get_field_name_map(feature_class):
+    """Return case-insensitive -> actual field name mapping for a feature class."""
+    return dict((field.name.lower(), field.name) for field in arcpy.ListFields(feature_class))
+
+
+def parse_field_pairs(field_mapping):
+    """Parse a semicolon-delimited mapping string into field-name pairs."""
+    pairs = []
+    for token in field_mapping.split(";"):
+        parts = token.strip().split()
+        if len(parts) >= 2:
+            pairs.append((parts[0], parts[1]))
+    return pairs
+
+
+def resolve_field_pairs(update_features, base_features, field_mapping):
+    """Keep only mappings where both fields exist and return actual-cased names."""
+    update_map = get_field_name_map(update_features)
+    base_map = get_field_name_map(base_features)
+
+    resolved_pairs = []
+    for update_field, base_field in parse_field_pairs(field_mapping):
+        update_actual = update_map.get(update_field.lower())
+        base_actual = base_map.get(base_field.lower())
+        if update_actual and base_actual:
+            resolved_pairs.append((update_actual, base_actual))
+    return resolved_pairs
+
+
 # Set environment settings
 env.overwriteOutput = True
-#env.workspace = r"D:\UTRANS\Updates\BeaverCenterlines_16_02_17.gdb" ### change database name ###
+#env.workspace = r"D:\UTRANS\Updates\DaggettCenterlines_16_02_17.gdb" ### change database name ###
 
 #strTimeNow = time.strftime("%c")
 
 # Set local variables
-updateFeatures = r"Z:\Documents\gdb\BEAVER\BeaverCo_20260604.gdb\Beaver_Roads2025"  ### THIS WOULD BE THE NEWEST DATA
-baseFeatures = r"Z:\Documents\gdb\BEAVER\BeaverCo_20250617.gdb\Beaver_Roads2025"  ### THIS IS THE DATA THEY SENT US LAST TIME
+updateFeatures = r"Z:\Documents\gdb\DAGGETT\DaggettCoMay31st2017.gdb\DaggettRoads"  ### THIS WOULD BE THE NEWEST DATA
+baseFeatures = r"Z:\Documents\gdb\DAGGETT\DaggettJuly15th2016.gdb\DaggettRoads2016"  ### THIS IS THE DATA THEY SENT US LAST TIME
 
 dirname = os.path.dirname(arcpy.Describe(updateFeatures).catalogPath)
 desc = arcpy.Describe(dirname)
@@ -34,39 +67,28 @@ print("Description: " + str(desc))
 #dfcOutput = "DFC_RESULT"
 #dfcResult = arcpy.Describe(updateFeatures).catalogPath + "\\DFC_RESULT"
 #dfcOutput = arcpy.Describe(updateFeatures).catalogPath + "\\DFC_RESULT"
-dfcOutput = dirname + "\\DFC_BeaverToBeaver_legacy"
+dfcOutput = dirname + "\\DFC_DaggettToDaggett_legacy"
 outFeature = dirname + "\\RoadCenterline_Recents_legacy"
 
 print("begin converting nulls to empty")
 # convert nulls to empty in both the update fc and basefeatures fc
 list = [updateFeatures, baseFeatures]
 for item in list:
+    field_map = get_field_name_map(item)
+    text_existing = [field_map[name.lower()] for name in TEXT_FIELDS if name.lower() in field_map]
+    numeric_existing = [field_map[name.lower()] for name in NUMERIC_FIELDS if name.lower() in field_map]
+
     rows = arcpy.UpdateCursor(item)
     for row in rows:
-        if row.PREDIR == ' ' or row.PREDIR == None or row.PREDIR is None:
-            row.PREDIR = ""
-        if row.STREETNAME == ' ' or row.STREETNAME == None or row.STREETNAME is None:
-            row.STREETNAME = ""
-        if row.STREETTYPE == ' ' or row.STREETTYPE == None or row.STREETTYPE is None:
-            row.STREETTYPE = ""
-        if row.SUFDIR == ' ' or row.SUFDIR == None or row.SUFDIR is None:
-            row.SUFDIR = ""
-        if row.ALIAS1 == ' ' or row.ALIAS1 == None or row.ALIAS1 is None:
-            row.ALIAS1 = ""
-        if row.ALIAS1TYP == ' ' or row.ALIAS1TYP == None or row.ALIAS1TYP is None:
-            row.ALIAS1TYP = ""
-        if row.ACSNAME == ' ' or row.ACSNAME == None or row.ACSNAME is None:
-            row.ACSNAME = ""
-        if row.ACSSUF == ' ' or row.ACSSUF == None or row.ACSSUF is None:
-            row.ACSSUF = ""
-        if row.L_F_ADD == ' ' or row.L_F_ADD == None or row.L_F_ADD is None:
-            row.L_F_ADD = 0
-        if row.L_T_ADD == ' ' or row.L_T_ADD == None or row.L_T_ADD is None:
-            row.L_T_ADD = 0
-        if row.R_F_ADD == ' ' or row.R_F_ADD == None or row.R_F_ADD is None:
-            row.R_F_ADD = 0
-        if row.R_T_ADD == ' ' or row.R_T_ADD == None or row.R_T_ADD is None:
-            row.R_T_ADD = 0
+        for field_name in text_existing:
+            value = getattr(row, field_name)
+            if value == ' ' or value == None or value is None:
+                setattr(row, field_name, "")
+
+        for field_name in numeric_existing:
+            value = getattr(row, field_name)
+            if value == ' ' or value == None or value is None:
+                setattr(row, field_name, 0)
 
         rows.updateRow(row)
 del row
@@ -77,9 +99,9 @@ print("begin dfc")
 #search_distance = "300 Feet" # 300 feet is about 90 meters \ 40 meters = 131.234 feet
 search_distance = "200 Feet" # The distance used to search for match candidates. A distance must be specified and it must be greater than zero. You can choose a preferred unit; the default is the feature unit.
 #match values
-match_fields = "STREETNAME STREETNAME"
+match_fields = "S_NAME S_NAME"
 #statsTable = arcpy.Describe(updateFeatures).catalogPath + "\\stats_vecc"
-statsTable = dirname + "\\stats_beaver_to_beaver_legacy"
+statsTable = dirname + "\\stats_daggett_to_daggett_legacy"
 print("StatsTable: " + str(statsTable))
 print("DFC Layer: " + str(dfcOutput))
 print()
@@ -89,9 +111,25 @@ print()
 change_tolerance = "40" # The Change Tolerance serves as the width of a buffer zone around the update features or the base features.  It's the distance used to determine if there is a spatial change. All matched update features and base features are checked against this tolerance. If any portions of update or base features fall outside the zone around the matched feature, it is considered a spatial change.
 
 ## compare values
-compare_fields = "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1TYP ALIAS1TYP; ACSNAME ACSNAME; ACSSUF ACSSUF; SUFDIR SUFDIR"
+compare_fields = "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ACS_ALIAS ACS_ALIAS; SUF_DIR SUF_DIR"
 
-arcpy.AddMessage("Begining detect feature change process for Beaver at: " + time.strftime("%c"))
+resolved_match_pairs = resolve_field_pairs(updateFeatures, baseFeatures, match_fields)
+if not resolved_match_pairs:
+    raise RuntimeError(
+        "No valid match field pairs found between update and base feature classes. "
+        "Edit match_fields to use fields that exist in both datasets."
+    )
+match_fields = "; ".join(["{0} {1}".format(update_field, base_field) for update_field, base_field in resolved_match_pairs])
+
+resolved_compare_pairs = resolve_field_pairs(updateFeatures, baseFeatures, compare_fields)
+if not resolved_compare_pairs:
+    raise RuntimeError(
+        "No valid compare field pairs found between update and base feature classes. "
+        "Edit compare_fields to use fields that exist in both datasets."
+    )
+compare_fields = "; ".join(["{0} {1}".format(update_field, base_field) for update_field, base_field in resolved_compare_pairs])
+
+arcpy.AddMessage("Begining detect feature change process for Daggett at: " + time.strftime("%c"))
 #print "begining detect feature change process..."
 # Clean up prior legacy outputs so repeat runs do not fail on name collisions.
 if arcpy.Exists(dfcOutput):
@@ -118,7 +156,6 @@ arcpy.MakeFeatureLayer_management(dfcOutput, "dfc_lyr")
 #joinField_roads = "OBJECTID"
 joinField_roads = arcpy.Describe("roads_lyr").OIDFieldName
 joinField_dfc = "UPDATE_FID"
-
 # Join the feature layer to a table
 arcpy.AddJoin_management("roads_lyr", joinField_roads, "dfc_lyr", joinField_dfc)
 
