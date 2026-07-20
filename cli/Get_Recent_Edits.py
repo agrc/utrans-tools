@@ -301,6 +301,18 @@ PROFILES = {
         default_dfc_output_name="DFC_VeccToVecc",
         default_stats_table_name="stats_vecc_to_vecc",
     ),
+    "sanjuan": CountyProfile(
+        key="sanjuan",
+        aliases=["sanjuan", "san juan"],
+        display_name="San Juan",
+        default_match_fields="S_NAME S_NAME",
+        default_compare_fields="S_NAME S_NAME",
+        text_fields=["S_NAME"],
+        numeric_fields=[],
+        normalize_mode="single_space_or_null",
+        default_dfc_output_name="DFC_SanJuanToSanJuan",
+        default_stats_table_name="stats_SanJuan_to_SanJuan",
+    ),
     "davis": CountyProfile(
         key="davis",
         aliases=["davis"],
@@ -623,7 +635,7 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, Piute, Rich, vecc, or Davis.")
+    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, Piute, Rich, SanJuan, vecc, or Davis.")
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
