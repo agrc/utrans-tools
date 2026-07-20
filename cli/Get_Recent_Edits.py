@@ -163,7 +163,7 @@ PROFILES = {
         text_fields=["STREETNAME", "PREDIR", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         uppercase_normalize_fields={"STREETNAME", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"},
-        normalize_mode="grand_legacy",
+        normalize_mode="legacy_standardized_text",
     ),
     "iron": county_profile(
         aliases=["iron"],
@@ -301,7 +301,7 @@ PROFILES = {
         text_fields=["FULLNAME", "PREDIR", "A1_NAME", "A2_NAME", "AN_NAME", "STATUS"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
         uppercase_normalize_fields={"FULLNAME", "A1_NAME", "A2_NAME"},
-        normalize_mode="grand_legacy",
+        normalize_mode="legacy_standardized_text",
     ),
     "uintah": county_profile(
         aliases=["uintah"],
@@ -313,7 +313,7 @@ PROFILES = {
         text_fields=["S_NAME", "ALIAS1"],
         numeric_fields=["toleft", "toright", "fromleft", "fromright"],
         uppercase_normalize_fields={"S_NAME", "ALIAS1"},
-        normalize_mode="grand_legacy",
+        normalize_mode="legacy_standardized_text",
     ),
     "utah": county_profile(
         aliases=["utah"],
@@ -338,7 +338,7 @@ PROFILES = {
         text_fields=["FULLNAME", "PREDIR", "AN_NAME", "STATUS"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
         uppercase_normalize_fields={"FULLNAME"},
-        normalize_mode="grand_legacy",
+        normalize_mode="legacy_standardized_text",
     ),
     "washington": county_profile(
         aliases=["washington"],
@@ -499,7 +499,7 @@ def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=No
                 if profile.normalize_mode == "single_space_or_null":
                     if value == " " or value is None:
                         replacement = ""
-                elif profile.normalize_mode == "grand_legacy":
+                elif profile.normalize_mode == "legacy_standardized_text":
                     field_name = text_existing[idx]
                     replacement = _normalize_text_value(
                         value,
