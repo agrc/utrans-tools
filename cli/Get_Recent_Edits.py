@@ -32,7 +32,7 @@ class CountyProfile:
     text_fields: list[str] = field(default_factory=list)
     numeric_fields: list[str] = field(default_factory=list)
     uppercase_normalize_fields: set[str] = field(default_factory=set)
-    normalize_mode: str = "strip_blank"
+    apply_legacy_text_standardization: bool = False
     default_dfc_output_name: str = "DFC_CountyToCounty"
     default_stats_table_name: str = "stats_county_to_county"
     default_recents_name: str = "RoadCenterline_Recents"
@@ -57,7 +57,6 @@ PROFILES = {
         ),
         text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYP", "ACSNAME", "ACSSUF"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        normalize_mode="single_space_or_null",
     ),
     "boxelder": county_profile(
         aliases=["boxelder", "box elder"],
@@ -72,7 +71,6 @@ PROFILES = {
         ),
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ACS_NAME", "ACS_SUF", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        normalize_mode="single_space_or_null",
     ),
     "cache": county_profile(
         aliases=["cache"],
@@ -85,7 +83,6 @@ PROFILES = {
         ),
         text_fields=["PRE_DIR", "GEOCODEST", "TYPE", "SUFFDIR", "AliasPreDir", "AliasStreet", "AliasType", "AliasSufDir"],
         numeric_fields=["FAL", "TAL", "FAR", "TAR"],
-        normalize_mode="single_space_or_null",
     ),
     "daggett": county_profile(
         aliases=["daggett"],
@@ -97,7 +94,6 @@ PROFILES = {
         ),
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        normalize_mode="single_space_or_null",
     ),
     "duchesne": county_profile(
         aliases=["duchesne"],
@@ -110,7 +106,6 @@ PROFILES = {
         ),
         text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE", "ACSNAME", "ACSSUF"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        normalize_mode="single_space_or_null",
     ),
     "emery": county_profile(
         aliases=["emery"],
@@ -123,7 +118,6 @@ PROFILES = {
         ),
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        normalize_mode="single_space_or_null",
     ),
     "carbon": county_profile(
         aliases=["carbon"],
@@ -136,7 +130,6 @@ PROFILES = {
         ),
         text_fields=["PREDIR", "NAME", "POSTTYPE", "POSTDIR", "AN_NAME"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-        normalize_mode="strip_blank",
     ),
     "garfield": county_profile(
         aliases=["garfield"],
@@ -149,7 +142,6 @@ PROFILES = {
         ),
         text_fields=["NAME", "PREDIR", "POSTDIR", "POSTTYPE", "AN_NAME", "A1_NAME", "A2_NAME"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-        normalize_mode="single_space_or_null",
     ),
     "grand": county_profile(
         aliases=["grand"],
@@ -163,7 +155,7 @@ PROFILES = {
         text_fields=["STREETNAME", "PREDIR", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         uppercase_normalize_fields={"STREETNAME", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"},
-        normalize_mode="legacy_standardized_text",
+        apply_legacy_text_standardization=True,
     ),
     "iron": county_profile(
         aliases=["iron"],
@@ -177,7 +169,6 @@ PROFILES = {
         ),
         text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE", "ACSALIAS", "ACSNAME", "ACSSUF"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        normalize_mode="single_space_or_null",
     ),
     "kane": county_profile(
         aliases=["kane"],
@@ -190,7 +181,6 @@ PROFILES = {
         ),
         text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ACSALIAS", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        normalize_mode="single_space_or_null",
     ),
     "millard": county_profile(
         aliases=["millard"],
@@ -203,7 +193,6 @@ PROFILES = {
         ),
         text_fields=["PREDIR", "FULLNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        normalize_mode="single_space_or_null",
     ),
     "morgan": county_profile(
         aliases=["morgan"],
@@ -214,7 +203,6 @@ PROFILES = {
         ),
         text_fields=["FULLNAME"],
         numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
-        normalize_mode="single_space_or_null",
     ),
     "piute": county_profile(
         aliases=["piute"],
@@ -227,7 +215,6 @@ PROFILES = {
         ),
         text_fields=["PREDIR", "NAME", "POSTTYPE", "POSTDIR"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-        normalize_mode="strip_blank",
     ),
     "rich": county_profile(
         aliases=["rich"],
@@ -241,7 +228,6 @@ PROFILES = {
         ),
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        normalize_mode="single_space_or_null",
     ),
     "vecc": county_profile(
         aliases=["vecc", "saltlake vecc", "salt lake vecc", "slc vecc", "slcvecc", "slc"],
@@ -255,7 +241,6 @@ PROFILES = {
         ),
         text_fields=["PREDIR", "NAME", "POSTTYPE", "POSTDIR", "AN_NAME", "AN_POSTDIR"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-        normalize_mode="strip_blank",
     ),
     "sanjuan": county_profile(
         aliases=["sanjuan", "san juan"],
@@ -264,7 +249,6 @@ PROFILES = {
         default_compare_fields="S_NAME S_NAME",
         text_fields=["S_NAME"],
         numeric_fields=[],
-        normalize_mode="single_space_or_null",
     ),
     "sevier": county_profile(
         aliases=["sevier"],
@@ -276,7 +260,6 @@ PROFILES = {
         ),
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUR_DIR", "ALIAS"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        normalize_mode="single_space_or_null",
     ),
     "summit": county_profile(
         aliases=["summit"],
@@ -288,7 +271,6 @@ PROFILES = {
         ),
         text_fields=["PREFIX_DIR", "STREET", "CLASSIFICA", "POST_DIR"],
         numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
-        normalize_mode="single_space_or_null",
     ),
     "tooele": county_profile(
         aliases=["tooele"],
@@ -301,7 +283,7 @@ PROFILES = {
         text_fields=["FULLNAME", "PREDIR", "A1_NAME", "A2_NAME", "AN_NAME", "STATUS"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
         uppercase_normalize_fields={"FULLNAME", "A1_NAME", "A2_NAME"},
-        normalize_mode="legacy_standardized_text",
+        apply_legacy_text_standardization=True,
     ),
     "uintah": county_profile(
         aliases=["uintah"],
@@ -313,7 +295,7 @@ PROFILES = {
         text_fields=["S_NAME", "ALIAS1"],
         numeric_fields=["toleft", "toright", "fromleft", "fromright"],
         uppercase_normalize_fields={"S_NAME", "ALIAS1"},
-        normalize_mode="legacy_standardized_text",
+        apply_legacy_text_standardization=True,
     ),
     "utah": county_profile(
         aliases=["utah"],
@@ -326,7 +308,6 @@ PROFILES = {
         ),
         text_fields=["ROADPREDIR", "ROADNAME", "ROADTYPE", "ROADPOSTDIR", "ALTROADNAME", "ALTROADTYPE", "ALTROADNAME2", "ALTROADTYPE2"],
         numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
-        normalize_mode="strip_blank",
     ),
     "wasatch": county_profile(
         aliases=["wasatch"],
@@ -338,7 +319,7 @@ PROFILES = {
         text_fields=["FULLNAME", "PREDIR", "AN_NAME", "STATUS"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
         uppercase_normalize_fields={"FULLNAME"},
-        normalize_mode="legacy_standardized_text",
+        apply_legacy_text_standardization=True,
     ),
     "washington": county_profile(
         aliases=["washington"],
@@ -350,7 +331,6 @@ PROFILES = {
         ),
         text_fields=["PREDIR", "NAME", "POSTTYPE", "SUFFIXDIR", "POSTDIR", "AN_NAME", "AN_POSTDIR", "A1_NAME", "A1_POSTTYPE", "A2_NAME", "A2_POSTTYPE"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-        normalize_mode="strip_blank",
     ),
     "wayne": county_profile(
         aliases=["wayne"],
@@ -362,7 +342,6 @@ PROFILES = {
         ),
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ALIAS1", "ALIAS1_TYP"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        normalize_mode="strip_blank",
     ),
     "weber": county_profile(
         aliases=["weber"],
@@ -374,14 +353,12 @@ PROFILES = {
         ),
         text_fields=["PREDIR", "S_NAME", "STREETTYPE", "SUFDIR", "ALIAS", "ACS_ALIAS", "SUFFIX_911"],
         numeric_fields=["LEFTFROM", "LEFTTO", "RIGHTFROM", "RIGHTTO"],
-        normalize_mode="strip_blank",
     ),
     "davis": county_profile(
         aliases=["davis"],
         display_name="Davis",
         default_match_fields="RoadName RoadName",
         default_compare_fields=None,
-        normalize_mode="single_space_or_null",
         davis_schemas={
             "legacy": DavisSchema(
                 description="Legacy/truncated Davis field names",
@@ -470,9 +447,20 @@ def get_output_workspace(update_features):
     return dirname
 
 
-def _normalize_text_value(value, force_uppercase):
-    if value in ("", " ", "None", "NULL", None):
+def _blank_like(value):
+    if value is None:
+        return True
+    return str(value).strip() in {"", "None", "NULL"}
+
+
+def _normalize_text_value(value, force_uppercase, apply_legacy_text_standardization=False):
+    if _blank_like(value):
         return ""
+    if apply_legacy_text_standardization:
+        normalized = " ".join(str(value).split())
+        if force_uppercase:
+            return normalized.upper()
+        return normalized
     if force_uppercase:
         return " ".join(str(value).split()).upper()
     return value
@@ -495,19 +483,12 @@ def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=No
             updated = False
             for idx in range(len(text_existing)):
                 value = row[idx]
-                replacement = value
-                if profile.normalize_mode == "single_space_or_null":
-                    if value == " " or value is None:
-                        replacement = ""
-                elif profile.normalize_mode == "legacy_standardized_text":
-                    field_name = text_existing[idx]
-                    replacement = _normalize_text_value(
-                        value,
-                        force_uppercase=field_name.upper() in profile.uppercase_normalize_fields,
-                    )
-                else:
-                    if value is None or str(value).strip() == "":
-                        replacement = ""
+                field_name = text_existing[idx]
+                replacement = _normalize_text_value(
+                    value,
+                    force_uppercase=field_name.upper() in profile.uppercase_normalize_fields,
+                    apply_legacy_text_standardization=profile.apply_legacy_text_standardization,
+                )
 
                 if replacement != value:
                     row[idx] = replacement
@@ -515,13 +496,7 @@ def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=No
 
             for idx in range(len(text_existing), len(field_names)):
                 value = row[idx]
-                replacement = value
-                if profile.normalize_mode == "single_space_or_null":
-                    if value == " " or value is None:
-                        replacement = 0
-                else:
-                    if value is None or str(value).strip() == "":
-                        replacement = 0
+                replacement = 0 if _blank_like(value) else value
 
                 if replacement != value:
                     row[idx] = replacement
