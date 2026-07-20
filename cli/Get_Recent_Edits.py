@@ -237,6 +237,20 @@ PROFILES = {
         default_dfc_output_name="DFC_MillardToMillard",
         default_stats_table_name="stats_millard_to_millard",
     ),
+    "morgan": CountyProfile(
+        key="morgan",
+        aliases=["morgan"],
+        display_name="Morgan",
+        default_match_fields="FULLNAME FULLNAME",
+        default_compare_fields=(
+            "FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT; FULLNAME FULLNAME"
+        ),
+        text_fields=["FULLNAME"],
+        numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
+        normalize_mode="single_space_or_null",
+        default_dfc_output_name="DFC_MorganToMorgan",
+        default_stats_table_name="new_roads_stats_morgan",
+    ),
     "davis": CountyProfile(
         key="davis",
         aliases=["davis"],
@@ -559,7 +573,7 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, or Davis.")
+    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, or Davis.")
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
