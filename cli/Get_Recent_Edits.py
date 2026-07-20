@@ -374,6 +374,82 @@ PROFILES = {
         default_dfc_output_name="DFC_UintahToUintah",
         default_stats_table_name="stats_uintah_to_uintah",
     ),
+    "utah": CountyProfile(
+        key="utah",
+        aliases=["utah"],
+        display_name="Utah",
+        default_match_fields="ROADNAME ROADNAME",
+        default_compare_fields=(
+            "ROADPREDIR ROADPREDIR; ROADNAME ROADNAME; ROADTYPE ROADTYPE; ROADPOSTDIR ROADPOSTDIR; "
+            "ALTROADNAME ALTROADNAME; ALTROADTYPE ALTROADTYPE; ALTROADNAME2 ALTROADNAME2; ALTROADTYPE2 ALTROADTYPE2; "
+            "FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT"
+        ),
+        text_fields=["ROADPREDIR", "ROADNAME", "ROADTYPE", "ROADPOSTDIR", "ALTROADNAME", "ALTROADTYPE", "ALTROADNAME2", "ALTROADTYPE2"],
+        numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
+        normalize_mode="strip_blank",
+        default_dfc_output_name="DFC_UtahToUtah",
+        default_stats_table_name="stats_utah_to_utah",
+    ),
+    "wasatch": CountyProfile(
+        key="wasatch",
+        aliases=["wasatch"],
+        display_name="Wasatch",
+        default_match_fields="FULLNAME FULLNAME",
+        default_compare_fields=(
+            "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; FULLNAME FULLNAME; PREDIR PREDIR; AN_NAME AN_NAME"
+        ),
+        text_fields=["FULLNAME", "PREDIR", "AN_NAME", "STATUS"],
+        numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
+        uppercase_normalize_fields={"FULLNAME"},
+        normalize_mode="grand_legacy",
+        default_dfc_output_name="DFC_WasatchToWasatch",
+        default_stats_table_name="stats_wasatch_to_wasatch",
+    ),
+    "washington": CountyProfile(
+        key="washington",
+        aliases=["washington"],
+        display_name="Washington",
+        default_match_fields="NAME NAME",
+        default_compare_fields=(
+            "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; SUFFIXDIR SUFFIXDIR; "
+            "AN_NAME AN_NAME; AN_POSTDIR AN_POSTDIR; A1_NAME A1_NAME; A1_POSTTYPE A1_POSTTYPE; A2_NAME A2_NAME; A2_POSTTYPE A2_POSTTYPE"
+        ),
+        text_fields=["PREDIR", "NAME", "POSTTYPE", "SUFFIXDIR", "POSTDIR", "AN_NAME", "AN_POSTDIR", "A1_NAME", "A1_POSTTYPE", "A2_NAME", "A2_POSTTYPE"],
+        numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
+        normalize_mode="strip_blank",
+        default_dfc_output_name="DFC_WashToWash",
+        default_stats_table_name="stats_Wash_to_Wash",
+    ),
+    "wayne": CountyProfile(
+        key="wayne",
+        aliases=["wayne"],
+        display_name="Wayne",
+        default_match_fields="S_NAME S_NAME",
+        default_compare_fields=(
+            "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; ACS_ALIAS ACS_ALIAS; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; "
+            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD"
+        ),
+        text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ALIAS1", "ALIAS1_TYP"],
+        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
+        normalize_mode="strip_blank",
+        default_dfc_output_name="DFC_WayneToWayne",
+        default_stats_table_name="stats_Wayne_to_Wayne",
+    ),
+    "weber": CountyProfile(
+        key="weber",
+        aliases=["weber"],
+        display_name="Weber",
+        default_match_fields="S_NAME S_NAME",
+        default_compare_fields=(
+            "PREDIR PREDIR; S_NAME S_NAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ALIAS ALIAS; ACS_ALIAS ACS_ALIAS; SUFFIX_911 SUFFIX_911; "
+            "LEFTFROM LEFTFROM; LEFTTO LEFTTO; RIGHTFROM RIGHTFROM; RIGHTTO RIGHTTO"
+        ),
+        text_fields=["PREDIR", "S_NAME", "STREETTYPE", "SUFDIR", "ALIAS", "ACS_ALIAS", "SUFFIX_911"],
+        numeric_fields=["LEFTFROM", "LEFTTO", "RIGHTFROM", "RIGHTTO"],
+        normalize_mode="strip_blank",
+        default_dfc_output_name="DFC_WeberToWeber",
+        default_stats_table_name="stats_weber_to_weber",
+    ),
     "davis": CountyProfile(
         key="davis",
         aliases=["davis"],
@@ -696,7 +772,7 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, Piute, Rich, SanJuan, Sevier, Summit, Tooele, Uintah, vecc, or Davis.")
+    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, Piute, Rich, SanJuan, Sevier, Summit, Tooele, Uintah, Utah, Wasatch, Washington, Wayne, Weber, vecc, or Davis.")
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
