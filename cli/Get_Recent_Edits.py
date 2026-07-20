@@ -284,6 +284,23 @@ PROFILES = {
         default_dfc_output_name="DFC_RichToRich",
         default_stats_table_name="stats_rich_to_rich",
     ),
+    "vecc": CountyProfile(
+        key="vecc",
+        aliases=["vecc", "saltlake vecc", "salt lake vecc"],
+        display_name="Salt Lake VECC",
+        default_match_fields="NAME NAME",
+        default_compare_fields=(
+            "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; "
+            "AN_NAME AN_NAME; AN_POSTDIR AN_POSTDIR; "
+            "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; "
+            "FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R"
+        ),
+        text_fields=["PREDIR", "NAME", "POSTTYPE", "POSTDIR", "AN_NAME", "AN_POSTDIR"],
+        numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
+        normalize_mode="strip_blank",
+        default_dfc_output_name="DFC_VeccToVecc",
+        default_stats_table_name="stats_vecc_to_vecc",
+    ),
     "davis": CountyProfile(
         key="davis",
         aliases=["davis"],
@@ -606,7 +623,7 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, Piute, Rich, or Davis.")
+    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, Piute, Rich, vecc, or Davis.")
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
