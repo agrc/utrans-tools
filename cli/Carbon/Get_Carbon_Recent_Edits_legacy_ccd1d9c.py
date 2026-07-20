@@ -20,22 +20,22 @@ env.overwriteOutput = True
 #strTimeNow = time.strftime("%c")
 
 # Set local variables
-updateFeatures = r"C:\temp\County_Obtained\Carbon\Carbon20241031.gdb\Roads" ### THIS WOULD BE THE NEWEST DATA
-baseFeatures = r"C:\temp\County_Obtained\Carbon\Carbon20240221.gdb\Roads" ### THIS IS THE DATA THEY SENT US LAST TIME
+updateFeatures = r"Z:\Documents\gdb\Carbon20241031.gdb\Roads" ### THIS WOULD BE THE NEWEST DATA
+baseFeatures = r"Z:\Documents\gdb\Carbon20240221.gdb\Roads" ### THIS IS THE DATA THEY SENT US LAST TIME
 
 dirname = os.path.dirname(arcpy.Describe(updateFeatures).catalogPath)
 desc = arcpy.Describe(dirname)
 if hasattr(desc, "datasetType") and desc.datasetType=='FeatureDataset':
     dirname = os.path.dirname(dirname)
 
-print ("Directory Name: ") + str(dirname)
-print ("Description: ") + str(desc)
+print("Directory Name: " + str(dirname))
+print("Description: " + str(desc))
 #dfcOutput = "DFC_RESULT"
 #dfcResult = arcpy.Describe(updateFeatures).catalogPath + "\\DFC_RESULT"
 #dfcOutput = arcpy.Describe(updateFeatures).catalogPath + "\\DFC_RESULT"
 dfcOutput = dirname + "\\DFC_carbonTocarbon"
 
-print ("begin converting nulls to emtpy")
+print("begin converting nulls to emtpy")
 # convert nulls to empty in both the update fc and basefeatures fc
 list = [updateFeatures, baseFeatures]
 for item in list:
@@ -73,16 +73,16 @@ del row
 del rows
 
 
-print ("begin dfc")
+print("begin dfc")
 #search_distance = "300 Feet" # 300 feet is about 90 meters \ 40 meters = 131.234 feet
 search_distance = "200 Feet" # The distance used to search for match candidates. A distance must be specified and it must be greater than zero. You can choose a preferred unit; the default is the feature unit.
 #match values
 match_fields = "NAME NAME"
 #statsTable = arcpy.Describe(updateFeatures).catalogPath + "\\stats_vecc"
 statsTable = dirname + "\\stats_carbon_to_carbon"
-print ("StatsTable: ") + str(statsTable)
-print ("DFC Layer: ") + str(dfcOutput)
-print
+print("StatsTable: " + str(statsTable))
+print("DFC Layer: " + str(dfcOutput))
+print()
 #statsTable = None
 
 #change_tolerance = "300 Feet"
@@ -96,10 +96,10 @@ arcpy.AddMessage("Begining detect feature change process for carbon at: " + time
 #print "begining detect feature change process..."
 # Perform spatial change detection
 arcpy.DetectFeatureChanges_management(updateFeatures, baseFeatures, dfcOutput, search_distance, match_fields, statsTable, change_tolerance, compare_fields)
-print ("finished detect feature change process!")
+print("finished detect feature change process!")
 
 
-print ("begin creating seperate feature class named RoadsCenterlines_Recents")
+print("begin creating seperate feature class named RoadsCenterlines_Recents")
 # join the dfc output to the newest county data to see what changes have been made
 arcpy.env.qualifiedFieldNames = False
 
@@ -127,4 +127,4 @@ outFeature = dirname + "\\RoadCenterline_Recents"
 arcpy.CopyFeatures_management(layerName, outFeature)
 
 arcpy.AddMessage("Finished detect feature change process at: " + time.strftime("%c"))
-print ("done at: ") + time.strftime("%c")
+print("done at: " + time.strftime("%c"))
