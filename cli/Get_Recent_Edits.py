@@ -313,6 +313,36 @@ PROFILES = {
         default_dfc_output_name="DFC_SanJuanToSanJuan",
         default_stats_table_name="stats_SanJuan_to_SanJuan",
     ),
+    "sevier": CountyProfile(
+        key="sevier",
+        aliases=["sevier"],
+        display_name="Sevier",
+        default_match_fields="S_NAME S_NAME",
+        default_compare_fields=(
+            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; "
+            "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUR_DIR SUR_DIR; ALIAS ALIAS"
+        ),
+        text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUR_DIR", "ALIAS"],
+        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
+        normalize_mode="single_space_or_null",
+        default_dfc_output_name="DFC_SevierToSevier",
+        default_stats_table_name="stats_sevier_to_sevier",
+    ),
+    "summit": CountyProfile(
+        key="summit",
+        aliases=["summit"],
+        display_name="Summit",
+        default_match_fields="STREET STREET",
+        default_compare_fields=(
+            "PREFIX_DIR PREFIX_DIR; STREET STREET; CLASSIFICA CLASSIFICA; POST_DIR POST_DIR; "
+            "FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT"
+        ),
+        text_fields=["PREFIX_DIR", "STREET", "CLASSIFICA", "POST_DIR"],
+        numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
+        normalize_mode="single_space_or_null",
+        default_dfc_output_name="DFC_SummitToSummit",
+        default_stats_table_name="stats_summit_to_summit",
+    ),
     "davis": CountyProfile(
         key="davis",
         aliases=["davis"],
@@ -635,7 +665,7 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, Piute, Rich, SanJuan, vecc, or Davis.")
+    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, Piute, Rich, SanJuan, Sevier, Summit, vecc, or Davis.")
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
