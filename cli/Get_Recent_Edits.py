@@ -41,6 +41,23 @@ class CountyProfile:
 
 
 PROFILES = {
+    "beaver": CountyProfile(
+        key="beaver",
+        aliases=["beaver"],
+        display_name="Beaver",
+        default_match_fields="STREETNAME STREETNAME",
+        default_compare_fields=(
+            "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; "
+            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; "
+            "ALIAS1 ALIAS1; ALIAS1TYP ALIAS1TYP; ACSNAME ACSNAME; ACSSUF ACSSUF; "
+            "SUFDIR SUFDIR"
+        ),
+        text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYP", "ACSNAME", "ACSSUF"],
+        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
+        normalize_mode="single_space_or_null",
+        default_dfc_output_name="DFC_BeaverToBeaver",
+        default_stats_table_name="stats_beaver_to_beaver",
+    ),
     "carbon": CountyProfile(
         key="carbon",
         aliases=["carbon"],
@@ -412,7 +429,7 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Grand, Garfield, Carbon, or Davis.")
+    parser.add_argument("--county", required=True, help="County key, such as Beaver, Grand, Garfield, Carbon, or Davis.")
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
