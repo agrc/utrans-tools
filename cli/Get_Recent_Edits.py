@@ -76,6 +76,22 @@ PROFILES = {
         default_dfc_output_name="DFC_BoxElderToBoxElder",
         default_stats_table_name="stats_boxelder_to_boxelder",
     ),
+    "cache": CountyProfile(
+        key="cache",
+        aliases=["cache"],
+        display_name="Cache",
+        default_match_fields="GEOCODEST GEOCODEST",
+        default_compare_fields=(
+            "PRE_DIR PRE_DIR; GEOCODEST GEOCODEST; TYPE TYPE; FAL FAL; TAL TAL; "
+            "FAR FAR; TAR TAR; AliasPreDir AliasPreDir; AliasStreet AliasStreet; "
+            "AliasType AliasType; AliasSufDir AliasSufDir; SUFFDIR SUFFDIR"
+        ),
+        text_fields=["PRE_DIR", "GEOCODEST", "TYPE", "SUFFDIR", "AliasPreDir", "AliasStreet", "AliasType", "AliasSufDir"],
+        numeric_fields=["FAL", "TAL", "FAR", "TAR"],
+        normalize_mode="single_space_or_null",
+        default_dfc_output_name="DFC_CacheToCache",
+        default_stats_table_name="stats_cache_to_cache",
+    ),
     "carbon": CountyProfile(
         key="carbon",
         aliases=["carbon"],
@@ -447,7 +463,7 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Grand, Garfield, Carbon, or Davis.")
+    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Grand, Garfield, Carbon, or Davis.")
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
