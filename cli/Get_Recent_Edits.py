@@ -25,7 +25,6 @@ class DavisSchema:
 
 @dataclass
 class CountyProfile:
-    key: str
     aliases: list[str]
     display_name: str
     default_match_fields: str
@@ -42,7 +41,6 @@ class CountyProfile:
 
 PROFILES = {
     "beaver": CountyProfile(
-        key="beaver",
         aliases=["beaver"],
         display_name="Beaver",
         default_match_fields="STREETNAME STREETNAME",
@@ -59,7 +57,6 @@ PROFILES = {
         default_stats_table_name="stats_beaver_to_beaver",
     ),
     "boxelder": CountyProfile(
-        key="boxelder",
         aliases=["boxelder", "box elder"],
         display_name="Box Elder",
         default_match_fields="S_NAME S_NAME",
@@ -77,7 +74,6 @@ PROFILES = {
         default_stats_table_name="stats_boxelder_to_boxelder",
     ),
     "cache": CountyProfile(
-        key="cache",
         aliases=["cache"],
         display_name="Cache",
         default_match_fields="GEOCODEST GEOCODEST",
@@ -93,7 +89,6 @@ PROFILES = {
         default_stats_table_name="stats_cache_to_cache",
     ),
     "daggett": CountyProfile(
-        key="daggett",
         aliases=["daggett"],
         display_name="Daggett",
         default_match_fields="S_NAME S_NAME",
@@ -108,7 +103,6 @@ PROFILES = {
         default_stats_table_name="stats_daggett_to_daggett",
     ),
     "duchesne": CountyProfile(
-        key="duchesne",
         aliases=["duchesne"],
         display_name="Duchesne",
         default_match_fields="STREETNAME STREETNAME",
@@ -124,7 +118,6 @@ PROFILES = {
         default_stats_table_name="stats_duchesne_to_duchesne",
     ),
     "emery": CountyProfile(
-        key="emery",
         aliases=["emery"],
         display_name="Emery",
         default_match_fields="S_NAME S_NAME",
@@ -140,7 +133,6 @@ PROFILES = {
         default_stats_table_name="stats_emery_to_emery",
     ),
     "carbon": CountyProfile(
-        key="carbon",
         aliases=["carbon"],
         display_name="Carbon",
         default_match_fields="NAME NAME",
@@ -156,7 +148,6 @@ PROFILES = {
         default_stats_table_name="new_roads_stats_carbon",
     ),
     "garfield": CountyProfile(
-        key="garfield",
         aliases=["garfield"],
         display_name="Garfield",
         default_match_fields="NAME NAME",
@@ -172,7 +163,6 @@ PROFILES = {
         default_stats_table_name="stats_Garfield_to_Garfield",
     ),
     "grand": CountyProfile(
-        key="grand",
         aliases=["grand"],
         display_name="Grand",
         default_match_fields="STREETNAME STREETNAME",
@@ -189,7 +179,6 @@ PROFILES = {
         default_stats_table_name="stats_grand_to_grand",
     ),
     "iron": CountyProfile(
-        key="iron",
         aliases=["iron"],
         display_name="Iron",
         default_match_fields="STREETNAME STREETNAME",
@@ -206,7 +195,6 @@ PROFILES = {
         default_stats_table_name="stats_iron_to_iron",
     ),
     "kane": CountyProfile(
-        key="kane",
         aliases=["kane"],
         display_name="Kane",
         default_match_fields="STREETNAME STREETNAME",
@@ -222,7 +210,6 @@ PROFILES = {
         default_stats_table_name="stats_kane_to_kane",
     ),
     "millard": CountyProfile(
-        key="millard",
         aliases=["millard"],
         display_name="Millard",
         default_match_fields="FULLNAME FULLNAME",
@@ -238,7 +225,6 @@ PROFILES = {
         default_stats_table_name="stats_millard_to_millard",
     ),
     "morgan": CountyProfile(
-        key="morgan",
         aliases=["morgan"],
         display_name="Morgan",
         default_match_fields="FULLNAME FULLNAME",
@@ -252,7 +238,6 @@ PROFILES = {
         default_stats_table_name="new_roads_stats_morgan",
     ),
     "piute": CountyProfile(
-        key="piute",
         aliases=["piute"],
         display_name="Piute",
         default_match_fields="NAME NAME",
@@ -268,7 +253,6 @@ PROFILES = {
         default_stats_table_name="new_roads_stats_piute",
     ),
     "rich": CountyProfile(
-        key="rich",
         aliases=["rich"],
         display_name="Rich",
         default_match_fields="S_NAME S_NAME",
@@ -285,8 +269,7 @@ PROFILES = {
         default_stats_table_name="stats_rich_to_rich",
     ),
     "vecc": CountyProfile(
-        key="vecc",
-        aliases=["vecc", "saltlake vecc", "salt lake vecc"],
+        aliases=["vecc", "saltlake vecc", "salt lake vecc", "slc vecc", "slcvecc", "slc"],
         display_name="Salt Lake VECC",
         default_match_fields="NAME NAME",
         default_compare_fields=(
@@ -302,7 +285,6 @@ PROFILES = {
         default_stats_table_name="stats_vecc_to_vecc",
     ),
     "sanjuan": CountyProfile(
-        key="sanjuan",
         aliases=["sanjuan", "san juan"],
         display_name="San Juan",
         default_match_fields="S_NAME S_NAME",
@@ -314,7 +296,6 @@ PROFILES = {
         default_stats_table_name="stats_SanJuan_to_SanJuan",
     ),
     "sevier": CountyProfile(
-        key="sevier",
         aliases=["sevier"],
         display_name="Sevier",
         default_match_fields="S_NAME S_NAME",
@@ -329,7 +310,6 @@ PROFILES = {
         default_stats_table_name="stats_sevier_to_sevier",
     ),
     "summit": CountyProfile(
-        key="summit",
         aliases=["summit"],
         display_name="Summit",
         default_match_fields="STREET STREET",
@@ -344,7 +324,6 @@ PROFILES = {
         default_stats_table_name="stats_summit_to_summit",
     ),
     "tooele": CountyProfile(
-        key="tooele",
         aliases=["tooele"],
         display_name="Tooele",
         default_match_fields="FULLNAME FULLNAME",
@@ -360,7 +339,6 @@ PROFILES = {
         default_stats_table_name="new_roads_stats_tooele",
     ),
     "uintah": CountyProfile(
-        key="uintah",
         aliases=["uintah"],
         display_name="Uintah",
         default_match_fields="S_NAME S_NAME",
@@ -375,7 +353,6 @@ PROFILES = {
         default_stats_table_name="stats_uintah_to_uintah",
     ),
     "utah": CountyProfile(
-        key="utah",
         aliases=["utah"],
         display_name="Utah",
         default_match_fields="ROADNAME ROADNAME",
@@ -391,7 +368,6 @@ PROFILES = {
         default_stats_table_name="stats_utah_to_utah",
     ),
     "wasatch": CountyProfile(
-        key="wasatch",
         aliases=["wasatch"],
         display_name="Wasatch",
         default_match_fields="FULLNAME FULLNAME",
@@ -406,7 +382,6 @@ PROFILES = {
         default_stats_table_name="stats_wasatch_to_wasatch",
     ),
     "washington": CountyProfile(
-        key="washington",
         aliases=["washington"],
         display_name="Washington",
         default_match_fields="NAME NAME",
@@ -421,7 +396,6 @@ PROFILES = {
         default_stats_table_name="stats_Wash_to_Wash",
     ),
     "wayne": CountyProfile(
-        key="wayne",
         aliases=["wayne"],
         display_name="Wayne",
         default_match_fields="S_NAME S_NAME",
@@ -436,7 +410,6 @@ PROFILES = {
         default_stats_table_name="stats_Wayne_to_Wayne",
     ),
     "weber": CountyProfile(
-        key="weber",
         aliases=["weber"],
         display_name="Weber",
         default_match_fields="S_NAME S_NAME",
@@ -451,7 +424,6 @@ PROFILES = {
         default_stats_table_name="stats_weber_to_weber",
     ),
     "davis": CountyProfile(
-        key="davis",
         aliases=["davis"],
         display_name="Davis",
         default_match_fields="RoadName RoadName",
@@ -610,9 +582,9 @@ def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=No
 
 def resolve_county_profile(county):
     county_key = county.lower().strip()
-    for profile in PROFILES.values():
+    for profile_key, profile in PROFILES.items():
         aliases = {alias.lower() for alias in profile.aliases}
-        aliases.add(profile.key.lower())
+        aliases.add(profile_key.lower())
         if county_key in aliases:
             return profile
     raise RuntimeError(f"Unknown county '{county}'. Supported counties: {', '.join(sorted(PROFILES.keys()))}")
@@ -677,7 +649,7 @@ def run_change_detection(
     active_text_fields = profile.text_fields
     active_numeric_fields = profile.numeric_fields
 
-    if profile.key == "davis":
+    if profile.davis_schemas:
         schema_name, schema = _resolve_davis_schema(profile, schema_option, update_features, base_features)
         active_text_fields = schema.text_fields
         active_numeric_fields = schema.numeric_fields
@@ -772,7 +744,7 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, Piute, Rich, SanJuan, Sevier, Summit, Tooele, Uintah, Utah, Wasatch, Washington, Wayne, Weber, vecc, or Davis.")
+    parser.add_argument("--county", required=True, help="County key, such as Beaver or Davis.")
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
