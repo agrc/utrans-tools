@@ -58,6 +58,24 @@ PROFILES = {
         default_dfc_output_name="DFC_BeaverToBeaver",
         default_stats_table_name="stats_beaver_to_beaver",
     ),
+    "boxelder": CountyProfile(
+        key="boxelder",
+        aliases=["boxelder", "box elder"],
+        display_name="Box Elder",
+        default_match_fields="S_NAME S_NAME",
+        default_compare_fields=(
+            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; "
+            "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; "
+            "ACS_ALIAS ACS_ALIAS; ACS_NAME ACS_NAME; ACS_SUF ACS_SUF; "
+            "ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; "
+            "ALIAS2_TYP ALIAS2_TYP"
+        ),
+        text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ACS_NAME", "ACS_SUF", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
+        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
+        normalize_mode="single_space_or_null",
+        default_dfc_output_name="DFC_BoxElderToBoxElder",
+        default_stats_table_name="stats_boxelder_to_boxelder",
+    ),
     "carbon": CountyProfile(
         key="carbon",
         aliases=["carbon"],
@@ -429,7 +447,7 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Beaver, Grand, Garfield, Carbon, or Davis.")
+    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Grand, Garfield, Carbon, or Davis.")
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
