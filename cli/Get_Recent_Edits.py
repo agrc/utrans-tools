@@ -343,6 +343,37 @@ PROFILES = {
         default_dfc_output_name="DFC_SummitToSummit",
         default_stats_table_name="stats_summit_to_summit",
     ),
+    "tooele": CountyProfile(
+        key="tooele",
+        aliases=["tooele"],
+        display_name="Tooele",
+        default_match_fields="FULLNAME FULLNAME",
+        default_compare_fields=(
+            "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; "
+            "FULLNAME FULLNAME; PREDIR PREDIR; A1_NAME A1_NAME; A2_NAME A2_NAME; AN_NAME AN_NAME; STATUS STATUS"
+        ),
+        text_fields=["FULLNAME", "PREDIR", "A1_NAME", "A2_NAME", "AN_NAME", "STATUS"],
+        numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
+        uppercase_normalize_fields={"FULLNAME", "A1_NAME", "A2_NAME"},
+        normalize_mode="grand_legacy",
+        default_dfc_output_name="DFC_TooeleToTooele",
+        default_stats_table_name="new_roads_stats_tooele",
+    ),
+    "uintah": CountyProfile(
+        key="uintah",
+        aliases=["uintah"],
+        display_name="Uintah",
+        default_match_fields="S_NAME S_NAME",
+        default_compare_fields=(
+            "toleft toleft; toright toright; fromleft fromleft; fromright fromright; S_NAME S_NAME; ALIAS1 ALIAS1"
+        ),
+        text_fields=["S_NAME", "ALIAS1"],
+        numeric_fields=["toleft", "toright", "fromleft", "fromright"],
+        uppercase_normalize_fields={"S_NAME", "ALIAS1"},
+        normalize_mode="grand_legacy",
+        default_dfc_output_name="DFC_UintahToUintah",
+        default_stats_table_name="stats_uintah_to_uintah",
+    ),
     "davis": CountyProfile(
         key="davis",
         aliases=["davis"],
@@ -665,7 +696,7 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, Piute, Rich, SanJuan, Sevier, Summit, vecc, or Davis.")
+    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, Morgan, Piute, Rich, SanJuan, Sevier, Summit, Tooele, Uintah, vecc, or Davis.")
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
