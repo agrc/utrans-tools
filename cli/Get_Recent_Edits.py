@@ -205,6 +205,38 @@ PROFILES = {
         default_dfc_output_name="DFC_IronToIron",
         default_stats_table_name="stats_iron_to_iron",
     ),
+    "kane": CountyProfile(
+        key="kane",
+        aliases=["kane"],
+        display_name="Kane",
+        default_match_fields="STREETNAME STREETNAME",
+        default_compare_fields=(
+            "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; "
+            "ACSALIAS ACSALIAS; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; "
+            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD"
+        ),
+        text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ACSALIAS", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE"],
+        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
+        normalize_mode="single_space_or_null",
+        default_dfc_output_name="DFC_KaneToKane",
+        default_stats_table_name="stats_kane_to_kane",
+    ),
+    "millard": CountyProfile(
+        key="millard",
+        aliases=["millard"],
+        display_name="Millard",
+        default_match_fields="FULLNAME FULLNAME",
+        default_compare_fields=(
+            "PREDIR PREDIR; FULLNAME FULLNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; "
+            "ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; "
+            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD"
+        ),
+        text_fields=["PREDIR", "FULLNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE"],
+        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
+        normalize_mode="single_space_or_null",
+        default_dfc_output_name="DFC_MillardToMillard",
+        default_stats_table_name="stats_millard_to_millard",
+    ),
     "davis": CountyProfile(
         key="davis",
         aliases=["davis"],
@@ -527,7 +559,7 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, or Davis.")
+    parser.add_argument("--county", required=True, help="County key, such as Beaver, BoxElder, Cache, Daggett, Duchesne, Emery, Grand, Garfield, Carbon, Iron, Kane, Millard, or Davis.")
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
