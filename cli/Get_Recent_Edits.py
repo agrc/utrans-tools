@@ -39,8 +39,13 @@ class CountyProfile:
     davis_schemas: dict[str, DavisSchema] | None = None
 
 
+def county_profile(**kwargs):
+    """Build CountyProfile while inheriting shared output-name defaults."""
+    return CountyProfile(**kwargs)
+
+
 PROFILES = {
-    "beaver": CountyProfile(
+    "beaver": county_profile(
         aliases=["beaver"],
         display_name="Beaver",
         default_match_fields="STREETNAME STREETNAME",
@@ -53,10 +58,8 @@ PROFILES = {
         text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYP", "ACSNAME", "ACSSUF"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_BeaverToBeaver",
-        default_stats_table_name="stats_beaver_to_beaver",
     ),
-    "boxelder": CountyProfile(
+    "boxelder": county_profile(
         aliases=["boxelder", "box elder"],
         display_name="Box Elder",
         default_match_fields="S_NAME S_NAME",
@@ -70,10 +73,8 @@ PROFILES = {
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ACS_NAME", "ACS_SUF", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_BoxElderToBoxElder",
-        default_stats_table_name="stats_boxelder_to_boxelder",
     ),
-    "cache": CountyProfile(
+    "cache": county_profile(
         aliases=["cache"],
         display_name="Cache",
         default_match_fields="GEOCODEST GEOCODEST",
@@ -85,10 +86,8 @@ PROFILES = {
         text_fields=["PRE_DIR", "GEOCODEST", "TYPE", "SUFFDIR", "AliasPreDir", "AliasStreet", "AliasType", "AliasSufDir"],
         numeric_fields=["FAL", "TAL", "FAR", "TAR"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_CacheToCache",
-        default_stats_table_name="stats_cache_to_cache",
     ),
-    "daggett": CountyProfile(
+    "daggett": county_profile(
         aliases=["daggett"],
         display_name="Daggett",
         default_match_fields="S_NAME S_NAME",
@@ -99,10 +98,8 @@ PROFILES = {
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_DaggettToDaggett",
-        default_stats_table_name="stats_daggett_to_daggett",
     ),
-    "duchesne": CountyProfile(
+    "duchesne": county_profile(
         aliases=["duchesne"],
         display_name="Duchesne",
         default_match_fields="STREETNAME STREETNAME",
@@ -114,10 +111,8 @@ PROFILES = {
         text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE", "ACSNAME", "ACSSUF"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_DuchesneToDuchesne",
-        default_stats_table_name="stats_duchesne_to_duchesne",
     ),
-    "emery": CountyProfile(
+    "emery": county_profile(
         aliases=["emery"],
         display_name="Emery",
         default_match_fields="S_NAME S_NAME",
@@ -129,10 +124,8 @@ PROFILES = {
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_EmeryToEmery",
-        default_stats_table_name="stats_emery_to_emery",
     ),
-    "carbon": CountyProfile(
+    "carbon": county_profile(
         aliases=["carbon"],
         display_name="Carbon",
         default_match_fields="NAME NAME",
@@ -144,10 +137,8 @@ PROFILES = {
         text_fields=["PREDIR", "NAME", "POSTTYPE", "POSTDIR", "AN_NAME"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
         normalize_mode="strip_blank",
-        default_dfc_output_name="DFC_CarbonToCarbon",
-        default_stats_table_name="new_roads_stats_carbon",
     ),
-    "garfield": CountyProfile(
+    "garfield": county_profile(
         aliases=["garfield"],
         display_name="Garfield",
         default_match_fields="NAME NAME",
@@ -159,10 +150,8 @@ PROFILES = {
         text_fields=["NAME", "PREDIR", "POSTDIR", "POSTTYPE", "AN_NAME", "A1_NAME", "A2_NAME"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_GarfieldToGarfield",
-        default_stats_table_name="stats_Garfield_to_Garfield",
     ),
-    "grand": CountyProfile(
+    "grand": county_profile(
         aliases=["grand"],
         display_name="Grand",
         default_match_fields="STREETNAME STREETNAME",
@@ -175,10 +164,8 @@ PROFILES = {
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         uppercase_normalize_fields={"STREETNAME", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"},
         normalize_mode="grand_legacy",
-        default_dfc_output_name="DFC_GrandtoGrand",
-        default_stats_table_name="stats_grand_to_grand",
     ),
-    "iron": CountyProfile(
+    "iron": county_profile(
         aliases=["iron"],
         display_name="Iron",
         default_match_fields="STREETNAME STREETNAME",
@@ -191,10 +178,8 @@ PROFILES = {
         text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE", "ACSALIAS", "ACSNAME", "ACSSUF"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_IronToIron",
-        default_stats_table_name="stats_iron_to_iron",
     ),
-    "kane": CountyProfile(
+    "kane": county_profile(
         aliases=["kane"],
         display_name="Kane",
         default_match_fields="STREETNAME STREETNAME",
@@ -206,10 +191,8 @@ PROFILES = {
         text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ACSALIAS", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_KaneToKane",
-        default_stats_table_name="stats_kane_to_kane",
     ),
-    "millard": CountyProfile(
+    "millard": county_profile(
         aliases=["millard"],
         display_name="Millard",
         default_match_fields="FULLNAME FULLNAME",
@@ -221,10 +204,8 @@ PROFILES = {
         text_fields=["PREDIR", "FULLNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_MillardToMillard",
-        default_stats_table_name="stats_millard_to_millard",
     ),
-    "morgan": CountyProfile(
+    "morgan": county_profile(
         aliases=["morgan"],
         display_name="Morgan",
         default_match_fields="FULLNAME FULLNAME",
@@ -234,10 +215,8 @@ PROFILES = {
         text_fields=["FULLNAME"],
         numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_MorganToMorgan",
-        default_stats_table_name="new_roads_stats_morgan",
     ),
-    "piute": CountyProfile(
+    "piute": county_profile(
         aliases=["piute"],
         display_name="Piute",
         default_match_fields="NAME NAME",
@@ -249,10 +228,8 @@ PROFILES = {
         text_fields=["PREDIR", "NAME", "POSTTYPE", "POSTDIR"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
         normalize_mode="strip_blank",
-        default_dfc_output_name="DFC_PiuteToPiute",
-        default_stats_table_name="new_roads_stats_piute",
     ),
-    "rich": CountyProfile(
+    "rich": county_profile(
         aliases=["rich"],
         display_name="Rich",
         default_match_fields="S_NAME S_NAME",
@@ -265,10 +242,8 @@ PROFILES = {
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_RichToRich",
-        default_stats_table_name="stats_rich_to_rich",
     ),
-    "vecc": CountyProfile(
+    "vecc": county_profile(
         aliases=["vecc", "saltlake vecc", "salt lake vecc", "slc vecc", "slcvecc", "slc"],
         display_name="Salt Lake VECC",
         default_match_fields="NAME NAME",
@@ -281,10 +256,8 @@ PROFILES = {
         text_fields=["PREDIR", "NAME", "POSTTYPE", "POSTDIR", "AN_NAME", "AN_POSTDIR"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
         normalize_mode="strip_blank",
-        default_dfc_output_name="DFC_VeccToVecc",
-        default_stats_table_name="stats_vecc_to_vecc",
     ),
-    "sanjuan": CountyProfile(
+    "sanjuan": county_profile(
         aliases=["sanjuan", "san juan"],
         display_name="San Juan",
         default_match_fields="S_NAME S_NAME",
@@ -292,10 +265,8 @@ PROFILES = {
         text_fields=["S_NAME"],
         numeric_fields=[],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_SanJuanToSanJuan",
-        default_stats_table_name="stats_SanJuan_to_SanJuan",
     ),
-    "sevier": CountyProfile(
+    "sevier": county_profile(
         aliases=["sevier"],
         display_name="Sevier",
         default_match_fields="S_NAME S_NAME",
@@ -306,10 +277,8 @@ PROFILES = {
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUR_DIR", "ALIAS"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_SevierToSevier",
-        default_stats_table_name="stats_sevier_to_sevier",
     ),
-    "summit": CountyProfile(
+    "summit": county_profile(
         aliases=["summit"],
         display_name="Summit",
         default_match_fields="STREET STREET",
@@ -320,10 +289,8 @@ PROFILES = {
         text_fields=["PREFIX_DIR", "STREET", "CLASSIFICA", "POST_DIR"],
         numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_SummitToSummit",
-        default_stats_table_name="stats_summit_to_summit",
     ),
-    "tooele": CountyProfile(
+    "tooele": county_profile(
         aliases=["tooele"],
         display_name="Tooele",
         default_match_fields="FULLNAME FULLNAME",
@@ -335,10 +302,8 @@ PROFILES = {
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
         uppercase_normalize_fields={"FULLNAME", "A1_NAME", "A2_NAME"},
         normalize_mode="grand_legacy",
-        default_dfc_output_name="DFC_TooeleToTooele",
-        default_stats_table_name="new_roads_stats_tooele",
     ),
-    "uintah": CountyProfile(
+    "uintah": county_profile(
         aliases=["uintah"],
         display_name="Uintah",
         default_match_fields="S_NAME S_NAME",
@@ -349,10 +314,8 @@ PROFILES = {
         numeric_fields=["toleft", "toright", "fromleft", "fromright"],
         uppercase_normalize_fields={"S_NAME", "ALIAS1"},
         normalize_mode="grand_legacy",
-        default_dfc_output_name="DFC_UintahToUintah",
-        default_stats_table_name="stats_uintah_to_uintah",
     ),
-    "utah": CountyProfile(
+    "utah": county_profile(
         aliases=["utah"],
         display_name="Utah",
         default_match_fields="ROADNAME ROADNAME",
@@ -364,10 +327,8 @@ PROFILES = {
         text_fields=["ROADPREDIR", "ROADNAME", "ROADTYPE", "ROADPOSTDIR", "ALTROADNAME", "ALTROADTYPE", "ALTROADNAME2", "ALTROADTYPE2"],
         numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
         normalize_mode="strip_blank",
-        default_dfc_output_name="DFC_UtahToUtah",
-        default_stats_table_name="stats_utah_to_utah",
     ),
-    "wasatch": CountyProfile(
+    "wasatch": county_profile(
         aliases=["wasatch"],
         display_name="Wasatch",
         default_match_fields="FULLNAME FULLNAME",
@@ -378,10 +339,8 @@ PROFILES = {
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
         uppercase_normalize_fields={"FULLNAME"},
         normalize_mode="grand_legacy",
-        default_dfc_output_name="DFC_WasatchToWasatch",
-        default_stats_table_name="stats_wasatch_to_wasatch",
     ),
-    "washington": CountyProfile(
+    "washington": county_profile(
         aliases=["washington"],
         display_name="Washington",
         default_match_fields="NAME NAME",
@@ -392,10 +351,8 @@ PROFILES = {
         text_fields=["PREDIR", "NAME", "POSTTYPE", "SUFFIXDIR", "POSTDIR", "AN_NAME", "AN_POSTDIR", "A1_NAME", "A1_POSTTYPE", "A2_NAME", "A2_POSTTYPE"],
         numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
         normalize_mode="strip_blank",
-        default_dfc_output_name="DFC_WashToWash",
-        default_stats_table_name="stats_Wash_to_Wash",
     ),
-    "wayne": CountyProfile(
+    "wayne": county_profile(
         aliases=["wayne"],
         display_name="Wayne",
         default_match_fields="S_NAME S_NAME",
@@ -406,10 +363,8 @@ PROFILES = {
         text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ALIAS1", "ALIAS1_TYP"],
         numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
         normalize_mode="strip_blank",
-        default_dfc_output_name="DFC_WayneToWayne",
-        default_stats_table_name="stats_Wayne_to_Wayne",
     ),
-    "weber": CountyProfile(
+    "weber": county_profile(
         aliases=["weber"],
         display_name="Weber",
         default_match_fields="S_NAME S_NAME",
@@ -420,17 +375,13 @@ PROFILES = {
         text_fields=["PREDIR", "S_NAME", "STREETTYPE", "SUFDIR", "ALIAS", "ACS_ALIAS", "SUFFIX_911"],
         numeric_fields=["LEFTFROM", "LEFTTO", "RIGHTFROM", "RIGHTTO"],
         normalize_mode="strip_blank",
-        default_dfc_output_name="DFC_WeberToWeber",
-        default_stats_table_name="stats_weber_to_weber",
     ),
-    "davis": CountyProfile(
+    "davis": county_profile(
         aliases=["davis"],
         display_name="Davis",
         default_match_fields="RoadName RoadName",
         default_compare_fields=None,
         normalize_mode="single_space_or_null",
-        default_dfc_output_name="DFC_DavisToDavis",
-        default_stats_table_name="stats_davis_to_davis",
         davis_schemas={
             "legacy": DavisSchema(
                 description="Legacy/truncated Davis field names",
