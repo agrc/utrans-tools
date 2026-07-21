@@ -219,41 +219,9 @@
     "aliases": ["davis"],
     "display_name": "Davis",
     "default_match_fields": "RoadName RoadName",
-    "default_compare_fields": null,
-    "davis_schemas": {
-      "legacy": {
-        "description": "Legacy/truncated Davis field names",
-        "text_fields": ["PrefixDire", "RoadName", "RoadNameTy", "PostDirect", "RoadAliasN"],
-        "numeric_fields": ["LeftFrom", "LeftTo", "RightFrom", "RightTo"],
-        "compare_pairs": [
-          ["PrefixDire", "PrefixDire"],
-          ["RoadName", "RoadName"],
-          ["RoadNameTy", "RoadNameTy"],
-          ["PostDirect", "PostDirect"],
-          ["RoadAliasN", "RoadAliasN"],
-          ["LeftFrom", "LeftFrom"],
-          ["LeftTo", "LeftTo"],
-          ["RightFrom", "RightFrom"],
-          ["RightTo", "RightTo"]
-        ]
-      },
-      "gdb": {
-        "description": "GDB/full Davis field names",
-        "text_fields": ["PrefixDirection", "RoadName", "RoadNameType", "PostDirection", "RoadAliasName"],
-        "numeric_fields": ["LeftFrom", "LeftTo", "RightFrom", "RightTo", "MPH"],
-        "compare_pairs": [
-          ["PrefixDirection", "PrefixDirection"],
-          ["RoadName", "RoadName"],
-          ["RoadNameType", "RoadNameType"],
-          ["PostDirection", "PostDirection"],
-          ["RoadAliasName", "RoadAliasName"],
-          ["LeftFrom", "LeftFrom"],
-          ["LeftTo", "LeftTo"],
-          ["RightFrom", "RightFrom"],
-          ["RightTo", "RightTo"],
-          ["MPH", "MPH"]
-        ]
-      }
-    }
+    "default_compare_fields": "PrefixDirection PrefixDirection; RoadName RoadName; RoadNameType RoadNameType; PostDirection PostDirection; RoadAliasName RoadAliasName; LeftFrom LeftFrom; LeftTo LeftTo; RightFrom RightFrom; RightTo RightTo; MPH MPH",
+    "text_fields": ["PrefixDirection", "RoadName", "RoadNameType", "PostDirection", "RoadAliasName"],
+    "numeric_fields": ["LeftFrom", "LeftTo", "RightFrom", "RightTo", "MPH"],
+    "required_fields": ["PrefixDirection", "RoadName", "RoadNameType", "PostDirection", "RoadAliasName", "LeftFrom", "LeftTo", "RightFrom", "RightTo", "MPH"]
   }
 }

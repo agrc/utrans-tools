@@ -11,6 +11,7 @@ Verify that the unified script produces correct recents output for each county g
 - Use single-run validation for each county.
 - Run the unified script once with known inputs and validate output quality.
 - All county-specific legacy scripts have been removed; all processing now routes through `Get_Recent_Edits.py`.
+- Davis policy: legacy/truncated Davis field names are no longer supported. Inputs must use modern/full Davis fields.
 
 ## 1) Prepare Inputs
 

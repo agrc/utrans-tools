@@ -18,14 +18,6 @@ import arcpy
 
 
 @dataclass
-class DavisSchema:
-    description: str
-    text_fields: list[str]
-    numeric_fields: list[str]
-    compare_pairs: list[tuple[str, str]]
-
-
-@dataclass
 class CountyProfile:
     aliases: list[str]
     display_name: str
@@ -38,7 +30,7 @@ class CountyProfile:
     default_dfc_output_name: str = "DFC_CountyToCounty"
     default_stats_table_name: str = "stats_county_to_county"
     default_recents_name: str = "RoadCenterline_Recents"
-    davis_schemas: dict[str, DavisSchema] | None = None
+    required_fields: list[str] = field(default_factory=list)
 
 
 def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
@@ -48,18 +40,6 @@ def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
 
     profiles = {}
     for key, data in raw.items():
-        davis_schemas = None
-        if "davis_schemas" in data:
-            davis_schemas = {
-                schema_key: DavisSchema(
-                    description=schema_data["description"],
-                    text_fields=schema_data["text_fields"],
-                    numeric_fields=schema_data["numeric_fields"],
-                    compare_pairs=[tuple(pair) for pair in schema_data["compare_pairs"]],
-                )
-                for schema_key, schema_data in data["davis_schemas"].items()
-            }
-
         profiles[key] = CountyProfile(
             aliases=data["aliases"],
             display_name=data["display_name"],
@@ -72,7 +52,7 @@ def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
             default_dfc_output_name=data.get("default_dfc_output_name", "DFC_CountyToCounty"),
             default_stats_table_name=data.get("default_stats_table_name", "stats_county_to_county"),
             default_recents_name=data.get("default_recents_name", "RoadCenterline_Recents"),
-            davis_schemas=davis_schemas,
+            required_fields=data.get("required_fields", []),
         )
     return profiles
 
@@ -208,33 +188,13 @@ def resolve_feature_inputs(args):
     return args.update_features, args.base_features
 
 
-def _resolve_davis_schema(profile, schema_option, update_features, base_features):
-    if not profile.davis_schemas:
-        return None, None
-
-    def _has_all_fields(feature_class, required_fields):
-        lookup = get_field_name_map(feature_class)
-        return all(field_name.lower() in lookup for field_name in required_fields)
-
-    if schema_option in profile.davis_schemas:
-        requested = profile.davis_schemas[schema_option]
-        required = requested.text_fields + requested.numeric_fields
-        if _has_all_fields(update_features, required) and _has_all_fields(base_features, required):
-            return schema_option, requested
+def ensure_required_fields(feature_class, required_fields, dataset_label):
+    lookup = get_field_name_map(feature_class)
+    missing = [field_name for field_name in required_fields if field_name.lower() not in lookup]
+    if missing:
         raise RuntimeError(
-            f"Requested schema '{schema_option}' but required fields are missing in one or both inputs."
+            f"{dataset_label} is missing required fields: {', '.join(missing)}"
         )
-
-    gdb_schema = profile.davis_schemas["gdb"]
-    legacy_schema = profile.davis_schemas["legacy"]
-
-    if _has_all_fields(update_features, gdb_schema.text_fields) and _has_all_fields(base_features, gdb_schema.text_fields):
-        return "gdb", gdb_schema
-
-    if _has_all_fields(update_features, legacy_schema.text_fields) and _has_all_fields(base_features, legacy_schema.text_fields):
-        return "legacy", legacy_schema
-
-    raise RuntimeError("Could not auto-detect Davis schema. Use --schema legacy or --schema gdb.")
 
 
 def run_change_detection(
@@ -248,7 +208,6 @@ def run_change_detection(
     dfc_output_name,
     stats_table_name,
     recents_name,
-    schema_option="auto",
 ):
     arcpy.env.overwriteOutput = True
     output_workspace = get_output_workspace(update_features)
@@ -259,23 +218,9 @@ def run_change_detection(
     active_text_fields = profile.text_fields
     active_numeric_fields = profile.numeric_fields
 
-    if profile.davis_schemas:
-        schema_name, schema = _resolve_davis_schema(profile, schema_option, update_features, base_features)
-        active_text_fields = schema.text_fields
-        active_numeric_fields = schema.numeric_fields
-        if not compare_fields:
-            update_lookup = get_field_name_map(update_features)
-            base_lookup = get_field_name_map(base_features)
-            compare_parts = []
-            for update_field, base_field in schema.compare_pairs:
-                u = update_lookup.get(update_field.lower())
-                b = base_lookup.get(base_field.lower())
-                if u and b:
-                    compare_parts.append(f"{u} {b}")
-            if not compare_parts:
-                raise RuntimeError("No comparable fields were found for Detect Feature Changes.")
-            compare_fields = "; ".join(compare_parts)
-        log(f"Using Davis schema: {schema_name} ({schema.description})")
+    if profile.required_fields:
+        ensure_required_fields(update_features, profile.required_fields, "Update features")
+        ensure_required_fields(base_features, profile.required_fields, "Base features")
 
     if not compare_fields:
         raise RuntimeError("Compare fields were not provided and county profile has no default compare mapping.")
@@ -360,13 +305,6 @@ def build_parser():
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
 
     parser.add_argument(
-        "--schema",
-        default="auto",
-        choices=["auto", "legacy", "gdb"],
-        help="Schema mode for counties that support it (currently Davis).",
-    )
-
-    parser.add_argument(
         "--search-distance",
         default="200 Feet",
         help="Search distance for candidate matches in Detect Feature Changes.",
@@ -421,7 +359,6 @@ def main(argv=None):
             dfc_output_name=dfc_output_name,
             stats_table_name=stats_table_name,
             recents_name=recents_name,
-            schema_option=args.schema,
         )
     except RuntimeError as exc:
         log(str(exc))
