@@ -92,11 +92,22 @@ def resolve_field_pairs(update_features, base_features, field_mapping):
     update_map = get_field_name_map(update_features)
     base_map = get_field_name_map(base_features)
     resolved_pairs = []
+    dropped_pairs = []
     for update_field, base_field in parse_field_pairs(field_mapping):
         update_actual = update_map.get(update_field.lower())
         base_actual = base_map.get(base_field.lower())
         if update_actual and base_actual:
             resolved_pairs.append((update_actual, base_actual))
+        else:
+            dropped_pairs.append((update_field, base_field))
+
+    if dropped_pairs:
+        dropped_pairs_text = "; ".join([f"{update_field} {base_field}" for update_field, base_field in dropped_pairs])
+        log(
+            "Warning: dropping "
+            f"{len(dropped_pairs)} field pair(s) not found in both datasets: {dropped_pairs_text}"
+        )
+
     return resolved_pairs
 
 
