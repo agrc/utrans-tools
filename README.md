@@ -10,5 +10,5 @@ python Get_Recent_Edits.py --county Carbon --update-features "Z:\Documents\gdb\C
 
 # example 2
 
-python Get_Recent_Edits.py --county Davis --update-features "Z:\Documents\gdb\DavisCounty_20260626.gdb\DavisRoads" --base-features "Z:\Documents\gdb\DavisCounty_20260514.gdb\DavisRoads" --dfc-output-name DFC_test721 --stats-table-name stats_test721 --recents-name RoadCenterline_Recents_test721
+python cli/Get_Recent_Edits.py --county Davis --update-features "Z:\Documents\gdb\DavisCounty_20260626.gdb\DavisRoads" --base-features "Z:\Documents\gdb\DavisCounty_20260514.gdb\DavisRoads" --dfc-output-name DFC_test721 --stats-table-name stats_test721 --recents-name RoadCenterline_Recents_test721
 ```
