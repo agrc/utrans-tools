@@ -179,12 +179,14 @@ def resolve_county_profile(county, profiles=None):
     raise RuntimeError(f"Unknown county '{county}'. Supported counties: {', '.join(sorted(profiles.keys()))}")
 
 
-def resolve_feature_inputs(args):
+def resolve_required_inputs(args):
+    if not args.county:
+        raise RuntimeError("Missing required input. Provide --county to select a field mapping profile.")
     if not args.update_features or not args.base_features:
         raise RuntimeError(
             "Missing required input paths. Provide both --update-features and --base-features."
         )
-    return args.update_features, args.base_features
+    return args.county, args.update_features, args.base_features
 
 
 def ensure_required_fields(feature_class, required_fields, dataset_label):
@@ -240,8 +242,10 @@ def run_change_detection(
         )
     compare_fields = "; ".join([f"{update_field} {base_field}" for update_field, base_field in resolved_compare_pairs])
 
-    log("begin converting nulls to empty")
-    for feature_class in [update_features, base_features]:
+    log("Normalizing blank and null-like values before change detection")
+    for dataset_label, feature_class in [("Update features", update_features), ("Base features", base_features)]:
+        dataset_name = arcpy.Describe(feature_class).name
+        log(f"Normalizing {dataset_label} ({dataset_name}): blank text values to empty strings, blank numeric values to 0")
         normalize_fields(
             feature_class,
             profile,
@@ -249,7 +253,7 @@ def run_change_detection(
             numeric_fields=active_numeric_fields,
         )
 
-    log("begin detect feature changes")
+    log("Running DetectFeatureChanges")
     log(f"Beginning detect feature change process for {profile.display_name} at: {time.strftime('%c')}")
     arcpy.management.DetectFeatureChanges(
         update_features,
@@ -261,9 +265,9 @@ def run_change_detection(
         change_tolerance,
         compare_fields,
     )
-    log("finished detect feature change process")
+    log("DetectFeatureChanges finished")
 
-    log(f"begin creating separate feature class named {recents_name}")
+    log(f"Creating changed-road output feature class: {recents_name}")
     arcpy.env.qualifiedFieldNames = False
 
     roads_layer = "roads_lyr"
@@ -279,8 +283,7 @@ def run_change_detection(
     arcpy.management.SelectLayerByAttribute(roads_layer, "NEW_SELECTION", expression)
     arcpy.management.CopyFeatures(roads_layer, out_feature)
 
-    log("Finished detect feature change process at: " + time.strftime("%c"))
-    log("done at: " + time.strftime("%c"))
+    log("Finished change detection and recents export at: " + time.strftime("%c"))
 
 
 def build_parser():
@@ -298,7 +301,11 @@ def build_parser():
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
     )
-    parser.add_argument("--county", required=True, help="County key, such as Beaver or Davis.")
+    parser.add_argument(
+        "--county",
+        required=True,
+        help="Required. County key used to select the field mapping profile, such as Beaver or Davis.",
+    )
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
     parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
@@ -336,8 +343,8 @@ def main(argv=None):
 
     try:
         profiles = _load_profiles(Path(args.profiles) if args.profiles else None)
-        profile = resolve_county_profile(args.county, profiles)
-        update_features, base_features = resolve_feature_inputs(args)
+        county, update_features, base_features = resolve_required_inputs(args)
+        profile = resolve_county_profile(county, profiles)
 
         ensure_detect_feature_changes_license()
 
