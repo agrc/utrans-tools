@@ -3,8 +3,7 @@
 Requires explicit full feature class paths:
 - `--update-features`
 - `--base-features`
-
-County wrappers can dispatch here with a fixed `--county` value.
+- `--county` (to select the correct field mapping profile)
 """
 
 import argparse
