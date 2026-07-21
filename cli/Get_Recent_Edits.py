@@ -1,4 +1,4 @@
-"""Unified recent-edits runner for county road change detection.
+﻿"""Unified recent-edits runner for county road change detection.
 
 Requires explicit full feature class paths:
 - `--update-features`
@@ -8,9 +8,11 @@ County wrappers can dispatch here with a fixed `--county` value.
 """
 
 import argparse
+import json
 import os
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import arcpy
 
@@ -39,363 +41,43 @@ class CountyProfile:
     davis_schemas: dict[str, DavisSchema] | None = None
 
 
-def county_profile(**kwargs):
-    """Build CountyProfile while inheriting shared output-name defaults."""
-    return CountyProfile(**kwargs)
+def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
+    profiles_path = path or Path(__file__).parent / "profiles.json"
+    with profiles_path.open(encoding="utf-8") as f:
+        raw = json.load(f)
+
+    profiles = {}
+    for key, data in raw.items():
+        davis_schemas = None
+        if "davis_schemas" in data:
+            davis_schemas = {
+                schema_key: DavisSchema(
+                    description=schema_data["description"],
+                    text_fields=schema_data["text_fields"],
+                    numeric_fields=schema_data["numeric_fields"],
+                    compare_pairs=[tuple(pair) for pair in schema_data["compare_pairs"]],
+                )
+                for schema_key, schema_data in data["davis_schemas"].items()
+            }
+
+        profiles[key] = CountyProfile(
+            aliases=data["aliases"],
+            display_name=data["display_name"],
+            default_match_fields=data["default_match_fields"],
+            default_compare_fields=data.get("default_compare_fields"),
+            text_fields=data.get("text_fields", []),
+            numeric_fields=data.get("numeric_fields", []),
+            uppercase_normalize_fields=set(data.get("uppercase_normalize_fields", [])),
+            apply_legacy_text_standardization=data.get("apply_legacy_text_standardization", False),
+            default_dfc_output_name=data.get("default_dfc_output_name", "DFC_CountyToCounty"),
+            default_stats_table_name=data.get("default_stats_table_name", "stats_county_to_county"),
+            default_recents_name=data.get("default_recents_name", "RoadCenterline_Recents"),
+            davis_schemas=davis_schemas,
+        )
+    return profiles
 
 
-PROFILES = {
-    "beaver": county_profile(
-        aliases=["beaver"],
-        display_name="Beaver",
-        default_match_fields="STREETNAME STREETNAME",
-        default_compare_fields=(
-            "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; "
-            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; "
-            "ALIAS1 ALIAS1; ALIAS1TYP ALIAS1TYP; ACSNAME ACSNAME; ACSSUF ACSSUF; "
-            "SUFDIR SUFDIR"
-        ),
-        text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYP", "ACSNAME", "ACSSUF"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    ),
-    "boxelder": county_profile(
-        aliases=["boxelder", "box elder"],
-        display_name="Box Elder",
-        default_match_fields="S_NAME S_NAME",
-        default_compare_fields=(
-            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; "
-            "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; "
-            "ACS_ALIAS ACS_ALIAS; ACS_NAME ACS_NAME; ACS_SUF ACS_SUF; "
-            "ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; "
-            "ALIAS2_TYP ALIAS2_TYP"
-        ),
-        text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ACS_NAME", "ACS_SUF", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    ),
-    "cache": county_profile(
-        aliases=["cache"],
-        display_name="Cache",
-        default_match_fields="GEOCODEST GEOCODEST",
-        default_compare_fields=(
-            "PRE_DIR PRE_DIR; GEOCODEST GEOCODEST; TYPE TYPE; FAL FAL; TAL TAL; "
-            "FAR FAR; TAR TAR; AliasPreDir AliasPreDir; AliasStreet AliasStreet; "
-            "AliasType AliasType; AliasSufDir AliasSufDir; SUFFDIR SUFFDIR"
-        ),
-        text_fields=["PRE_DIR", "GEOCODEST", "TYPE", "SUFFDIR", "AliasPreDir", "AliasStreet", "AliasType", "AliasSufDir"],
-        numeric_fields=["FAL", "TAL", "FAR", "TAR"],
-    ),
-    "daggett": county_profile(
-        aliases=["daggett"],
-        display_name="Daggett",
-        default_match_fields="S_NAME S_NAME",
-        default_compare_fields=(
-            "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; "
-            "R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ACS_ALIAS ACS_ALIAS; SUF_DIR SUF_DIR"
-        ),
-        text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    ),
-    "duchesne": county_profile(
-        aliases=["duchesne"],
-        display_name="Duchesne",
-        default_match_fields="STREETNAME STREETNAME",
-        default_compare_fields=(
-            "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; "
-            "R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; "
-            "ALIAS2TYPE ALIAS2TYPE; ACSNAME ACSNAME; ACSSUF ACSSUF; SUFDIR SUFDIR"
-        ),
-        text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE", "ACSNAME", "ACSSUF"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    ),
-    "emery": county_profile(
-        aliases=["emery"],
-        display_name="Emery",
-        default_match_fields="S_NAME S_NAME",
-        default_compare_fields=(
-            "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; "
-            "R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; "
-            "ALIAS2_TYP ALIAS2_TYP; SUF_DIR SUF_DIR"
-        ),
-        text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    ),
-    "carbon": county_profile(
-        aliases=["carbon"],
-        display_name="Carbon",
-        default_match_fields="NAME NAME",
-        default_compare_fields=(
-            "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; "
-            "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; "
-            "FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R"
-        ),
-        text_fields=["PREDIR", "NAME", "POSTTYPE", "POSTDIR", "AN_NAME"],
-        numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-    ),
-    "garfield": county_profile(
-        aliases=["garfield"],
-        display_name="Garfield",
-        default_match_fields="NAME NAME",
-        default_compare_fields=(
-            "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; "
-            "TOADDR_R TOADDR_R; NAME NAME; PREDIR PREDIR; POSTDIR POSTDIR; "
-            "POSTTYPE POSTTYPE; AN_NAME AN_NAME; A1_NAME A1_NAME; A2_NAME A2_NAME"
-        ),
-        text_fields=["NAME", "PREDIR", "POSTDIR", "POSTTYPE", "AN_NAME", "A1_NAME", "A2_NAME"],
-        numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-    ),
-    "grand": county_profile(
-        aliases=["grand"],
-        display_name="Grand",
-        default_match_fields="STREETNAME STREETNAME",
-        default_compare_fields=(
-            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; "
-            "STREETNAME STREETNAME; PREDIR PREDIR; SUFDIR SUFDIR; "
-            "STREETTYPE STREETTYPE; ACSALIAS ACSALIAS; ALIAS1 ALIAS1; ALIAS2 ALIAS2"
-        ),
-        text_fields=["STREETNAME", "PREDIR", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-        uppercase_normalize_fields={"STREETNAME", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"},
-        apply_legacy_text_standardization=True,
-    ),
-    "iron": county_profile(
-        aliases=["iron"],
-        display_name="Iron",
-        default_match_fields="STREETNAME STREETNAME",
-        default_compare_fields=(
-            "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; "
-            "ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; "
-            "ACSALIAS ACSALIAS; ACSNAME ACSNAME; ACSSUF ACSSUF; "
-            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD"
-        ),
-        text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE", "ACSALIAS", "ACSNAME", "ACSSUF"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    ),
-    "kane": county_profile(
-        aliases=["kane"],
-        display_name="Kane",
-        default_match_fields="STREETNAME STREETNAME",
-        default_compare_fields=(
-            "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; "
-            "ACSALIAS ACSALIAS; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; "
-            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD"
-        ),
-        text_fields=["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ACSALIAS", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    ),
-    "millard": county_profile(
-        aliases=["millard"],
-        display_name="Millard",
-        default_match_fields="FULLNAME FULLNAME",
-        default_compare_fields=(
-            "PREDIR PREDIR; FULLNAME FULLNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; "
-            "ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; "
-            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD"
-        ),
-        text_fields=["PREDIR", "FULLNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    ),
-    "morgan": county_profile(
-        aliases=["morgan"],
-        display_name="Morgan",
-        default_match_fields="FULLNAME FULLNAME",
-        default_compare_fields=(
-            "FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT; FULLNAME FULLNAME"
-        ),
-        text_fields=["FULLNAME"],
-        numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
-    ),
-    "piute": county_profile(
-        aliases=["piute"],
-        display_name="Piute",
-        default_match_fields="NAME NAME",
-        default_compare_fields=(
-            "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; "
-            "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; "
-            "FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R"
-        ),
-        text_fields=["PREDIR", "NAME", "POSTTYPE", "POSTDIR"],
-        numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-    ),
-    "rich": county_profile(
-        aliases=["rich"],
-        display_name="Rich",
-        default_match_fields="S_NAME S_NAME",
-        default_compare_fields=(
-            "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; "
-            "ACS_ALIAS ACS_ALIAS; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; "
-            "ALIAS2 ALIAS2; ALIAS2_TYP ALIAS2_TYP; "
-            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD"
-        ),
-        text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    ),
-    "vecc": county_profile(
-        aliases=["vecc", "saltlake vecc", "salt lake vecc", "slc vecc", "slcvecc", "slc"],
-        display_name="Salt Lake VECC",
-        default_match_fields="NAME NAME",
-        default_compare_fields=(
-            "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; "
-            "AN_NAME AN_NAME; AN_POSTDIR AN_POSTDIR; "
-            "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; "
-            "FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R"
-        ),
-        text_fields=["PREDIR", "NAME", "POSTTYPE", "POSTDIR", "AN_NAME", "AN_POSTDIR"],
-        numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-    ),
-    "sanjuan": county_profile(
-        aliases=["sanjuan", "san juan"],
-        display_name="San Juan",
-        default_match_fields="S_NAME S_NAME",
-        default_compare_fields="S_NAME S_NAME",
-        text_fields=["S_NAME"],
-        numeric_fields=[],
-    ),
-    "sevier": county_profile(
-        aliases=["sevier"],
-        display_name="Sevier",
-        default_match_fields="S_NAME S_NAME",
-        default_compare_fields=(
-            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; "
-            "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUR_DIR SUR_DIR; ALIAS ALIAS"
-        ),
-        text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUR_DIR", "ALIAS"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    ),
-    "summit": county_profile(
-        aliases=["summit"],
-        display_name="Summit",
-        default_match_fields="STREET STREET",
-        default_compare_fields=(
-            "PREFIX_DIR PREFIX_DIR; STREET STREET; CLASSIFICA CLASSIFICA; POST_DIR POST_DIR; "
-            "FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT"
-        ),
-        text_fields=["PREFIX_DIR", "STREET", "CLASSIFICA", "POST_DIR"],
-        numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
-    ),
-    "tooele": county_profile(
-        aliases=["tooele"],
-        display_name="Tooele",
-        default_match_fields="FULLNAME FULLNAME",
-        default_compare_fields=(
-            "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; "
-            "FULLNAME FULLNAME; PREDIR PREDIR; A1_NAME A1_NAME; A2_NAME A2_NAME; AN_NAME AN_NAME; STATUS STATUS"
-        ),
-        text_fields=["FULLNAME", "PREDIR", "A1_NAME", "A2_NAME", "AN_NAME", "STATUS"],
-        numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-        uppercase_normalize_fields={"FULLNAME", "A1_NAME", "A2_NAME"},
-        apply_legacy_text_standardization=True,
-    ),
-    "uintah": county_profile(
-        aliases=["uintah"],
-        display_name="Uintah",
-        default_match_fields="S_NAME S_NAME",
-        default_compare_fields=(
-            "toleft toleft; toright toright; fromleft fromleft; fromright fromright; S_NAME S_NAME; ALIAS1 ALIAS1"
-        ),
-        text_fields=["S_NAME", "ALIAS1"],
-        numeric_fields=["toleft", "toright", "fromleft", "fromright"],
-        uppercase_normalize_fields={"S_NAME", "ALIAS1"},
-        apply_legacy_text_standardization=True,
-    ),
-    "utah": county_profile(
-        aliases=["utah"],
-        display_name="Utah",
-        default_match_fields="ROADNAME ROADNAME",
-        default_compare_fields=(
-            "ROADPREDIR ROADPREDIR; ROADNAME ROADNAME; ROADTYPE ROADTYPE; ROADPOSTDIR ROADPOSTDIR; "
-            "ALTROADNAME ALTROADNAME; ALTROADTYPE ALTROADTYPE; ALTROADNAME2 ALTROADNAME2; ALTROADTYPE2 ALTROADTYPE2; "
-            "FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT"
-        ),
-        text_fields=["ROADPREDIR", "ROADNAME", "ROADTYPE", "ROADPOSTDIR", "ALTROADNAME", "ALTROADTYPE", "ALTROADNAME2", "ALTROADTYPE2"],
-        numeric_fields=["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"],
-    ),
-    "wasatch": county_profile(
-        aliases=["wasatch"],
-        display_name="Wasatch",
-        default_match_fields="FULLNAME FULLNAME",
-        default_compare_fields=(
-            "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; FULLNAME FULLNAME; PREDIR PREDIR; AN_NAME AN_NAME"
-        ),
-        text_fields=["FULLNAME", "PREDIR", "AN_NAME", "STATUS"],
-        numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-        uppercase_normalize_fields={"FULLNAME"},
-        apply_legacy_text_standardization=True,
-    ),
-    "washington": county_profile(
-        aliases=["washington"],
-        display_name="Washington",
-        default_match_fields="NAME NAME",
-        default_compare_fields=(
-            "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; SUFFIXDIR SUFFIXDIR; "
-            "AN_NAME AN_NAME; AN_POSTDIR AN_POSTDIR; A1_NAME A1_NAME; A1_POSTTYPE A1_POSTTYPE; A2_NAME A2_NAME; A2_POSTTYPE A2_POSTTYPE"
-        ),
-        text_fields=["PREDIR", "NAME", "POSTTYPE", "SUFFIXDIR", "POSTDIR", "AN_NAME", "AN_POSTDIR", "A1_NAME", "A1_POSTTYPE", "A2_NAME", "A2_POSTTYPE"],
-        numeric_fields=["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-    ),
-    "wayne": county_profile(
-        aliases=["wayne"],
-        display_name="Wayne",
-        default_match_fields="S_NAME S_NAME",
-        default_compare_fields=(
-            "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; ACS_ALIAS ACS_ALIAS; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; "
-            "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD"
-        ),
-        text_fields=["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ALIAS1", "ALIAS1_TYP"],
-        numeric_fields=["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    ),
-    "weber": county_profile(
-        aliases=["weber"],
-        display_name="Weber",
-        default_match_fields="S_NAME S_NAME",
-        default_compare_fields=(
-            "PREDIR PREDIR; S_NAME S_NAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ALIAS ALIAS; ACS_ALIAS ACS_ALIAS; SUFFIX_911 SUFFIX_911; "
-            "LEFTFROM LEFTFROM; LEFTTO LEFTTO; RIGHTFROM RIGHTFROM; RIGHTTO RIGHTTO"
-        ),
-        text_fields=["PREDIR", "S_NAME", "STREETTYPE", "SUFDIR", "ALIAS", "ACS_ALIAS", "SUFFIX_911"],
-        numeric_fields=["LEFTFROM", "LEFTTO", "RIGHTFROM", "RIGHTTO"],
-    ),
-    "davis": county_profile(
-        aliases=["davis"],
-        display_name="Davis",
-        default_match_fields="RoadName RoadName",
-        default_compare_fields=None,
-        davis_schemas={
-            "legacy": DavisSchema(
-                description="Legacy/truncated Davis field names",
-                text_fields=["PrefixDire", "RoadName", "RoadNameTy", "PostDirect", "RoadAliasN"],
-                numeric_fields=["LeftFrom", "LeftTo", "RightFrom", "RightTo"],
-                compare_pairs=[
-                    ("PrefixDire", "PrefixDire"),
-                    ("RoadName", "RoadName"),
-                    ("RoadNameTy", "RoadNameTy"),
-                    ("PostDirect", "PostDirect"),
-                    ("RoadAliasN", "RoadAliasN"),
-                    ("LeftFrom", "LeftFrom"),
-                    ("LeftTo", "LeftTo"),
-                    ("RightFrom", "RightFrom"),
-                    ("RightTo", "RightTo"),
-                ],
-            ),
-            "gdb": DavisSchema(
-                description="GDB/full Davis field names",
-                text_fields=["PrefixDirection", "RoadName", "RoadNameType", "PostDirection", "RoadAliasName"],
-                numeric_fields=["LeftFrom", "LeftTo", "RightFrom", "RightTo", "MPH"],
-                compare_pairs=[
-                    ("PrefixDirection", "PrefixDirection"),
-                    ("RoadName", "RoadName"),
-                    ("RoadNameType", "RoadNameType"),
-                    ("PostDirection", "PostDirection"),
-                    ("RoadAliasName", "RoadAliasName"),
-                    ("LeftFrom", "LeftFrom"),
-                    ("LeftTo", "LeftTo"),
-                    ("RightFrom", "RightFrom"),
-                    ("RightTo", "RightTo"),
-                    ("MPH", "MPH"),
-                ],
-            ),
-        },
-    ),
-}
+PROFILES = _load_profiles()
 
 
 def log(message):
@@ -506,14 +188,16 @@ def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=No
                 rows.updateRow(row)
 
 
-def resolve_county_profile(county):
+def resolve_county_profile(county, profiles=None):
+    if profiles is None:
+        profiles = PROFILES
     county_key = county.lower().strip()
-    for profile_key, profile in PROFILES.items():
+    for profile_key, profile in profiles.items():
         aliases = {alias.lower() for alias in profile.aliases}
         aliases.add(profile_key.lower())
         if county_key in aliases:
             return profile
-    raise RuntimeError(f"Unknown county '{county}'. Supported counties: {', '.join(sorted(PROFILES.keys()))}")
+    raise RuntimeError(f"Unknown county '{county}'. Supported counties: {', '.join(sorted(profiles.keys()))}")
 
 
 def resolve_feature_inputs(args):
@@ -699,6 +383,12 @@ def build_parser():
     parser.add_argument("--dfc-output-name", help="Output feature class name for Detect Feature Changes result.")
     parser.add_argument("--stats-table-name", help="Output table name for Detect Feature Changes statistics.")
     parser.add_argument("--recents-name", help="Output feature class name for selected changed roads.")
+    parser.add_argument(
+        "--profiles",
+        default=None,
+        metavar="PATH",
+        help="Path to a custom profiles JSON file. Defaults to profiles.json next to this script.",
+    )
     return parser
 
 
@@ -708,7 +398,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     try:
-        profile = resolve_county_profile(args.county)
+        profiles = _load_profiles(Path(args.profiles) if args.profiles else None)
+        profile = resolve_county_profile(args.county, profiles)
         update_features, base_features = resolve_feature_inputs(args)
 
         ensure_detect_feature_changes_license()
