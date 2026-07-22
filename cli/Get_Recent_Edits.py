@@ -246,7 +246,7 @@ def run_change_detection(
             "No valid match field pairs found between update and base feature classes. "
             "Pass --match-fields with fields that exist in both datasets."
         )
-    match_fields = "; ".join([f"{update_field} {base_field}" for update_field, base_field in resolved_match_pairs])
+    resolved_match_fields = "; ".join([f"{update_field} {base_field}" for update_field, base_field in resolved_match_pairs])
 
     resolved_compare_pairs = resolve_field_pairs(update_features, base_features, compare_fields)
     if not resolved_compare_pairs:
@@ -254,7 +254,7 @@ def run_change_detection(
             "No valid compare field pairs found between update and base feature classes. "
             "Pass --compare-fields with fields that exist in both datasets."
         )
-    compare_fields = "; ".join([f"{update_field} {base_field}" for update_field, base_field in resolved_compare_pairs])
+    resolved_compare_fields = "; ".join([f"{update_field} {base_field}" for update_field, base_field in resolved_compare_pairs])
 
     log("Normalizing blank and null-like values before change detection")
     for dataset_label, feature_class in [("Update features", update_features), ("Base features", base_features)]:
@@ -274,10 +274,10 @@ def run_change_detection(
         base_features,
         dfc_output,
         search_distance,
-        match_fields,
+        resolved_match_fields,
         stats_table,
         change_tolerance,
-        compare_fields,
+        resolved_compare_fields,
     )
     log("DetectFeatureChanges finished")
 
