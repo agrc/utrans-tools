@@ -202,17 +202,6 @@ def ensure_required_fields(feature_class, required_fields, dataset_label):
         )
 
 
-def resolve_change_type_field(feature_class):
-    field_map = get_field_name_map(feature_class)
-    change_type_field = field_map.get("change_type")
-    if not change_type_field:
-        raise RuntimeError(
-            "Detect Feature Changes output is missing the change-type field. "
-            "Expected CHANGE_TYPE."
-        )
-    return change_type_field
-
-
 def run_change_detection(
     profile,
     update_features,
@@ -294,8 +283,7 @@ def run_change_detection(
     arcpy.management.AddJoin(roads_layer, join_field_roads, dfc_layer, "UPDATE_FID")
 
     dfc_name = arcpy.Describe(dfc_output).name
-    change_type_field = resolve_change_type_field(dfc_output)
-    expression = f"{dfc_name}.{change_type_field} <> 'NC'"
+    expression = f"{dfc_name}.CHANGE_TYPE <> 'NC'"
     arcpy.management.SelectLayerByAttribute(roads_layer, "NEW_SELECTION", expression)
     arcpy.management.CopyFeatures(roads_layer, out_feature)
 
