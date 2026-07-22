@@ -21,6 +21,9 @@
     <None Include="Properties\launchSettings.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="obj\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="ArcGIS.Desktop.Framework">
       <HintPath>C:\Program Files\ArcGIS\Pro\bin\ArcGIS.Desktop.Framework.dll</HintPath>
       <CopyLocal>False</CopyLocal>
@@ -97,5 +100,8 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-   <Import Project="C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets" Condition="Exists('C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets') AND !Exists('Esri.ArcGISPro.Extensions.targets')" />
+   <Import Project="C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets" Condition="Exists('C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets') AND !Exists('Esri.ArcGISPro.Extensions.targets') AND '$(MSBuildRuntimeType)' == 'Full'" />
+   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+     <Exec Command="rmdir /s /q &quot;%25LocalAppData%25\ESRI\ArcGISPro\AssemblyCache&quot;" />
+   </Target>
 </Project>
