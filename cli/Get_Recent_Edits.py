@@ -211,11 +211,11 @@ def ensure_required_fields(feature_class, required_fields, dataset_label):
 
 def resolve_change_type_field(feature_class):
     field_map = get_field_name_map(feature_class)
-    change_type_field = field_map.get("change_type") or field_map.get("change_typ")
+    change_type_field = field_map.get("change_type")
     if not change_type_field:
         raise RuntimeError(
             "Detect Feature Changes output is missing the change-type field. "
-            "Expected CHANGE_TYPE (geodatabase) or CHANGE_TYP (shapefile)."
+            "Expected CHANGE_TYPE."
         )
     return change_type_field
 
