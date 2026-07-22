@@ -26,12 +26,12 @@ Always ensure that code suggestions are compatible with the latest supported ver
 
 # Migration instructions
 
-This project is being migrated from an old ArcMap Add-in to a new ArcGIS Pro Add-in. The old add-in codebase is available as a sibling to this repository named: "utrans-editor-tools". Please refer to this project when migrating functionality.
+This project is being migrated from a legacy ArcMap Add-in to a new ArcGIS Pro Add-in. The legacy add-in codebase is available as a sibling to this repository named: "utrans-editor-tools". Please refer to this project when migrating functionality.
 
 When migrating code, follow these guidelines:
 
 - Identify the core functionality in the ArcMap add-in that needs to be migrated.
-- For each piece of functionality, find the equivalent API in the ArcGIS Pro SDK.
+- For each piece of functionality, find the equivalent API in the ArcGIS Pro SDK. Please note that the old ArcMap SDK is totally different from the new ArcGIS Pro SDK.
 
 # Validation
 

@@ -2,7 +2,9 @@
   "profiles": {
     "UGRC.UtransTools": {
       "commandName": "Executable",
-      "executablePath": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe"
+      "executablePath": "C:\\Program Files\\ArcGIS\\Pro\\bin\\ArcGISPro.exe",
+      "commandLineArgs": "\"C:\\Mac\\Home\\Documents\\ArcGIS\\Projects\\UTRANS Tools\\UTRANS Tools.aprx\"",
+      "workingDirectory": "C:\\Program Files\\ArcGIS\\Pro\\bin"
     }
   }
 }

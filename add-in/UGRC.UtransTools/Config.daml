@@ -6,37 +6,47 @@
         xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
 
   <AddInInfo id="{f893be2f-ad95-46be-9d60-fd6dba457152}" version="1.0" desktopVersion="3.6.59527" product="ArcGISPro">
-    <Name>UGRC.UtransTools</Name>   
-    <Description>UGRC.UtransTools description</Description>
+    <Name>UGRC_UtransTools</Name>   
+    <Description>UGRC_UtransTools description</Description>
     <Image>Images\AddinDesktop32.png</Image>
     <Author>stdavis</Author>
-    <Company>Acme</Company>
+    <Company>UGRC</Company>
     <Date>7/7/2026 7:49:12 PM</Date>
-    <Subject>Framework</Subject>
-    <!-- Note subject can be one or more of these topics:
-                    Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
+    <Subject>Editing</Subject>
   </AddInInfo>
 
   <modules>
-    <insertModule id="UGRC.UtransTools_Module" className="Module1" autoLoad="false" caption="Module1">
-      <!-- uncomment to have the control hosted on a separate tab-->
+    <insertModule id="UGRC_UtransTools_Module" className="UtransToolsModule" autoLoad="false" caption="UTRANS Tools">
       <tabs>
-        <!--<tab id="UGRC.UtransTools_Tab1" caption="New Tab">
-          <group refID="UGRC.UtransTools_Group1"/>
-        </tab>-->
+        <tab id="UGRC_UtransTools_CustomTab" caption="UTrans" keytip="UTRANS_Tab">
+          <group refID="UGRC_UtransTools_Group1"/>
+        </tab>
       </tabs>
               
       <groups>
-        <!-- comment this out if you have no controls on the Addin tab to avoid
-              an empty group-->
-        <group id="UGRC.UtransTools_Group1" caption="Group 1" appearsOnAddInTab="true">
-          <!-- host controls within groups -->
+        <group id="UGRC_UtransTools_Group1" caption="UTrans" keytip="UTRANS_Group">
+          <button refID="UGRC_UtransTools_UtransEditorDockpaneButton" />
         </group>
       </groups>
       
       <controls>
-        <!-- add your controls here -->
+        <button id="UGRC_UtransTools_UtransEditorDockpaneButton"
+                caption="UTrans Editor"
+                className="UtransEditorDockpaneButton"
+                loadOnClick="true"
+                smallImage="Images\AddInDesktop16.png"
+                largeImage="Images\AddInDesktop32.png"
+				keytip="UTRANS Editor Pane"/>
       </controls> 
+
+       <dockPanes>
+         <dockPane id="UGRC_UtransTools_UtransEditorDockpane"
+                   caption="UTrans Editor"
+                   className="UtransEditorDockpaneViewModel"
+                   dock="right">
+           <content className="UtransEditorDockpaneView" />
+         </dockPane>
+       </dockPanes>
       
     </insertModule>
   </modules>
