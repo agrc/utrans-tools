@@ -23,3 +23,18 @@ I am developing ArcGIS Pro Add-ins using the ArcGIS Pro SDK.
 - CIMSymbol has an extension method called MakeSymbolReference. Use MakeSymbolReference to convert any CIMSymbol to a CIMSymbolReference.
 
 Always ensure that code suggestions are compatible with the latest supported version of ArcGIS Pro SDK.
+
+# Migration instructions
+
+This project is being migrated from an old ArcMap Add-in to a new ArcGIS Pro Add-in. The old add-in codebase is available as a sibling to this repository named: "utrans-editor-tools". Please refer to this project when migrating functionality.
+
+When migrating code, follow these guidelines:
+
+- Identify the core functionality in the ArcMap add-in that needs to be migrated.
+- For each piece of functionality, find the equivalent API in the ArcGIS Pro SDK.
+
+# Validation
+
+After you have made changes to the add-in, validate your changes by:
+
+- Building the add-in in Visual Studio to ensure there are no compilation errors.
