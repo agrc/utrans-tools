@@ -25,7 +25,6 @@ class CountyProfile:
     text_fields: list[str] = field(default_factory=list)
     numeric_fields: list[str] = field(default_factory=list)
     uppercase_normalize_fields: set[str] = field(default_factory=set)
-    apply_legacy_text_standardization: bool = False
     default_dfc_output_name: str = "DFC_CountyToCounty"
     default_stats_table_name: str = "stats_county_to_county"
     default_recents_name: str = "RoadCenterline_Recents"
@@ -47,7 +46,6 @@ def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
             text_fields=data.get("text_fields", []),
             numeric_fields=data.get("numeric_fields", []),
             uppercase_normalize_fields=set(data.get("uppercase_normalize_fields", [])),
-            apply_legacy_text_standardization=data.get("apply_legacy_text_standardization", False),
             default_dfc_output_name=data.get("default_dfc_output_name", "DFC_CountyToCounty"),
             default_stats_table_name=data.get("default_stats_table_name", "stats_county_to_county"),
             default_recents_name=data.get("default_recents_name", "RoadCenterline_Recents"),
@@ -125,17 +123,13 @@ def _blank_like(value):
     return str(value).strip() in {"", "None", "NULL"}
 
 
-def _normalize_text_value(value, force_uppercase, apply_legacy_text_standardization=False):
+def _normalize_text_value(value, force_uppercase):
     if _blank_like(value):
         return ""
-    if apply_legacy_text_standardization:
-        normalized = " ".join(str(value).split())
-        if force_uppercase:
-            return normalized.upper()
-        return normalized
+    normalized = " ".join(str(value).split())
     if force_uppercase:
-        return " ".join(str(value).split()).upper()
-    return value
+        return normalized.upper()
+    return normalized
 
 
 def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=None):
@@ -159,7 +153,6 @@ def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=No
                 replacement = _normalize_text_value(
                     value,
                     force_uppercase=field_name.upper() in profile.uppercase_normalize_fields,
-                    apply_legacy_text_standardization=profile.apply_legacy_text_standardization,
                 )
 
                 if replacement != value:

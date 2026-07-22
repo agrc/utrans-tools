@@ -70,8 +70,7 @@
     "default_compare_fields": "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; STREETNAME STREETNAME; PREDIR PREDIR; SUFDIR SUFDIR; STREETTYPE STREETTYPE; ACSALIAS ACSALIAS; ALIAS1 ALIAS1; ALIAS2 ALIAS2",
     "text_fields": ["STREETNAME", "PREDIR", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
-    "uppercase_normalize_fields": ["STREETNAME", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"],
-    "apply_legacy_text_standardization": true
+    "uppercase_normalize_fields": ["STREETNAME", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"]
   },
   "iron": {
     "aliases": ["iron"],
@@ -160,8 +159,7 @@
     "default_compare_fields": "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; FULLNAME FULLNAME; PREDIR PREDIR; A1_NAME A1_NAME; A2_NAME A2_NAME; AN_NAME AN_NAME; STATUS STATUS",
     "text_fields": ["FULLNAME", "PREDIR", "A1_NAME", "A2_NAME", "AN_NAME", "STATUS"],
     "numeric_fields": ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-    "uppercase_normalize_fields": ["FULLNAME", "A1_NAME", "A2_NAME"],
-    "apply_legacy_text_standardization": true
+    "uppercase_normalize_fields": ["FULLNAME", "A1_NAME", "A2_NAME"]
   },
   "uintah": {
     "aliases": ["uintah"],
@@ -170,8 +168,7 @@
     "default_compare_fields": "toleft toleft; toright toright; fromleft fromleft; fromright fromright; S_NAME S_NAME; ALIAS1 ALIAS1",
     "text_fields": ["S_NAME", "ALIAS1"],
     "numeric_fields": ["toleft", "toright", "fromleft", "fromright"],
-    "uppercase_normalize_fields": ["S_NAME", "ALIAS1"],
-    "apply_legacy_text_standardization": true
+    "uppercase_normalize_fields": ["S_NAME", "ALIAS1"]
   },
   "utah": {
     "aliases": ["utah"],
@@ -188,8 +185,7 @@
     "default_compare_fields": "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; FULLNAME FULLNAME; PREDIR PREDIR; AN_NAME AN_NAME",
     "text_fields": ["FULLNAME", "PREDIR", "AN_NAME", "STATUS"],
     "numeric_fields": ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
-    "uppercase_normalize_fields": ["FULLNAME"],
-    "apply_legacy_text_standardization": true
+    "uppercase_normalize_fields": ["FULLNAME"]
   },
   "washington": {
     "aliases": ["washington"],
