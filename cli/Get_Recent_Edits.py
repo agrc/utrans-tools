@@ -20,14 +20,14 @@ import arcpy
 class CountyProfile:
     aliases: list[str]
     display_name: str
-    default_match_fields: str
-    default_compare_fields: str | None
+    match_fields: str
+    compare_fields: str | None
     text_fields: list[str] = field(default_factory=list)
     numeric_fields: list[str] = field(default_factory=list)
     uppercase_normalize_fields: set[str] = field(default_factory=set)
-    default_dfc_output_name: str = "DFC_CountyToCounty"
-    default_stats_table_name: str = "stats_county_to_county"
-    default_recents_name: str = "RoadCenterline_Recents"
+    dfc_output_name: str = "DFC_CountyToCounty"
+    stats_table_name: str = "stats_county_to_county"
+    recents_name: str = "RoadCenterline_Recents"
     required_fields: list[str] = field(default_factory=list)
 
 
@@ -41,14 +41,14 @@ def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
         profiles[key] = CountyProfile(
             aliases=data["aliases"],
             display_name=data["display_name"],
-            default_match_fields=data["default_match_fields"],
-            default_compare_fields=data.get("default_compare_fields"),
+            match_fields=data["match_fields"],
+            compare_fields=data.get("compare_fields"),
             text_fields=data.get("text_fields", []),
             numeric_fields=data.get("numeric_fields", []),
             uppercase_normalize_fields=set(data.get("uppercase_normalize_fields", [])),
-            default_dfc_output_name=data.get("default_dfc_output_name", "DFC_CountyToCounty"),
-            default_stats_table_name=data.get("default_stats_table_name", "stats_county_to_county"),
-            default_recents_name=data.get("default_recents_name", "RoadCenterline_Recents"),
+            dfc_output_name=data.get("dfc_output_name", "DFC_CountyToCounty"),
+            stats_table_name=data.get("stats_table_name", "stats_county_to_county"),
+            recents_name=data.get("recents_name", "RoadCenterline_Recents"),
             required_fields=data.get("required_fields", []),
         )
     return profiles
@@ -364,11 +364,11 @@ def main(argv=None):
 
         ensure_detect_feature_changes_license()
 
-        match_fields = args.match_fields or profile.default_match_fields
-        compare_fields = args.compare_fields if args.compare_fields is not None else profile.default_compare_fields
-        dfc_output_name = args.dfc_output_name or profile.default_dfc_output_name
-        stats_table_name = args.stats_table_name or profile.default_stats_table_name
-        recents_name = args.recents_name or profile.default_recents_name
+        match_fields = args.match_fields or profile.match_fields
+        compare_fields = args.compare_fields if args.compare_fields is not None else profile.compare_fields
+        dfc_output_name = args.dfc_output_name or profile.dfc_output_name
+        stats_table_name = args.stats_table_name or profile.stats_table_name
+        recents_name = args.recents_name or profile.recents_name
 
         run_change_detection(
             profile=profile,

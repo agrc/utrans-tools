@@ -2,72 +2,72 @@
   "beaver": {
     "aliases": ["beaver"],
     "display_name": "Beaver",
-    "default_match_fields": "STREETNAME STREETNAME",
-    "default_compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1TYP ALIAS1TYP; ACSNAME ACSNAME; ACSSUF ACSSUF; SUFDIR SUFDIR",
+    "match_fields": "STREETNAME STREETNAME",
+    "compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1TYP ALIAS1TYP; ACSNAME ACSNAME; ACSSUF ACSSUF; SUFDIR SUFDIR",
     "text_fields": ["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYP", "ACSNAME", "ACSSUF"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
   },
   "boxelder": {
     "aliases": ["boxelder", "box elder"],
     "display_name": "Box Elder",
-    "default_match_fields": "S_NAME S_NAME",
-    "default_compare_fields": "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; ACS_ALIAS ACS_ALIAS; ACS_NAME ACS_NAME; ACS_SUF ACS_SUF; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; ALIAS2_TYP ALIAS2_TYP",
+    "match_fields": "S_NAME S_NAME",
+    "compare_fields": "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; ACS_ALIAS ACS_ALIAS; ACS_NAME ACS_NAME; ACS_SUF ACS_SUF; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; ALIAS2_TYP ALIAS2_TYP",
     "text_fields": ["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ACS_NAME", "ACS_SUF", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
   },
   "cache": {
     "aliases": ["cache"],
     "display_name": "Cache",
-    "default_match_fields": "GEOCODEST GEOCODEST",
-    "default_compare_fields": "PRE_DIR PRE_DIR; GEOCODEST GEOCODEST; TYPE TYPE; FAL FAL; TAL TAL; FAR FAR; TAR TAR; AliasPreDir AliasPreDir; AliasStreet AliasStreet; AliasType AliasType; AliasSufDir AliasSufDir; SUFFDIR SUFFDIR",
+    "match_fields": "GEOCODEST GEOCODEST",
+    "compare_fields": "PRE_DIR PRE_DIR; GEOCODEST GEOCODEST; TYPE TYPE; FAL FAL; TAL TAL; FAR FAR; TAR TAR; AliasPreDir AliasPreDir; AliasStreet AliasStreet; AliasType AliasType; AliasSufDir AliasSufDir; SUFFDIR SUFFDIR",
     "text_fields": ["PRE_DIR", "GEOCODEST", "TYPE", "SUFFDIR", "AliasPreDir", "AliasStreet", "AliasType", "AliasSufDir"],
     "numeric_fields": ["FAL", "TAL", "FAR", "TAR"]
   },
   "daggett": {
     "aliases": ["daggett"],
     "display_name": "Daggett",
-    "default_match_fields": "S_NAME S_NAME",
-    "default_compare_fields": "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ACS_ALIAS ACS_ALIAS; SUF_DIR SUF_DIR",
+    "match_fields": "S_NAME S_NAME",
+    "compare_fields": "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ACS_ALIAS ACS_ALIAS; SUF_DIR SUF_DIR",
     "text_fields": ["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
   },
   "duchesne": {
     "aliases": ["duchesne"],
     "display_name": "Duchesne",
-    "default_match_fields": "STREETNAME STREETNAME",
-    "default_compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; ACSNAME ACSNAME; ACSSUF ACSSUF; SUFDIR SUFDIR",
+    "match_fields": "STREETNAME STREETNAME",
+    "compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; ACSNAME ACSNAME; ACSSUF ACSSUF; SUFDIR SUFDIR",
     "text_fields": ["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE", "ACSNAME", "ACSSUF"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
   },
   "emery": {
     "aliases": ["emery"],
     "display_name": "Emery",
-    "default_match_fields": "S_NAME S_NAME",
-    "default_compare_fields": "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; ALIAS2_TYP ALIAS2_TYP; SUF_DIR SUF_DIR",
+    "match_fields": "S_NAME S_NAME",
+    "compare_fields": "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; ALIAS2_TYP ALIAS2_TYP; SUF_DIR SUF_DIR",
     "text_fields": ["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
   },
   "carbon": {
     "aliases": ["carbon"],
     "display_name": "Carbon",
-    "default_match_fields": "NAME NAME",
-    "default_compare_fields": "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R",
+    "match_fields": "NAME NAME",
+    "compare_fields": "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R",
     "text_fields": ["PREDIR", "NAME", "POSTTYPE", "POSTDIR", "AN_NAME"],
     "numeric_fields": ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"]
   },
   "garfield": {
     "aliases": ["garfield"],
     "display_name": "Garfield",
-    "default_match_fields": "NAME NAME",
-    "default_compare_fields": "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; NAME NAME; PREDIR PREDIR; POSTDIR POSTDIR; POSTTYPE POSTTYPE; AN_NAME AN_NAME; A1_NAME A1_NAME; A2_NAME A2_NAME",
+    "match_fields": "NAME NAME",
+    "compare_fields": "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; NAME NAME; PREDIR PREDIR; POSTDIR POSTDIR; POSTTYPE POSTTYPE; AN_NAME AN_NAME; A1_NAME A1_NAME; A2_NAME A2_NAME",
     "text_fields": ["NAME", "PREDIR", "POSTDIR", "POSTTYPE", "AN_NAME", "A1_NAME", "A2_NAME"],
     "numeric_fields": ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"]
   },
   "grand": {
     "aliases": ["grand"],
     "display_name": "Grand",
-    "default_match_fields": "STREETNAME STREETNAME",
-    "default_compare_fields": "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; STREETNAME STREETNAME; PREDIR PREDIR; SUFDIR SUFDIR; STREETTYPE STREETTYPE; ACSALIAS ACSALIAS; ALIAS1 ALIAS1; ALIAS2 ALIAS2",
+    "match_fields": "STREETNAME STREETNAME",
+    "compare_fields": "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; STREETNAME STREETNAME; PREDIR PREDIR; SUFDIR SUFDIR; STREETTYPE STREETTYPE; ACSALIAS ACSALIAS; ALIAS1 ALIAS1; ALIAS2 ALIAS2",
     "text_fields": ["STREETNAME", "PREDIR", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"],
     "uppercase_normalize_fields": ["STREETNAME", "STREETTYPE", "ACSALIAS", "ALIAS1", "ALIAS2"]
@@ -75,88 +75,88 @@
   "iron": {
     "aliases": ["iron"],
     "display_name": "Iron",
-    "default_match_fields": "STREETNAME STREETNAME",
-    "default_compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; ACSALIAS ACSALIAS; ACSNAME ACSNAME; ACSSUF ACSSUF; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
+    "match_fields": "STREETNAME STREETNAME",
+    "compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; ACSALIAS ACSALIAS; ACSNAME ACSNAME; ACSSUF ACSSUF; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
     "text_fields": ["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE", "ACSALIAS", "ACSNAME", "ACSSUF"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
   },
   "kane": {
     "aliases": ["kane"],
     "display_name": "Kane",
-    "default_match_fields": "STREETNAME STREETNAME",
-    "default_compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ACSALIAS ACSALIAS; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
+    "match_fields": "STREETNAME STREETNAME",
+    "compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ACSALIAS ACSALIAS; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
     "text_fields": ["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR", "ACSALIAS", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
   },
   "millard": {
     "aliases": ["millard"],
     "display_name": "Millard",
-    "default_match_fields": "FULLNAME FULLNAME",
-    "default_compare_fields": "PREDIR PREDIR; FULLNAME FULLNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
+    "match_fields": "FULLNAME FULLNAME",
+    "compare_fields": "PREDIR PREDIR; FULLNAME FULLNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
     "text_fields": ["PREDIR", "FULLNAME", "STREETTYPE", "SUFDIR", "ALIAS1", "ALIAS1TYPE", "ALIAS2", "ALIAS2TYPE"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
   },
   "morgan": {
     "aliases": ["morgan"],
     "display_name": "Morgan",
-    "default_match_fields": "FULLNAME FULLNAME",
-    "default_compare_fields": "FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT; FULLNAME FULLNAME",
+    "match_fields": "FULLNAME FULLNAME",
+    "compare_fields": "FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT; FULLNAME FULLNAME",
     "text_fields": ["FULLNAME"],
     "numeric_fields": ["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"]
   },
   "piute": {
     "aliases": ["piute"],
     "display_name": "Piute",
-    "default_match_fields": "NAME NAME",
-    "default_compare_fields": "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R",
+    "match_fields": "NAME NAME",
+    "compare_fields": "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R",
     "text_fields": ["PREDIR", "NAME", "POSTTYPE", "POSTDIR"],
     "numeric_fields": ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"]
   },
   "rich": {
     "aliases": ["rich"],
     "display_name": "Rich",
-    "default_match_fields": "S_NAME S_NAME",
-    "default_compare_fields": "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; ACS_ALIAS ACS_ALIAS; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; ALIAS2_TYP ALIAS2_TYP; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
+    "match_fields": "S_NAME S_NAME",
+    "compare_fields": "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; ACS_ALIAS ACS_ALIAS; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; ALIAS2_TYP ALIAS2_TYP; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
     "text_fields": ["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ALIAS1", "ALIAS1_TYP", "ALIAS2", "ALIAS2_TYP"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
   },
   "vecc": {
     "aliases": ["vecc", "saltlake vecc", "salt lake vecc", "slc vecc", "slcvecc", "slc"],
     "display_name": "Salt Lake VECC",
-    "default_match_fields": "NAME NAME",
-    "default_compare_fields": "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; AN_NAME AN_NAME; AN_POSTDIR AN_POSTDIR; FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R",
+    "match_fields": "NAME NAME",
+    "compare_fields": "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; AN_NAME AN_NAME; AN_POSTDIR AN_POSTDIR; FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R",
     "text_fields": ["PREDIR", "NAME", "POSTTYPE", "POSTDIR", "AN_NAME", "AN_POSTDIR"],
     "numeric_fields": ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"]
   },
   "sanjuan": {
     "aliases": ["sanjuan", "san juan"],
     "display_name": "San Juan",
-    "default_match_fields": "S_NAME S_NAME",
-    "default_compare_fields": "S_NAME S_NAME",
+    "match_fields": "S_NAME S_NAME",
+    "compare_fields": "S_NAME S_NAME",
     "text_fields": ["S_NAME"],
     "numeric_fields": []
   },
   "sevier": {
     "aliases": ["sevier"],
     "display_name": "Sevier",
-    "default_match_fields": "S_NAME S_NAME",
-    "default_compare_fields": "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUR_DIR SUR_DIR; ALIAS ALIAS",
+    "match_fields": "S_NAME S_NAME",
+    "compare_fields": "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUR_DIR SUR_DIR; ALIAS ALIAS",
     "text_fields": ["PRE_DIR", "S_NAME", "S_TYPE", "SUR_DIR", "ALIAS"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
   },
   "summit": {
     "aliases": ["summit"],
     "display_name": "Summit",
-    "default_match_fields": "STREET STREET",
-    "default_compare_fields": "PREFIX_DIR PREFIX_DIR; STREET STREET; CLASSIFICA CLASSIFICA; POST_DIR POST_DIR; FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT",
+    "match_fields": "STREET STREET",
+    "compare_fields": "PREFIX_DIR PREFIX_DIR; STREET STREET; CLASSIFICA CLASSIFICA; POST_DIR POST_DIR; FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT",
     "text_fields": ["PREFIX_DIR", "STREET", "CLASSIFICA", "POST_DIR"],
     "numeric_fields": ["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"]
   },
   "tooele": {
     "aliases": ["tooele"],
     "display_name": "Tooele",
-    "default_match_fields": "FULLNAME FULLNAME",
-    "default_compare_fields": "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; FULLNAME FULLNAME; PREDIR PREDIR; A1_NAME A1_NAME; A2_NAME A2_NAME; AN_NAME AN_NAME; STATUS STATUS",
+    "match_fields": "FULLNAME FULLNAME",
+    "compare_fields": "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; FULLNAME FULLNAME; PREDIR PREDIR; A1_NAME A1_NAME; A2_NAME A2_NAME; AN_NAME AN_NAME; STATUS STATUS",
     "text_fields": ["FULLNAME", "PREDIR", "A1_NAME", "A2_NAME", "AN_NAME", "STATUS"],
     "numeric_fields": ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
     "uppercase_normalize_fields": ["FULLNAME", "A1_NAME", "A2_NAME"]
@@ -164,8 +164,8 @@
   "uintah": {
     "aliases": ["uintah"],
     "display_name": "Uintah",
-    "default_match_fields": "S_NAME S_NAME",
-    "default_compare_fields": "toleft toleft; toright toright; fromleft fromleft; fromright fromright; S_NAME S_NAME; ALIAS1 ALIAS1",
+    "match_fields": "S_NAME S_NAME",
+    "compare_fields": "toleft toleft; toright toright; fromleft fromleft; fromright fromright; S_NAME S_NAME; ALIAS1 ALIAS1",
     "text_fields": ["S_NAME", "ALIAS1"],
     "numeric_fields": ["toleft", "toright", "fromleft", "fromright"],
     "uppercase_normalize_fields": ["S_NAME", "ALIAS1"]
@@ -173,16 +173,16 @@
   "utah": {
     "aliases": ["utah"],
     "display_name": "Utah",
-    "default_match_fields": "ROADNAME ROADNAME",
-    "default_compare_fields": "ROADPREDIR ROADPREDIR; ROADNAME ROADNAME; ROADTYPE ROADTYPE; ROADPOSTDIR ROADPOSTDIR; ALTROADNAME ALTROADNAME; ALTROADTYPE ALTROADTYPE; ALTROADNAME2 ALTROADNAME2; ALTROADTYPE2 ALTROADTYPE2; FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT",
+    "match_fields": "ROADNAME ROADNAME",
+    "compare_fields": "ROADPREDIR ROADPREDIR; ROADNAME ROADNAME; ROADTYPE ROADTYPE; ROADPOSTDIR ROADPOSTDIR; ALTROADNAME ALTROADNAME; ALTROADTYPE ALTROADTYPE; ALTROADNAME2 ALTROADNAME2; ALTROADTYPE2 ALTROADTYPE2; FROMLEFT FROMLEFT; TOLEFT TOLEFT; FROMRIGHT FROMRIGHT; TORIGHT TORIGHT",
     "text_fields": ["ROADPREDIR", "ROADNAME", "ROADTYPE", "ROADPOSTDIR", "ALTROADNAME", "ALTROADTYPE", "ALTROADNAME2", "ALTROADTYPE2"],
     "numeric_fields": ["FROMLEFT", "TOLEFT", "FROMRIGHT", "TORIGHT"]
   },
   "wasatch": {
     "aliases": ["wasatch"],
     "display_name": "Wasatch",
-    "default_match_fields": "FULLNAME FULLNAME",
-    "default_compare_fields": "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; FULLNAME FULLNAME; PREDIR PREDIR; AN_NAME AN_NAME",
+    "match_fields": "FULLNAME FULLNAME",
+    "compare_fields": "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; FULLNAME FULLNAME; PREDIR PREDIR; AN_NAME AN_NAME",
     "text_fields": ["FULLNAME", "PREDIR", "AN_NAME", "STATUS"],
     "numeric_fields": ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"],
     "uppercase_normalize_fields": ["FULLNAME"]
@@ -190,32 +190,32 @@
   "washington": {
     "aliases": ["washington"],
     "display_name": "Washington",
-    "default_match_fields": "NAME NAME",
-    "default_compare_fields": "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; SUFFIXDIR SUFFIXDIR; AN_NAME AN_NAME; AN_POSTDIR AN_POSTDIR; A1_NAME A1_NAME; A1_POSTTYPE A1_POSTTYPE; A2_NAME A2_NAME; A2_POSTTYPE A2_POSTTYPE",
+    "match_fields": "NAME NAME",
+    "compare_fields": "FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R; PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; SUFFIXDIR SUFFIXDIR; AN_NAME AN_NAME; AN_POSTDIR AN_POSTDIR; A1_NAME A1_NAME; A1_POSTTYPE A1_POSTTYPE; A2_NAME A2_NAME; A2_POSTTYPE A2_POSTTYPE",
     "text_fields": ["PREDIR", "NAME", "POSTTYPE", "SUFFIXDIR", "POSTDIR", "AN_NAME", "AN_POSTDIR", "A1_NAME", "A1_POSTTYPE", "A2_NAME", "A2_POSTTYPE"],
     "numeric_fields": ["FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"]
   },
   "wayne": {
     "aliases": ["wayne"],
     "display_name": "Wayne",
-    "default_match_fields": "S_NAME S_NAME",
-    "default_compare_fields": "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; ACS_ALIAS ACS_ALIAS; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
+    "match_fields": "S_NAME S_NAME",
+    "compare_fields": "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; ACS_ALIAS ACS_ALIAS; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
     "text_fields": ["PRE_DIR", "S_NAME", "S_TYPE", "SUF_DIR", "ACS_ALIAS", "ALIAS1", "ALIAS1_TYP"],
     "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
   },
   "weber": {
     "aliases": ["weber"],
     "display_name": "Weber",
-    "default_match_fields": "S_NAME S_NAME",
-    "default_compare_fields": "PREDIR PREDIR; S_NAME S_NAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ALIAS ALIAS; ACS_ALIAS ACS_ALIAS; SUFFIX_911 SUFFIX_911; LEFTFROM LEFTFROM; LEFTTO LEFTTO; RIGHTFROM RIGHTFROM; RIGHTTO RIGHTTO",
+    "match_fields": "S_NAME S_NAME",
+    "compare_fields": "PREDIR PREDIR; S_NAME S_NAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ALIAS ALIAS; ACS_ALIAS ACS_ALIAS; SUFFIX_911 SUFFIX_911; LEFTFROM LEFTFROM; LEFTTO LEFTTO; RIGHTFROM RIGHTFROM; RIGHTTO RIGHTTO",
     "text_fields": ["PREDIR", "S_NAME", "STREETTYPE", "SUFDIR", "ALIAS", "ACS_ALIAS", "SUFFIX_911"],
     "numeric_fields": ["LEFTFROM", "LEFTTO", "RIGHTFROM", "RIGHTTO"]
   },
   "davis": {
     "aliases": ["davis"],
     "display_name": "Davis",
-    "default_match_fields": "RoadName RoadName",
-    "default_compare_fields": "PrefixDirection PrefixDirection; RoadName RoadName; RoadNameType RoadNameType; PostDirection PostDirection; RoadAliasName RoadAliasName; LeftFrom LeftFrom; LeftTo LeftTo; RightFrom RightFrom; RightTo RightTo; MPH MPH",
+    "match_fields": "RoadName RoadName",
+    "compare_fields": "PrefixDirection PrefixDirection; RoadName RoadName; RoadNameType RoadNameType; PostDirection PostDirection; RoadAliasName RoadAliasName; LeftFrom LeftFrom; LeftTo LeftTo; RightFrom RightFrom; RightTo RightTo; MPH MPH",
     "text_fields": ["PrefixDirection", "RoadName", "RoadNameType", "PostDirection", "RoadAliasName"],
     "numeric_fields": ["LeftFrom", "LeftTo", "RightFrom", "RightTo", "MPH"],
     "required_fields": ["PrefixDirection", "RoadName", "RoadNameType", "PostDirection", "RoadAliasName", "LeftFrom", "LeftTo", "RightFrom", "RightTo", "MPH"]
