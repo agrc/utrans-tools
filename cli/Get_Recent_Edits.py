@@ -202,6 +202,16 @@ def ensure_required_fields(feature_class, required_fields, dataset_label):
         )
 
 
+def format_county_help(profiles=None):
+    active_profiles = profiles or PROFILES
+    profile_summaries = []
+    for county_key in sorted(active_profiles):
+        profile = active_profiles[county_key]
+        aliases = ", ".join(profile.aliases)
+        profile_summaries.append(f"{profile.display_name} ({aliases})")
+    return "; ".join(profile_summaries)
+
+
 def run_change_detection(
     profile,
     update_features,
@@ -291,6 +301,7 @@ def run_change_detection(
 
 
 def build_parser():
+    county_help = format_county_help()
     parser = argparse.ArgumentParser(
         description="Detect recent edits between county update and baseline roads.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -308,7 +319,10 @@ def build_parser():
     parser.add_argument(
         "--county",
         required=True,
-        help="Required. County key used to select the field mapping profile, such as Beaver or Davis.",
+        help=(
+            "Required. County key used to select the field mapping profile. "
+            f"Available county aliases: {county_help}."
+        ),
     )
 
     parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
