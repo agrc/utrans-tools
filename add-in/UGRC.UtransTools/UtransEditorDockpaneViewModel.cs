@@ -26,6 +26,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     private int? _remainingDfcRecords;
     private string _changeTypeMessage = "Please select a feature from DFC_RESULT layer";
     private string _statusMessage = "Select one DFC_RESULT feature to load it in the editor";
+    private string _updateDfcObjectIdErrorMessage = string.Empty;
     private string _utransDatabaseVersion = DefaultVersionMessage;
     private bool _codedValueOptionsLoaded;
 
@@ -54,14 +55,26 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
 
         try
         {
+            UpdateDfcObjectIdErrorMessage = string.Empty;
             var layers = await _layerValidationService.GetRequiredLayersAsync();
             await _utransEditService.RepairDfcIdentifierAsync(layers, ReviewState);
+            var updatedSelection = await _dfcSelectionService.LoadSelectedAsync(layers);
+            if (updatedSelection is null)
+            {
+                throw new InvalidOperationException(
+                    "Select one DFC_RESULT feature to refresh the target road segment."
+                );
+            }
+
+            ReviewState = new EditorReviewState(updatedSelection);
+            ChangeTypeMessage = updatedSelection.ChangeLabel;
             StatusMessage =
-                $"DFC record {ReviewState.Selection.ObjectId} now references UTRANS feature {ReviewState.Selection.UtransRoad?.ObjectId}.";
+                $"DFC record {ReviewState.Selection.ObjectId} now references the selected Roads_Edit feature.";
         }
         catch (Exception exception)
         {
             StatusMessage = exception.Message;
+            UpdateDfcObjectIdErrorMessage = exception.Message;
         }
     }
 
@@ -144,6 +157,21 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
             }
 
             _statusMessage = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string UpdateDfcObjectIdErrorMessage
+    {
+        get => _updateDfcObjectIdErrorMessage;
+        private set
+        {
+            if (_updateDfcObjectIdErrorMessage == value)
+            {
+                return;
+            }
+
+            _updateDfcObjectIdErrorMessage = value;
             OnPropertyChanged();
         }
     }

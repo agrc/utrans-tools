@@ -15,10 +15,11 @@ internal sealed class UtransEditService
     {
         return QueuedTask.Run(async () =>
         {
-            if (state.Selection.UtransRoad is null)
+            var selectedObjectIds = layers.UtransRoads.GetSelection().GetObjectIDs();
+            if (selectedObjectIds.Count != 1)
             {
                 throw new InvalidOperationException(
-                    "A UTRANS road must be loaded before repairing DFC_RESULT.BASE_FID."
+                    "Select exactly one feature in the Roads_Edit layer."
                 );
             }
 
@@ -33,7 +34,7 @@ internal sealed class UtransEditService
                 state.Selection.ObjectId,
                 new Dictionary<string, object?>
                 {
-                    ["BASE_FID"] = state.Selection.UtransRoad.ObjectId,
+                    ["BASE_FID"] = selectedObjectIds[0],
                     ["PREV__NOTES"] = string.IsNullOrWhiteSpace(previousNotes)
                         ? state.Selection.BaseFeatureId.ToString(
                             System.Globalization.CultureInfo.InvariantCulture
