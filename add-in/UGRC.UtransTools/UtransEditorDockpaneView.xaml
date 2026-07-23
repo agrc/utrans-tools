@@ -452,11 +452,19 @@
         </Grid.RowDefinitions>
 
         <GroupBox Header="Split a line OR wrong segment ID?">
-          <Button
-            Content="Update DFC ObjectID"
-            Command="{Binding UpdateDfcObjectIdCommand}"
-            Margin="3"
-          />
+          <StackPanel>
+            <Button
+              Content="Update DFC ObjectID"
+              Command="{Binding UpdateDfcObjectIdCommand}"
+              Margin="3"
+            />
+            <TextBlock
+              Text="{Binding UpdateDfcObjectIdErrorMessage}"
+              Foreground="Red"
+              TextWrapping="Wrap"
+              Margin="3,0,3,3"
+            />
+          </StackPanel>
         </GroupBox>
         <GroupBox Grid.Column="1" Header="CARTOCODE">
           <GroupBox.Style>
