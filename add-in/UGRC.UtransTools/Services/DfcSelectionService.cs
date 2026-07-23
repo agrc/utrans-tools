@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using ArcGIS.Core.Data;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using UGRC.UtransTools.Configuration;
 using UGRC.UtransTools.Models;
 
 namespace UGRC.UtransTools.Services;
@@ -32,7 +30,10 @@ internal sealed class DfcSelectionService
             var baseFeatureId = ReadInt64(dfc.Attributes, "BASE_FID");
             var changeType = dfc.GetText("CHANGE_TYPE");
             var countyRoad = ReadFeature(layers.CountyRoads.GetFeatureClass(), updateFeatureId);
-            var utransRoad = baseFeatureId == -1 ? null : ReadFeature(layers.UtransRoads.GetFeatureClass(), baseFeatureId);
+            var utransRoad =
+                baseFeatureId == -1
+                    ? null
+                    : ReadFeature(layers.UtransRoads.GetFeatureClass(), baseFeatureId);
 
             return new DfcSelectionSnapshot(
                 dfc.ObjectId,
@@ -42,7 +43,8 @@ internal sealed class DfcSelectionService
                 GetChangeLabel(changeType, baseFeatureId),
                 dfc,
                 countyRoad,
-                utransRoad);
+                utransRoad
+            );
         });
     }
 
@@ -65,10 +67,15 @@ internal sealed class DfcSelectionService
     private static RoadSnapshot ReadFeature(FeatureClass featureClass, long objectId)
     {
         var objectIdField = featureClass.GetDefinition().GetObjectIDField();
-        using var cursor = featureClass.Search(new QueryFilter { WhereClause = $"{objectIdField} = {objectId}" }, false);
+        using var cursor = featureClass.Search(
+            new QueryFilter { WhereClause = $"{objectIdField} = {objectId}" },
+            false
+        );
         if (!cursor.MoveNext())
         {
-            throw new InvalidOperationException($"Feature {objectId} was not found in {featureClass.GetDefinition().GetName()}.");
+            throw new InvalidOperationException(
+                $"Feature {objectId} was not found in {featureClass.GetDefinition().GetName()}."
+            );
         }
 
         using var feature = (Feature)cursor.Current;
@@ -91,15 +98,17 @@ internal sealed class DfcSelectionService
         return Convert.ToInt64(value, CultureInfo.InvariantCulture);
     }
 
-    internal static string GetChangeLabel(string changeType, long baseFeatureId) => changeType switch
-    {
-        "N" when baseFeatureId != -1 => "New ( Now in UTRANS - Please Verify Attributes and Click Save )",
-        "N" => "New",
-        "S" => "Spatial",
-        "A" => "Attribute",
-        "SA" => "Spatial and Attribute",
-        "NC" => "No Change",
-        "D" => "Delation",
-        _ => "Unknown"
-    };
+    internal static string GetChangeLabel(string changeType, long baseFeatureId) =>
+        changeType switch
+        {
+            "N" when baseFeatureId != -1 =>
+                "New ( Now in UTRANS - Please Verify Attributes and Click Save )",
+            "N" => "New",
+            "S" => "Spatial",
+            "A" => "Attribute",
+            "SA" => "Spatial and Attribute",
+            "NC" => "No Change",
+            "D" => "Delation",
+            _ => "Unknown",
+        };
 }

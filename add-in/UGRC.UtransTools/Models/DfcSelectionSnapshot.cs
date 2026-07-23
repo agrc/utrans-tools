@@ -8,7 +8,8 @@ internal sealed record DfcSelectionSnapshot(
     string ChangeLabel,
     RoadSnapshot DfcResult,
     RoadSnapshot CountyRoad,
-    RoadSnapshot? UtransRoad)
+    RoadSnapshot? UtransRoad
+)
 {
     internal bool IsNotYetCopiedNewRecord => ChangeType == "N" && BaseFeatureId == -1;
 }

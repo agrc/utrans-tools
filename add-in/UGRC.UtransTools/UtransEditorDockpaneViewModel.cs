@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
-using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Mapping.Events;
 using UGRC.UtransTools.Infrastructure;
 using UGRC.UtransTools.Models;
@@ -34,10 +32,14 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     internal UtransEditorDockpaneViewModel()
     {
         SaveCommand = new AsyncRelayCommand(SaveAsync);
-        NextCommand = new RelayCommand<object>(_ => StatusMessage = "Select the next DFC_RESULT feature to load it in the editor.");
+        NextCommand = new RelayCommand<object>(_ =>
+            StatusMessage = "Select the next DFC_RESULT feature to load it in the editor."
+        );
         UpdateDfcObjectIdCommand = new AsyncRelayCommand(RepairDfcIdentifierAsync);
         TransferAllCommand = new RelayCommand<EditorReviewState>(TransferAllValues);
-        ToggleFieldCommand = new RelayCommand<AttributeReviewField>(field => field.ToggleCountyValue());
+        ToggleFieldCommand = new RelayCommand<AttributeReviewField>(field =>
+            field.ToggleCountyValue()
+        );
         MapSelectionChangedEvent.Subscribe(OnMapSelectionChanged, false);
         ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged, false);
         QueueSelectionLoad();
@@ -54,7 +56,8 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
         {
             var layers = await _layerValidationService.GetRequiredLayersAsync();
             await _utransEditService.RepairDfcIdentifierAsync(layers, ReviewState);
-            StatusMessage = $"DFC record {ReviewState.Selection.ObjectId} now references UTRANS feature {ReviewState.Selection.UtransRoad?.ObjectId}.";
+            StatusMessage =
+                $"DFC record {ReviewState.Selection.ObjectId} now references UTRANS feature {ReviewState.Selection.UtransRoad?.ObjectId}.";
         }
         catch (Exception exception)
         {
@@ -155,7 +158,8 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     public IReadOnlyList<CodedValueOption> OnewayValues { get; private set; } = [];
     public IReadOnlyList<CodedValueOption> VerticalLevelValues { get; private set; } = [];
     public IReadOnlyList<string> SpeedLimitValues { get; } = CreateRange(5, 80, 5);
-    public IReadOnlyList<string> DfcStatusValues { get; } = new[] { "COMPLETED", "IGNORE", "REVISIT" };
+    public IReadOnlyList<string> DfcStatusValues { get; } =
+        new[] { "COMPLETED", "IGNORE", "REVISIT" };
 
     internal static void Show()
     {
@@ -218,7 +222,10 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
         try
         {
             var layers = await _layerValidationService.GetRequiredLayersAsync();
-            var versionTask = _layerValidationService.GetUtransDatabaseVersionAsync(layers, DefaultVersionMessage);
+            var versionTask = _layerValidationService.GetUtransDatabaseVersionAsync(
+                layers,
+                DefaultVersionMessage
+            );
             await LoadCodedValueOptionsAsync(layers);
             RemainingDfcRecords = await _dfcSelectionService.GetRemainingCountAsync(layers);
             UtransDatabaseVersion = await versionTask;

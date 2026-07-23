@@ -22,9 +22,14 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
     internal EditorReviewState()
     {
         Fields = new ObservableCollection<AttributeReviewField>(
-            UtransEditorConfiguration.EditableAddressFields
-                .Select(field => CreateEmptyField(field, true))
-                .Concat(UtransEditorConfiguration.EditableTextFields.Select(field => CreateEmptyField(field, false))));
+            UtransEditorConfiguration
+                .EditableAddressFields.Select(field => CreateEmptyField(field, true))
+                .Concat(
+                    UtransEditorConfiguration.EditableTextFields.Select(field =>
+                        CreateEmptyField(field, false)
+                    )
+                )
+        );
 
         static AttributeReviewField CreateEmptyField(string fieldName, bool isAddressRange) =>
             new(fieldName, string.Empty, string.Empty, isAddressRange);
@@ -35,29 +40,47 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
         Selection = selection;
         var utransRoad = selection.UtransRoad;
         Fields = new ObservableCollection<AttributeReviewField>(
-            UtransEditorConfiguration.EditableAddressFields
-                .Select(field => CreateField(field, true))
-                .Concat(UtransEditorConfiguration.EditableTextFields.Select(field => CreateField(field, false))));
+            UtransEditorConfiguration
+                .EditableAddressFields.Select(field => CreateField(field, true))
+                .Concat(
+                    UtransEditorConfiguration.EditableTextFields.Select(field =>
+                        CreateField(field, false)
+                    )
+                )
+        );
 
-        Cartocode = string.IsNullOrWhiteSpace(utransRoad?.GetText("CARTOCODE")) ? "11" : utransRoad!.GetText("CARTOCODE");
-        Oneway = string.IsNullOrWhiteSpace(utransRoad?.GetText("ONEWAY")) ? "0" : utransRoad!.GetText("ONEWAY");
-        VerticalLevel = string.IsNullOrWhiteSpace(utransRoad?.GetText("VERT_LEVEL")) ? "0" : utransRoad!.GetText("VERT_LEVEL");
+        Cartocode = string.IsNullOrWhiteSpace(utransRoad?.GetText("CARTOCODE"))
+            ? "11"
+            : utransRoad!.GetText("CARTOCODE");
+        Oneway = string.IsNullOrWhiteSpace(utransRoad?.GetText("ONEWAY"))
+            ? "0"
+            : utransRoad!.GetText("ONEWAY");
+        VerticalLevel = string.IsNullOrWhiteSpace(utransRoad?.GetText("VERT_LEVEL"))
+            ? "0"
+            : utransRoad!.GetText("VERT_LEVEL");
         SpeedLimit = utransRoad?.GetText("SPEED_LMT") ?? string.Empty;
         _initialCartocode = Cartocode;
         _initialOneway = Oneway;
         _initialVerticalLevel = VerticalLevel;
         _initialSpeedLimit = SpeedLimit;
-        DfcStatus = string.IsNullOrWhiteSpace(selection.DfcResult.GetText(UtransEditorConfiguration.DfcDispositionField))
+        DfcStatus = string.IsNullOrWhiteSpace(
+            selection.DfcResult.GetText(UtransEditorConfiguration.DfcDispositionField)
+        )
             ? "COMPLETED"
             : selection.DfcResult.GetText(UtransEditorConfiguration.DfcDispositionField);
         IsUdotRoad = !string.IsNullOrWhiteSpace(utransRoad?.GetText("DOT_RTNAME"));
-        IsAgrcAdjusted = utransRoad?.GetText("UTRANS_NOTES").Contains("AGRC ADJUSTED", System.StringComparison.OrdinalIgnoreCase) == true;
+        IsAgrcAdjusted =
+            utransRoad
+                ?.GetText("UTRANS_NOTES")
+                .Contains("AGRC ADJUSTED", System.StringComparison.OrdinalIgnoreCase) == true;
 
-        AttributeReviewField CreateField(string fieldName, bool isAddressRange) => new(
-            fieldName,
-            selection.CountyRoad.GetText(fieldName),
-            utransRoad?.GetText(fieldName) ?? string.Empty,
-            isAddressRange);
+        AttributeReviewField CreateField(string fieldName, bool isAddressRange) =>
+            new(
+                fieldName,
+                selection.CountyRoad.GetText(fieldName),
+                utransRoad?.GetText(fieldName) ?? string.Empty,
+                isAddressRange
+            );
     }
 
     internal DfcSelectionSnapshot? Selection { get; }
@@ -67,7 +90,8 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
     public long? CountyRecordObjectId => Selection?.CountyRoad.ObjectId;
     public long? UtransRecordObjectId => Selection?.BaseFeatureId;
     public ObservableCollection<AttributeReviewField> Fields { get; }
-    public AttributeReviewField this[string fieldName] => Fields.First(field => field.FieldName == fieldName);
+    public AttributeReviewField this[string fieldName] =>
+        Fields.First(field => field.FieldName == fieldName);
 
     public AttributeReviewField FromaddrL => this["FROMADDR_L"];
     public AttributeReviewField ToaddrL => this["TOADDR_L"];
@@ -112,10 +136,13 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
         set => SetTrackedValue(ref _speedLimit, value, nameof(IsSpeedLimitChanged));
     }
 
-    public bool IsCartocodeChanged => !string.Equals(Cartocode, _initialCartocode, StringComparison.Ordinal);
+    public bool IsCartocodeChanged =>
+        !string.Equals(Cartocode, _initialCartocode, StringComparison.Ordinal);
     public bool IsOnewayChanged => !string.Equals(Oneway, _initialOneway, StringComparison.Ordinal);
-    public bool IsVerticalLevelChanged => !string.Equals(VerticalLevel, _initialVerticalLevel, StringComparison.Ordinal);
-    public bool IsSpeedLimitChanged => !string.Equals(SpeedLimit, _initialSpeedLimit, StringComparison.Ordinal);
+    public bool IsVerticalLevelChanged =>
+        !string.Equals(VerticalLevel, _initialVerticalLevel, StringComparison.Ordinal);
+    public bool IsSpeedLimitChanged =>
+        !string.Equals(SpeedLimit, _initialSpeedLimit, StringComparison.Ordinal);
     public string DfcStatus { get; set; } = string.Empty;
     public bool IsUdotRoad { get; }
     public bool IsAgrcAdjusted { get; }
@@ -125,15 +152,23 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
         var values = new Dictionary<string, object?>();
         foreach (var field in Fields)
         {
-            values[field.FieldName] = field.IsAddressRange && string.IsNullOrWhiteSpace(field.UtransValue)
-                ? 0d
-                : field.UtransValue.Trim().Replace("'", string.Empty, System.StringComparison.Ordinal);
+            values[field.FieldName] =
+                field.IsAddressRange && string.IsNullOrWhiteSpace(field.UtransValue)
+                    ? 0d
+                    : field
+                        .UtransValue.Trim()
+                        .Replace("'", string.Empty, System.StringComparison.Ordinal);
         }
 
         return values;
     }
 
-    private void SetTrackedValue(ref string field, string value, string changedPropertyName, [CallerMemberName] string? propertyName = null)
+    private void SetTrackedValue(
+        ref string field,
+        string value,
+        string changedPropertyName,
+        [CallerMemberName] string? propertyName = null
+    )
     {
         if (field == value)
         {
