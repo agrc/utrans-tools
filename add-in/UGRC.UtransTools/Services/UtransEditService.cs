@@ -17,26 +17,36 @@ internal sealed class UtransEditService
         {
             if (state.Selection.UtransRoad is null)
             {
-                throw new InvalidOperationException("A UTRANS road must be loaded before repairing DFC_RESULT.BASE_FID.");
+                throw new InvalidOperationException(
+                    "A UTRANS road must be loaded before repairing DFC_RESULT.BASE_FID."
+                );
             }
 
             var previousNotes = state.Selection.DfcResult.GetText("PREV__NOTES");
             var operation = new EditOperation
             {
                 Name = "Repair DFC_RESULT UTRANS identifier",
-                SelectModifiedFeatures = false
+                SelectModifiedFeatures = false,
             };
-            operation.Modify(layers.DfcResults, state.Selection.ObjectId, new Dictionary<string, object?>
-            {
-                ["BASE_FID"] = state.Selection.UtransRoad.ObjectId,
-                ["PREV__NOTES"] = string.IsNullOrWhiteSpace(previousNotes)
-                    ? state.Selection.BaseFeatureId.ToString(System.Globalization.CultureInfo.InvariantCulture)
-                    : $"{previousNotes}; {state.Selection.BaseFeatureId}"
-            });
+            operation.Modify(
+                layers.DfcResults,
+                state.Selection.ObjectId,
+                new Dictionary<string, object?>
+                {
+                    ["BASE_FID"] = state.Selection.UtransRoad.ObjectId,
+                    ["PREV__NOTES"] = string.IsNullOrWhiteSpace(previousNotes)
+                        ? state.Selection.BaseFeatureId.ToString(
+                            System.Globalization.CultureInfo.InvariantCulture
+                        )
+                        : $"{previousNotes}; {state.Selection.BaseFeatureId}",
+                }
+            );
 
             if (!await operation.ExecuteAsync())
             {
-                throw new InvalidOperationException(operation.ErrorMessage ?? "The DFC identifier repair failed.");
+                throw new InvalidOperationException(
+                    operation.ErrorMessage ?? "The DFC identifier repair failed."
+                );
             }
         });
     }
@@ -49,39 +59,61 @@ internal sealed class UtransEditService
             var operation = new EditOperation
             {
                 Name = "Save UTRANS editor changes",
-                SelectModifiedFeatures = false
+                SelectModifiedFeatures = false,
             };
 
-            var shouldWriteRoad = string.Equals(state.DfcStatus, "COMPLETED", System.StringComparison.OrdinalIgnoreCase);
+            var shouldWriteRoad = string.Equals(
+                state.DfcStatus,
+                "COMPLETED",
+                System.StringComparison.OrdinalIgnoreCase
+            );
 
             if (shouldWriteRoad && state.Selection.UtransRoad is null)
             {
-                var newObjectId = operation.Create(layers.UtransRoads, state.Selection.CountyRoad.Shape, values);
-                operation.Modify(layers.DfcResults, state.Selection.ObjectId, new Dictionary<string, object?>
-                {
-                    ["BASE_FID"] = newObjectId,
-                    [UtransEditorConfiguration.DfcDispositionField] = state.DfcStatus
-                });
+                var newObjectId = operation.Create(
+                    layers.UtransRoads,
+                    state.Selection.CountyRoad.Shape,
+                    values
+                );
+                operation.Modify(
+                    layers.DfcResults,
+                    state.Selection.ObjectId,
+                    new Dictionary<string, object?>
+                    {
+                        ["BASE_FID"] = newObjectId,
+                        [UtransEditorConfiguration.DfcDispositionField] = state.DfcStatus,
+                    }
+                );
             }
             else if (shouldWriteRoad)
             {
                 operation.Modify(layers.UtransRoads, state.Selection.BaseFeatureId, values);
-                operation.Modify(layers.DfcResults, state.Selection.ObjectId, new Dictionary<string, object?>
-                {
-                    [UtransEditorConfiguration.DfcDispositionField] = state.DfcStatus
-                });
+                operation.Modify(
+                    layers.DfcResults,
+                    state.Selection.ObjectId,
+                    new Dictionary<string, object?>
+                    {
+                        [UtransEditorConfiguration.DfcDispositionField] = state.DfcStatus,
+                    }
+                );
             }
             else
             {
-                operation.Modify(layers.DfcResults, state.Selection.ObjectId, new Dictionary<string, object?>
-                {
-                    [UtransEditorConfiguration.DfcDispositionField] = state.DfcStatus
-                });
+                operation.Modify(
+                    layers.DfcResults,
+                    state.Selection.ObjectId,
+                    new Dictionary<string, object?>
+                    {
+                        [UtransEditorConfiguration.DfcDispositionField] = state.DfcStatus,
+                    }
+                );
             }
 
             if (!await operation.ExecuteAsync())
             {
-                throw new InvalidOperationException(operation.ErrorMessage ?? "The UTRANS edit operation failed.");
+                throw new InvalidOperationException(
+                    operation.ErrorMessage ?? "The UTRANS edit operation failed."
+                );
             }
         });
     }
@@ -112,7 +144,7 @@ internal sealed class UtransEditService
             ["ONEWAY"] = state.Oneway,
             ["VERT_LEVEL"] = state.VerticalLevel,
             ["SPEED_LMT"] = string.IsNullOrWhiteSpace(state.SpeedLimit) ? null : state.SpeedLimit,
-            ["FULLNAME"] = BuildFullName(values)
+            ["FULLNAME"] = BuildFullName(values),
         };
 
         return values;
@@ -121,10 +153,15 @@ internal sealed class UtransEditService
     private static string BuildFullName(IReadOnlyDictionary<string, object?> values)
     {
         var name = GetText(values, "NAME");
-        var suffix = name.All(char.IsDigit) ? GetText(values, "POSTDIR") : GetText(values, "POSTTYPE");
+        var suffix = name.All(char.IsDigit)
+            ? GetText(values, "POSTDIR")
+            : GetText(values, "POSTTYPE");
         return string.IsNullOrWhiteSpace(suffix) ? name : $"{name} {suffix}".Trim();
     }
 
     private static string GetText(IReadOnlyDictionary<string, object?> values, string fieldName) =>
-        values.TryGetValue(fieldName, out var value) ? value?.ToString()?.Replace("'", string.Empty, System.StringComparison.Ordinal) ?? string.Empty : string.Empty;
+        values.TryGetValue(fieldName, out var value)
+            ? value?.ToString()?.Replace("'", string.Empty, System.StringComparison.Ordinal)
+                ?? string.Empty
+            : string.Empty;
 }

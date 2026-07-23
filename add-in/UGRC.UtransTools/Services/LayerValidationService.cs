@@ -17,15 +17,24 @@ internal sealed class LayerValidationService
     {
         return QueuedTask.Run(() =>
         {
-            var map = MapView.Active?.Map ?? throw new InvalidOperationException("Open a map before using the UTRANS editor.");
+            var map =
+                MapView.Active?.Map
+                ?? throw new InvalidOperationException(
+                    "Open a map before using the UTRANS editor."
+                );
             var layers = map.GetLayersAsFlattenedList().OfType<FeatureLayer>().ToList();
             var missingAliases = new List<string>();
 
             FeatureLayer GetLayer(string name)
             {
                 var layer = layers.FirstOrDefault(candidate =>
-                    string.Equals(candidate.Name, name, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(candidate.GetFeatureClass().GetDefinition().GetAliasName(), name, StringComparison.OrdinalIgnoreCase));
+                    string.Equals(candidate.Name, name, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(
+                        candidate.GetFeatureClass().GetDefinition().GetAliasName(),
+                        name,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
 
                 if (layer is null)
                 {
@@ -45,7 +54,9 @@ internal sealed class LayerValidationService
 
             if (missingAliases.Count > 0)
             {
-                throw new InvalidOperationException($"The active map is missing required layers: {string.Join(", ", missingAliases)}.");
+                throw new InvalidOperationException(
+                    $"The active map is missing required layers: {string.Join(", ", missingAliases)}."
+                );
             }
 
             return new EditorLayerContext(
@@ -55,29 +66,45 @@ internal sealed class LayerValidationService
                 addressSystems,
                 zipCodes,
                 counties,
-                municipalities);
+                municipalities
+            );
         });
     }
 
-    internal Task<IReadOnlyDictionary<string, IReadOnlyList<CodedValueOption>>> GetCodedValueOptionsAsync(EditorLayerContext layers)
+    internal Task<
+        IReadOnlyDictionary<string, IReadOnlyList<CodedValueOption>>
+    > GetCodedValueOptionsAsync(EditorLayerContext layers)
     {
         return QueuedTask.Run(() =>
         {
             var fields = layers.UtransRoads.GetFeatureClass().GetDefinition().GetFields();
-            var options = new Dictionary<string, IReadOnlyList<CodedValueOption>>(StringComparer.OrdinalIgnoreCase);
+            var options = new Dictionary<string, IReadOnlyList<CodedValueOption>>(
+                StringComparer.OrdinalIgnoreCase
+            );
 
             foreach (var fieldName in new[] { "CARTOCODE", "ONEWAY", "VERT_LEVEL" })
             {
-                var field = fields.FirstOrDefault(candidate => string.Equals(candidate.Name, fieldName, StringComparison.OrdinalIgnoreCase))
-                    ?? throw new InvalidOperationException($"{UtransEditorConfiguration.UtransRoadsAlias}.{fieldName} was not found.");
+                var field =
+                    fields.FirstOrDefault(candidate =>
+                        string.Equals(candidate.Name, fieldName, StringComparison.OrdinalIgnoreCase)
+                    )
+                    ?? throw new InvalidOperationException(
+                        $"{UtransEditorConfiguration.UtransRoadsAlias}.{fieldName} was not found."
+                    );
                 using var domain = field.GetDomain();
                 if (domain is not CodedValueDomain codedValueDomain)
                 {
-                    throw new InvalidOperationException($"{UtransEditorConfiguration.UtransRoadsAlias}.{fieldName} must use a coded-value domain.");
+                    throw new InvalidOperationException(
+                        $"{UtransEditorConfiguration.UtransRoadsAlias}.{fieldName} must use a coded-value domain."
+                    );
                 }
 
-                options[fieldName] = codedValueDomain.GetCodedValuePairs()
-                    .Select(pair => new CodedValueOption(Convert.ToString(pair.Key, CultureInfo.InvariantCulture) ?? string.Empty, pair.Value))
+                options[fieldName] = codedValueDomain
+                    .GetCodedValuePairs()
+                    .Select(pair => new CodedValueOption(
+                        Convert.ToString(pair.Key, CultureInfo.InvariantCulture) ?? string.Empty,
+                        pair.Value
+                    ))
                     .ToList();
             }
 
@@ -85,13 +112,17 @@ internal sealed class LayerValidationService
         });
     }
 
-    internal Task<string> GetUtransDatabaseVersionAsync(EditorLayerContext layers, string fallbackVersion)
+    internal Task<string> GetUtransDatabaseVersionAsync(
+        EditorLayerContext layers,
+        string fallbackVersion
+    )
     {
         return QueuedTask.Run(() =>
         {
             try
             {
-                using var geodatabase = (Geodatabase)layers.UtransRoads.GetFeatureClass().GetDatastore();
+                using var geodatabase = (Geodatabase)
+                    layers.UtransRoads.GetFeatureClass().GetDatastore();
                 using var versionManager = geodatabase.GetVersionManager();
                 using var version = versionManager.GetCurrentVersion();
                 var versionName = version.GetName();

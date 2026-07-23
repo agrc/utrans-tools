@@ -12,29 +12,61 @@ internal static class UtransEditorConfiguration
     internal const string CountiesAlias = "SGID.BOUNDARIES.Counties";
     internal const string MunicipalitiesAlias = "SGID.BOUNDARIES.Municipalities";
     internal const string DfcDispositionField = "CURRENT_NOTES";
-    internal const string AttributeReferenceUrl = "https://docs.google.com/document/d/1h7FTFUEXWobA8fvctgxKLaxr6LslnwVPnGVgPlrHnz0/edit";
-    internal const string DfcDefinitionQueryUrl = "https://www.google.com/search?q=DFC_RESULT+definition+query";
+    internal const string AttributeReferenceUrl =
+        "https://docs.google.com/document/d/1h7FTFUEXWobA8fvctgxKLaxr6LslnwVPnGVgPlrHnz0/edit";
+    internal const string DfcDefinitionQueryUrl =
+        "https://www.google.com/search?q=DFC_RESULT+definition+query";
 
     internal static readonly string[] EditableTextFields =
     {
-        "PREDIR", "NAME", "POSTTYPE", "POSTDIR",
-        "AN_NAME", "AN_POSTDIR",
-        "A1_PREDIR", "A1_NAME", "A1_POSTTYPE", "A1_POSTDIR",
-        "A2_PREDIR", "A2_NAME", "A2_POSTTYPE", "A2_POSTDIR"
+        "PREDIR",
+        "NAME",
+        "POSTTYPE",
+        "POSTDIR",
+        "AN_NAME",
+        "AN_POSTDIR",
+        "A1_PREDIR",
+        "A1_NAME",
+        "A1_POSTTYPE",
+        "A1_POSTDIR",
+        "A2_PREDIR",
+        "A2_NAME",
+        "A2_POSTTYPE",
+        "A2_POSTDIR",
     };
 
     internal static readonly string[] EditableAddressFields =
     {
-        "FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R"
+        "FROMADDR_L",
+        "TOADDR_L",
+        "FROMADDR_R",
+        "TOADDR_R",
     };
 
     internal static readonly string[] CommonRoadFields =
     {
-        "FROMADDR_L", "TOADDR_L", "FROMADDR_R", "TOADDR_R",
-        "PREDIR", "NAME", "POSTTYPE", "POSTDIR", "AN_NAME", "AN_POSTDIR",
-        "A1_PREDIR", "A1_NAME", "A1_POSTTYPE", "A1_POSTDIR",
-        "A2_PREDIR", "A2_NAME", "A2_POSTTYPE", "A2_POSTDIR",
-        "CARTOCODE", "ONEWAY", "VERT_LEVEL", "SPEED_LMT"
+        "FROMADDR_L",
+        "TOADDR_L",
+        "FROMADDR_R",
+        "TOADDR_R",
+        "PREDIR",
+        "NAME",
+        "POSTTYPE",
+        "POSTDIR",
+        "AN_NAME",
+        "AN_POSTDIR",
+        "A1_PREDIR",
+        "A1_NAME",
+        "A1_POSTTYPE",
+        "A1_POSTDIR",
+        "A2_PREDIR",
+        "A2_NAME",
+        "A2_POSTTYPE",
+        "A2_POSTDIR",
+        "CARTOCODE",
+        "ONEWAY",
+        "VERT_LEVEL",
+        "SPEED_LMT",
     };
 
     internal static readonly IReadOnlyDictionary<string, string> CountyOwnershipNames =
@@ -68,6 +100,6 @@ internal static class UtransEditorConfiguration
             ["051"] = "Wasatch",
             ["053"] = "Washington",
             ["055"] = "Wayne",
-            ["057"] = "Weber"
+            ["057"] = "Weber",
         };
 }

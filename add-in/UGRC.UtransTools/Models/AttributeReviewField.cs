@@ -9,7 +9,12 @@ public sealed class AttributeReviewField : INotifyPropertyChanged
     private string _utransValue;
     private bool _isUsingCountyValue;
 
-    internal AttributeReviewField(string fieldName, string countyValue, string utransValue, bool isAddressRange)
+    internal AttributeReviewField(
+        string fieldName,
+        string countyValue,
+        string utransValue,
+        bool isAddressRange
+    )
     {
         FieldName = fieldName;
         CountyValue = countyValue;
@@ -22,8 +27,10 @@ public sealed class AttributeReviewField : INotifyPropertyChanged
     public string CountyValue { get; }
     public string OriginalUtransValue { get; }
     public bool IsAddressRange { get; }
-    public bool IsDifferent => !string.Equals(CountyValue, OriginalUtransValue, System.StringComparison.OrdinalIgnoreCase);
-    public bool IsEdited => !string.Equals(UtransValue, OriginalUtransValue, System.StringComparison.Ordinal);
+    public bool IsDifferent =>
+        !string.Equals(CountyValue, OriginalUtransValue, System.StringComparison.OrdinalIgnoreCase);
+    public bool IsEdited =>
+        !string.Equals(UtransValue, OriginalUtransValue, System.StringComparison.Ordinal);
     public bool IsUsingCountyValue => _isUsingCountyValue;
 
     public string UtransValue
