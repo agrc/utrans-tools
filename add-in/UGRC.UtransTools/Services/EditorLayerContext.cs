@@ -9,4 +9,5 @@ internal sealed record EditorLayerContext(
     FeatureLayer AddressSystems,
     FeatureLayer ZipCodes,
     FeatureLayer Counties,
-    FeatureLayer Municipalities);
+    FeatureLayer Municipalities
+);

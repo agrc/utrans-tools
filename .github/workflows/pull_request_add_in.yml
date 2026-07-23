@@ -1,0 +1,32 @@
+name: Pull Request Events (Add-in)
+
+on:
+  pull_request:
+    paths:
+      - "add-in/**/*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v7
+
+      - name: 🥅 Setup .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: "8.0"
+
+      - name: 🧰 Restore .NET local tools
+        working-directory: add-in/UGRC.UtransTools
+        run: dotnet tool restore
+
+      - name: 🔪 Check CSharpier formatting
+        working-directory: add-in/UGRC.UtransTools
+        run: dotnet csharpier --check .
