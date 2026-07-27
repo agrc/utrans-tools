@@ -10,7 +10,7 @@ Each key in the JSON object is a county identifier (e.g. `"grand"`, `"davis"`). 
 
 ### `aliases`
 
-**Type:** `string[]` | **Required**
+**Type:** `string[]` | **Optional** — defaults to `[]`
 
 A list of strings that the `--county` argument will accept to select this profile. The profile key itself is always implicitly included as an alias.
 
@@ -38,7 +38,7 @@ When both datasets use the same schema, the field name is repeated. If the schem
 
 ### `compare_fields`
 
-**Type:** `string` | **Required**
+**Type:** `string` | **Optional in profile**
 
 A semicolon-delimited list of `update_field base_field` pairs passed to the `compare_fields` parameter of `DetectFeatureChanges`. These are the attribute fields checked for changes after two segments are matched.
 
@@ -50,11 +50,13 @@ A segment is included in the output recents layer if any of these fields differ 
 
 Fields that don't exist in one or both datasets are silently dropped before the tool runs, with a warning logged.
 
+If omitted from the profile, it must be provided via `--compare-fields` at runtime.
+
 ---
 
 ### `text_fields`
 
-**Type:** `string[]` | **Required**
+**Type:** `string[]` | **Optional** — defaults to `[]`
 
 Fields that will be text-normalized before change detection runs. Normalization:
 
@@ -72,7 +74,7 @@ This prevents false positives caused by whitespace or null inconsistencies betwe
 
 ### `numeric_fields`
 
-**Type:** `string[]` | **Required**
+**Type:** `string[]` | **Optional** — defaults to `[]`
 
 Fields that will be numeric-normalized before change detection runs. Normalization:
 
