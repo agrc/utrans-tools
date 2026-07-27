@@ -18,14 +18,6 @@ A list of strings that the `--county` argument will accept to select this profil
 "aliases": ["boxelder", "box elder"]
 ```
 
-### `display_name`
-
-**Type:** `string` | **Required**
-
-Human-readable county name used in log output during a run.
-
----
-
 ### `match_fields`
 
 **Type:** `string` | **Required**
@@ -147,7 +139,6 @@ Name of the final output feature class containing only roads that changed (i.e. 
 ```json
 "example": {
   "aliases": ["example"],
-  "display_name": "Example County",
   "match_fields": "STREETNAME STREETNAME",
   "compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
   "text_fields": ["PREDIR", "STREETNAME", "STREETTYPE"],
