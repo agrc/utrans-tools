@@ -21,6 +21,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     private static readonly EditorReviewState EmptyReviewState = new();
     private readonly LayerValidationService _layerValidationService = new();
     private readonly DfcSelectionService _dfcSelectionService = new();
+    private readonly DfcNavigationService _dfcNavigationService = new();
     private readonly UtransEditService _utransEditService = new();
     private EditorReviewState? _reviewState;
     private int? _remainingDfcRecords;
@@ -33,9 +34,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     internal UtransEditorDockpaneViewModel()
     {
         SaveCommand = new AsyncRelayCommand(SaveAsync);
-        NextCommand = new RelayCommand<object>(_ =>
-            StatusMessage = "Select the next DFC_RESULT feature to load it in the editor."
-        );
+        NextCommand = new AsyncRelayCommand(SelectNextDfcAsync);
         UpdateDfcObjectIdCommand = new AsyncRelayCommand(RepairDfcIdentifierAsync);
         TransferAllCommand = new RelayCommand<EditorReviewState>(TransferAllValues);
         ToggleFieldCommand = new RelayCommand<AttributeReviewField>(field =>
@@ -206,6 +205,26 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
             var layers = await _layerValidationService.GetRequiredLayersAsync();
             await _utransEditService.SaveAsync(layers, ReviewState);
             StatusMessage = $"Saved DFC record {ReviewState.Selection.ObjectId}.";
+        }
+        catch (Exception exception)
+        {
+            StatusMessage = exception.Message;
+        }
+    }
+
+    private async Task SelectNextDfcAsync()
+    {
+        try
+        {
+            var layers = await _layerValidationService.GetRequiredLayersAsync();
+            var nextObjectId = await _dfcNavigationService.SelectNextAndZoomAsync(layers);
+            if (nextObjectId is null)
+            {
+                StatusMessage = "There are no more DFC_RESULT features to review.";
+                return;
+            }
+
+            await LoadSelectedDfcAsync();
         }
         catch (Exception exception)
         {
