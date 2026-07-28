@@ -16,12 +16,44 @@ from pathlib import Path
 import arcpy
 
 
+NUMERIC_TYPES = {"SmallInteger", "Integer", "Single", "Double", "BigInteger"}
+
+
+def _detect_field_groups(feature_class: str, compare_fields: str | None = None) -> tuple[list[str], list[str]]:
+    """Detect text and numeric field groups from a feature class.
+
+    Args:
+        feature_class: Path to the feature class.
+        compare_fields: Optional semicolon-delimited field mapping string to filter detected fields.
+                       Only fields appearing in this mapping will be returned.
+
+    Returns:
+        Tuple of (text_field_names, numeric_field_names).
+    """
+    desc = arcpy.da.Describe(feature_class)
+    fields = desc["fields"]
+
+    text_fields = [f.name for f in fields if f.type == "String"]
+    numeric_fields = [f.name for f in fields if f.type in NUMERIC_TYPES]
+
+    # Filter to only fields in compare_fields if provided
+    if compare_fields:
+        compare_pairs = parse_field_pairs(compare_fields)
+        compare_field_names = set()
+        for field1, field2 in compare_pairs:
+            compare_field_names.add(field1.lower())
+            compare_field_names.add(field2.lower())
+        
+        text_fields = [f for f in text_fields if f.lower() in compare_field_names]
+        numeric_fields = [f for f in numeric_fields if f.lower() in compare_field_names]
+
+    return text_fields, numeric_fields
+
+
 @dataclass
 class CountyProfile:
     match_fields: str = ""
     compare_fields: str | None = None
-    text_fields: list[str] = field(default_factory=list)
-    numeric_fields: list[str] = field(default_factory=list)
     uppercase_normalize_fields: set[str] = field(default_factory=set)
     dfc_output_name: str = "DFC_CountyToCounty"
     stats_table_name: str = "stats_county_to_county"
@@ -39,8 +71,6 @@ def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
         profiles[key] = CountyProfile(
             match_fields=data["match_fields"],
             compare_fields=data.get("compare_fields"),
-            text_fields=data.get("text_fields", []),
-            numeric_fields=data.get("numeric_fields", []),
             uppercase_normalize_fields=set(data.get("uppercase_normalize_fields", [])),
             dfc_output_name=data.get("dfc_output_name", "DFC_CountyToCounty"),
             stats_table_name=data.get("stats_table_name", "stats_county_to_county"),
@@ -131,8 +161,8 @@ def _normalize_text_value(value, force_uppercase):
 
 def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=None):
     field_map = get_field_name_map(feature_class)
-    text_source = text_fields if text_fields is not None else profile.text_fields
-    numeric_source = numeric_fields if numeric_fields is not None else profile.numeric_fields
+    text_source = text_fields if text_fields is not None else []
+    numeric_source = numeric_fields if numeric_fields is not None else []
 
     text_existing = [field_map[name.lower()] for name in text_source if name.lower() in field_map]
     numeric_existing = [field_map[name.lower()] for name in numeric_source if name.lower() in field_map]
@@ -223,9 +253,6 @@ def run_change_detection(
     stats_table = os.path.join(output_workspace, stats_table_name)
     out_feature = os.path.join(output_workspace, recents_name)
 
-    active_text_fields = profile.text_fields
-    active_numeric_fields = profile.numeric_fields
-
     if profile.required_fields:
         ensure_required_fields(update_features, profile.required_fields, "Update features")
         ensure_required_fields(base_features, profile.required_fields, "Base features")
@@ -250,14 +277,20 @@ def run_change_detection(
     resolved_compare_fields = "; ".join([f"{update_field} {base_field}" for update_field, base_field in resolved_compare_pairs])
 
     log("Normalizing blank and null-like values before change detection")
-    for dataset_label, feature_class in [("Update features", update_features), ("Base features", base_features)]:
+    text_fields_update, numeric_fields_update = _detect_field_groups(update_features, resolved_compare_fields)
+    text_fields_base, numeric_fields_base = _detect_field_groups(base_features, resolved_compare_fields)
+
+    for dataset_label, feature_class, text_fields, numeric_fields in [
+        ("Update features", update_features, text_fields_update, numeric_fields_update),
+        ("Base features", base_features, text_fields_base, numeric_fields_base),
+    ]:
         dataset_name = arcpy.Describe(feature_class).name
         log(f"Normalizing {dataset_label} ({dataset_name}): blank text values to empty strings, blank numeric values to 0")
         normalize_fields(
             feature_class,
             profile,
-            text_fields=active_text_fields,
-            numeric_fields=active_numeric_fields,
+            text_fields=text_fields,
+            numeric_fields=numeric_fields,
         )
 
     log("Running DetectFeatureChanges")
