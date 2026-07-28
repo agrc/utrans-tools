@@ -1,4 +1,14 @@
 {
   "python-envs.defaultEnvManager": "ms-python.python:conda",
-  "cSpell.words": ["daml", "MVVM", "UGRC", "UTRANS"]
+  "cSpell.words": [
+    "daml",
+    "Geospatial",
+    "MVVM",
+    "pytest",
+    "pythonpath",
+    "testpaths",
+    "UGRC",
+    "UTRANS",
+    "utrans"
+  ]
 }

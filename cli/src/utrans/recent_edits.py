@@ -312,9 +312,10 @@ def run_change_detection(
     log("Finished change detection and recents export at: " + time.strftime("%c"))
 
 
-def build_parser():
+def build_parser(prog: str | None = None):
     county_help = format_county_help()
     parser = argparse.ArgumentParser(
+        prog=prog,
         description="Detect recent edits between county update and baseline roads.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
@@ -368,9 +369,9 @@ def build_parser():
     return parser
 
 
-def main(argv=None):
+def main(argv=None, *, prog: str | None = None):
     start_time = time.time()
-    parser = build_parser()
+    parser = build_parser(prog=prog)
     args = parser.parse_args(argv)
 
     try:
@@ -404,7 +405,7 @@ def main(argv=None):
         return 2
 
     elapsed = time.time() - start_time
-    log("Time elapsed: {:.2f}s".format(elapsed))
+    log(f"Time elapsed: {elapsed:.2f}s")
     return 0
 
 

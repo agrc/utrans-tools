@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling", "pathspec>=1.1.1"]
+build-backend = "hatchling.build"
+
+[project]
+name = "utrans-tools"
+version = "0.1.0"
+description = "Command-line tools for working with UTrans data."
+readme = "README.md"
+requires-python = ">=3.13"
+license = { file = "LICENSE" }
+authors = [{ name = "Utah Geospatial Resource Center" }]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+]
+
+[project.urls]
+Homepage = "https://github.com/agrc/utrans-tools/cli"
+Repository = "https://github.com/agrc/utrans-tools"
+
+[project.scripts]
+utrans = "utrans.cli:main"
+
+[project.optional-dependencies]
+dev = ["build>=1.2", "pytest>=8.0", "ruff>=0.6"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/utrans"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
