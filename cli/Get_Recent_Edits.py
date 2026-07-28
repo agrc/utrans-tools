@@ -10,28 +10,47 @@ import argparse
 import json
 import os
 import time
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import arcpy
 
 
-def _load_profiles(path: Path | None = None) -> dict[str, dict]:
+@dataclass
+class CountyProfile:
+    aliases: list[str] = field(default_factory=list)
+    match_fields: str = ""
+    compare_fields: str | None = None
+    text_fields: list[str] = field(default_factory=list)
+    numeric_fields: list[str] = field(default_factory=list)
+    uppercase_normalize_fields: set[str] = field(default_factory=set)
+    dfc_output_name: str = "DFC_CountyToCounty"
+    stats_table_name: str = "stats_county_to_county"
+    recents_name: str = "RoadCenterline_Recents"
+    required_fields: list[str] = field(default_factory=list)
+
+
+def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
     profiles_path = path or Path(__file__).parent / "profiles.json"
     with profiles_path.open(encoding="utf-8") as f:
         raw = json.load(f)
 
-    for data in raw.values():
-        data.setdefault("aliases", [])
-        data.setdefault("compare_fields", None)
-        data.setdefault("text_fields", [])
-        data.setdefault("numeric_fields", [])
-        data["uppercase_normalize_fields"] = set(data.get("uppercase_normalize_fields", []))
-        data.setdefault("dfc_output_name", "DFC_CountyToCounty")
-        data.setdefault("stats_table_name", "stats_county_to_county")
-        data.setdefault("recents_name", "RoadCenterline_Recents")
-        data.setdefault("required_fields", [])
+    profiles = {}
+    for key, data in raw.items():
+        profiles[key] = CountyProfile(
+            aliases=data.get("aliases", []),
+            match_fields=data["match_fields"],
+            compare_fields=data.get("compare_fields"),
+            text_fields=data.get("text_fields", []),
+            numeric_fields=data.get("numeric_fields", []),
+            uppercase_normalize_fields=set(data.get("uppercase_normalize_fields", [])),
+            dfc_output_name=data.get("dfc_output_name", "DFC_CountyToCounty"),
+            stats_table_name=data.get("stats_table_name", "stats_county_to_county"),
+            recents_name=data.get("recents_name", "RoadCenterline_Recents"),
+            required_fields=data.get("required_fields", []),
+        )
 
-    return raw
+    return profiles
 
 
 PROFILES = _load_profiles()
@@ -114,8 +133,8 @@ def _normalize_text_value(value, force_uppercase):
 
 def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=None):
     field_map = get_field_name_map(feature_class)
-    text_source = text_fields if text_fields is not None else profile["text_fields"]
-    numeric_source = numeric_fields if numeric_fields is not None else profile["numeric_fields"]
+    text_source = text_fields if text_fields is not None else profile.text_fields
+    numeric_source = numeric_fields if numeric_fields is not None else profile.numeric_fields
 
     text_existing = [field_map[name.lower()] for name in text_source if name.lower() in field_map]
     numeric_existing = [field_map[name.lower()] for name in numeric_source if name.lower() in field_map]
@@ -132,7 +151,7 @@ def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=No
                 field_name = text_existing[idx]
                 replacement = _normalize_text_value(
                     value,
-                    force_uppercase=field_name.upper() in profile["uppercase_normalize_fields"],
+                    force_uppercase=field_name.upper() in profile.uppercase_normalize_fields,
                 )
 
                 if replacement != value:
@@ -156,7 +175,7 @@ def resolve_county_profile(county, profiles=None):
         profiles = PROFILES
     county_key = county.lower().strip()
     for profile_key, profile in profiles.items():
-        aliases = {alias.lower() for alias in profile["aliases"]}
+        aliases = {alias.lower() for alias in profile.aliases}
         aliases.add(profile_key.lower())
         if county_key in aliases:
             return profile_key, profile
@@ -187,7 +206,7 @@ def format_county_help(profiles=None):
     profile_summaries = []
     for county_key in sorted(active_profiles):
         profile = active_profiles[county_key]
-        aliases = ", ".join(profile["aliases"])
+        aliases = ", ".join(profile.aliases)
         profile_summaries.append(f"{county_key} ({aliases})")
     return "; ".join(profile_summaries)
 
@@ -211,12 +230,12 @@ def run_change_detection(
     stats_table = os.path.join(output_workspace, stats_table_name)
     out_feature = os.path.join(output_workspace, recents_name)
 
-    active_text_fields = profile["text_fields"]
-    active_numeric_fields = profile["numeric_fields"]
+    active_text_fields = profile.text_fields
+    active_numeric_fields = profile.numeric_fields
 
-    if profile["required_fields"]:
-        ensure_required_fields(update_features, profile["required_fields"], "Update features")
-        ensure_required_fields(base_features, profile["required_fields"], "Base features")
+    if profile.required_fields:
+        ensure_required_fields(update_features, profile.required_fields, "Update features")
+        ensure_required_fields(base_features, profile.required_fields, "Base features")
 
     if not compare_fields:
         raise RuntimeError("Compare fields were not provided and county profile has no default compare mapping.")
@@ -347,11 +366,11 @@ def main(argv=None):
 
         ensure_detect_feature_changes_license()
 
-        match_fields = args.match_fields or profile["match_fields"]
-        compare_fields = args.compare_fields if args.compare_fields is not None else profile["compare_fields"]
-        dfc_output_name = args.dfc_output_name or profile["dfc_output_name"]
-        stats_table_name = args.stats_table_name or profile["stats_table_name"]
-        recents_name = args.recents_name or profile["recents_name"]
+        match_fields = args.match_fields or profile.match_fields
+        compare_fields = args.compare_fields if args.compare_fields is not None else profile.compare_fields
+        dfc_output_name = args.dfc_output_name or profile.dfc_output_name
+        stats_table_name = args.stats_table_name or profile.stats_table_name
+        recents_name = args.recents_name or profile.recents_name
 
         run_change_detection(
             profile_key=profile_key,
