@@ -4,19 +4,15 @@
 
 Each key in the JSON object is a county identifier (e.g. `"grand"`, `"davis"`). The script resolves the correct profile at runtime using the `--county` argument.
 
+County selection is strict:
+
+- `--county` must exactly match a top-level key in `profiles.json`
+- Matching is case-sensitive
+- Aliases and spaced variants are not supported
+
 ---
 
 ## Fields Reference
-
-### `aliases`
-
-**Type:** `string[]` | **Optional** — defaults to `[]`
-
-A list of strings that the `--county` argument will accept to select this profile. The profile key itself is always implicitly included as an alias.
-
-```json
-"aliases": ["boxelder", "box elder"]
-```
 
 ### `match_fields`
 
@@ -140,7 +136,6 @@ Name of the final output feature class containing only roads that changed (i.e. 
 
 ```json
 "example": {
-  "aliases": ["example"],
   "match_fields": "STREETNAME STREETNAME",
   "compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
   "text_fields": ["PREDIR", "STREETNAME", "STREETTYPE"],

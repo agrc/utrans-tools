@@ -18,7 +18,6 @@ import arcpy
 
 @dataclass
 class CountyProfile:
-    aliases: list[str] = field(default_factory=list)
     match_fields: str = ""
     compare_fields: str | None = None
     text_fields: list[str] = field(default_factory=list)
@@ -38,7 +37,6 @@ def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
     profiles = {}
     for key, data in raw.items():
         profiles[key] = CountyProfile(
-            aliases=data.get("aliases", []),
             match_fields=data["match_fields"],
             compare_fields=data.get("compare_fields"),
             text_fields=data.get("text_fields", []),
@@ -173,13 +171,13 @@ def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=No
 def resolve_county_profile(county, profiles=None):
     if profiles is None:
         profiles = PROFILES
-    county_key = county.lower().strip()
-    for profile_key, profile in profiles.items():
-        aliases = {alias.lower() for alias in profile.aliases}
-        aliases.add(profile_key.lower())
-        if county_key in aliases:
-            return profile_key, profile
-    raise RuntimeError(f"Unknown county '{county}'. Supported counties: {', '.join(sorted(profiles.keys()))}")
+    county_key = county.strip()
+    if county_key in profiles:
+        return county_key, profiles[county_key]
+    raise RuntimeError(
+        f"Unknown county '{county}'. Supported counties (exact, case-sensitive): "
+        f"{', '.join(sorted(profiles.keys()))}. Aliases and spaced variants are not supported."
+    )
 
 
 def resolve_required_inputs(args):
@@ -203,12 +201,7 @@ def ensure_required_fields(feature_class, required_fields, dataset_label):
 
 def format_county_help(profiles=None):
     active_profiles = profiles or PROFILES
-    profile_summaries = []
-    for county_key in sorted(active_profiles):
-        profile = active_profiles[county_key]
-        aliases = ", ".join(profile.aliases)
-        profile_summaries.append(f"{county_key} ({aliases})")
-    return "; ".join(profile_summaries)
+    return ", ".join(sorted(active_profiles.keys()))
 
 
 def run_change_detection(
@@ -307,11 +300,11 @@ def build_parser():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Examples:\n"
-            "  python Get_Recent_Edits.py --county Grand "
+            "  python Get_Recent_Edits.py --county grand "
             "--update-features \"Z:\\Documents\\gdb\\GRAND\\GrandCo_20260514.gdb\\GC__RDS_05_01_26\" "
             "--base-features \"Z:\\Documents\\gdb\\GRAND\\GrandCo_20240812.gdb\\GRANDROADS_24\"\n"
             "\n"
-            "  python Get_Recent_Edits.py --county Davis "
+            "  python Get_Recent_Edits.py --county davis "
             "--update-features \"Z:\\Documents\\gdb\\DavisCounty_20260626.gdb\\DavisRoads\" "
             "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
         ),
@@ -320,8 +313,10 @@ def build_parser():
         "--county",
         required=True,
         help=(
-            "Required. County key used to select the field mapping profile. "
-            f"Available county aliases: {county_help}."
+            "Required. Case-sensitive county key used to select the field mapping profile "
+            "from the active profiles file (default: profiles.json, override with --profiles). "
+            "Only exact top-level profile keys are accepted (aliases are not supported). "
+            f"Available county keys: {county_help}."
         ),
     )
 
