@@ -6,7 +6,9 @@ Each key in the JSON object is a county identifier (e.g. `"grand"`, `"davis"`). 
 
 County selection is strict:
 
-- `--county` must exactly match a top-level key in `profiles.json`
+- `--county` must exactly match a top-level key in the active profiles file
+- By default, the active profiles file is `cli/profiles.json`
+- Use `--profiles <path-to-json>` to supply a custom profiles file
 - Matching is case-sensitive
 - Aliases and spaced variants are not supported
 
