@@ -29,4 +29,4 @@ jobs:
 
       - name: 🔪 Check CSharpier formatting
         working-directory: add-in/UGRC.UtransTools
-        run: dotnet csharpier --check .
+        run: dotnet csharpier check .
