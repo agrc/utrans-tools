@@ -4,8 +4,7 @@ Tools for working with UTrans data
 
 ## CLI
 
-This is a python CLI tool for processing county-submitted data prior to ingestion into UTrans. See its [README](cli/README.md) for installation, usage, and
-release instructions.
+This is a Python CLI tool for processing county-submitted data prior to ingestion into UTrans. See its [README](cli/README.md) for installation, usage, and release instructions.
 
 ### `Get_Recent_Edits.py` script run example
 
