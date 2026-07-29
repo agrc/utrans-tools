@@ -39,7 +39,7 @@ internal sealed class UtransEditService
                         ? state.Selection.BaseFeatureId.ToString(
                             System.Globalization.CultureInfo.InvariantCulture
                         )
-                        : $"{previousNotes}; {state.Selection.BaseFeatureId}",
+                        : $"{previousNotes}; {state.Selection.BaseFeatureId.ToString(System.Globalization.CultureInfo.InvariantCulture)}",
                 }
             );
 
