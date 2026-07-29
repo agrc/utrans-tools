@@ -18,7 +18,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/agrc/utrans-tools/cli"
+Homepage = "https://github.com/agrc/utrans-tools/tree/main/cli"
 Repository = "https://github.com/agrc/utrans-tools"
 
 [project.scripts]

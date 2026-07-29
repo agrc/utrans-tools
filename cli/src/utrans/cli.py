@@ -32,7 +32,10 @@ def main(argv: list[str] | None = None) -> int:
     if arguments[0] == "get-recent-edits":
         return recent_edits.main(arguments[1:], prog="utrans get-recent-edits")
 
-    parser.parse_args(arguments)
+    try:
+        parser.parse_args(arguments)
+    except SystemExit as e:
+        return int(e.code) if e.code is not None else 0
     return 2
 
 
