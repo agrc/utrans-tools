@@ -19,13 +19,11 @@ import arcpy
 NUMERIC_TYPES = {"SmallInteger", "Integer", "Single", "Double", "BigInteger"}
 
 
-def _detect_field_groups(feature_class: str, compare_fields: str | None = None) -> tuple[list[str], list[str]]:
+def _detect_field_groups(feature_class: str) -> tuple[list[str], list[str]]:
     """Detect text and numeric field groups from a feature class.
 
     Args:
         feature_class: Path to the feature class.
-        compare_fields: Optional semicolon-delimited field mapping string to filter detected fields.
-                       Only fields appearing in this mapping will be returned.
 
     Returns:
         Tuple of (text_field_names, numeric_field_names).
@@ -36,19 +34,7 @@ def _detect_field_groups(feature_class: str, compare_fields: str | None = None) 
     text_fields = [f.name for f in fields if f.type == "String"]
     numeric_fields = [f.name for f in fields if f.type in NUMERIC_TYPES]
 
-    # Filter to only fields in compare_fields if provided
-    if compare_fields:
-        compare_pairs = parse_field_pairs(compare_fields)
-        compare_field_names = set()
-        for field1, field2 in compare_pairs:
-            compare_field_names.add(field1.lower())
-            compare_field_names.add(field2.lower())
-        
-        text_fields = [f for f in text_fields if f.lower() in compare_field_names]
-        numeric_fields = [f for f in numeric_fields if f.lower() in compare_field_names]
-
     return text_fields, numeric_fields
-
 
 @dataclass
 class CountyProfile:
@@ -277,8 +263,8 @@ def run_change_detection(
     resolved_compare_fields = "; ".join([f"{update_field} {base_field}" for update_field, base_field in resolved_compare_pairs])
 
     log("Normalizing blank and null-like values before change detection")
-    text_fields_update, numeric_fields_update = _detect_field_groups(update_features, resolved_compare_fields)
-    text_fields_base, numeric_fields_base = _detect_field_groups(base_features, resolved_compare_fields)
+    text_fields_update, numeric_fields_update = _detect_field_groups(update_features)
+    text_fields_base, numeric_fields_base = _detect_field_groups(base_features)
 
     for dataset_label, feature_class, text_fields, numeric_fields in [
         ("Update features", update_features, text_fields_update, numeric_fields_update),
