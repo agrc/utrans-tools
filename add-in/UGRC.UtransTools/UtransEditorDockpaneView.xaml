@@ -62,7 +62,7 @@
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <TextBlock
-          Text="{Binding RemainingDfcRecords, StringFormat=Remaining: {0}, TargetNullValue='Remaining: unavailable'}"
+          Text="{Binding RemainingDfcRecords, StringFormat=Remaining: {0}, TargetNullValue=Remaining: unavailable}"
           VerticalAlignment="Top"
         />
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
