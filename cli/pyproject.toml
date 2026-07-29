@@ -3,7 +3,7 @@ requires = ["hatchling", "pathspec>=1.1.1"]
 build-backend = "hatchling.build"
 
 [project]
-name = "utrans-tools"
+name = "ugrc-utrans-tools"
 version = "0.1.0"
 description = "Command-line tools for working with UTrans data."
 readme = "README.md"

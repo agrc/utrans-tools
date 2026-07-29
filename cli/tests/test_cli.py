@@ -7,7 +7,7 @@ from utrans import cli
 
 
 def test_package_version_comes_from_distribution_metadata():
-    assert utrans.__version__ == version("utrans-tools")
+    assert utrans.__version__ == version("ugrc-utrans-tools")
 
 
 def test_get_recent_edits_help(capsys):
