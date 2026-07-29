@@ -4,4 +4,4 @@ from importlib.metadata import version
 
 __all__ = ["__version__"]
 
-__version__ = version("utrans-tools")
+__version__ = version("ugrc-utrans-tools")
