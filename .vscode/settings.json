@@ -1,9 +1,12 @@
 {
   "python-envs.defaultEnvManager": "ms-python.python:conda",
   "cSpell.words": [
+    "arcpy",
     "daml",
     "Geospatial",
     "MVVM",
+    "pathspec",
+    "pyproject",
     "pytest",
     "pythonpath",
     "recents",
