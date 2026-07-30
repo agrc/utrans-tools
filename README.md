@@ -5,23 +5,3 @@ Tools for working with UTrans data
 ## CLI
 
 This is a Python CLI tool for processing county-submitted data prior to ingestion into UTrans. See its [README](cli/README.md) for installation, usage, and release instructions.
-
-### `Get_Recent_Edits.py` script run example
-
-`--county` must be an exact, case-sensitive key from the active profiles file.
-
-- By default, the active file is `cli/profiles.json`.
-- Use `--profiles <path-to-json>` to supply a custom profiles file.
-- The `--county` value must exist as a top-level key in that active file.
-
-```bash
-# example 1
-python cli/Get_Recent_Edits.py --county carbon --update-features "Z:\Documents\gdb\Carbon20231019.gdb\Roads" --base-features "Z:\Documents\gdb\Carbon20230208.gdb\CC_Roads" --dfc-output-name DFC_CarbonToCarbon_test5 --stats-table-name stats_carbon_to_carbon_test5 --recents-name RoadCenterline_Recents_test5
-
-# example 2
-
-python cli/Get_Recent_Edits.py --county davis --update-features "Z:\Documents\gdb\DavisCounty_20260626.gdb\DavisRoads" --base-features "Z:\Documents\gdb\DavisCounty_20260514.gdb\DavisRoads" --dfc-output-name DFC_test721 --stats-table-name stats_test721 --recents-name RoadCenterline_Recents_test721
-
-# example 3 (custom profiles file)
-python cli/Get_Recent_Edits.py --profiles "Z:\Documents\county_profiles_custom.json" --county davis --update-features "Z:\Documents\gdb\DavisCounty_20260626.gdb\DavisRoads" --base-features "Z:\Documents\gdb\DavisCounty_20260514.gdb\DavisRoads"
-```
