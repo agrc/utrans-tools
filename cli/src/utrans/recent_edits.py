@@ -1,4 +1,4 @@
-﻿"""Unified recent-edits runner for county road change detection.
+"""Unified recent-edits runner for county road change detection.
 
 Requires explicit full feature class paths:
 - `--update-features`
@@ -14,7 +14,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import arcpy
-
 
 NUMERIC_TYPES = {"SmallInteger", "Integer", "Single", "Double", "BigInteger"}
 
@@ -35,6 +34,7 @@ def _detect_field_groups(feature_class: str) -> tuple[list[str], list[str]]:
     numeric_fields = [f.name for f in fields if f.type in NUMERIC_TYPES]
 
     return text_fields, numeric_fields
+
 
 @dataclass
 class CountyProfile:
@@ -113,7 +113,12 @@ def resolve_field_pairs(update_features, base_features, field_mapping):
             dropped_pairs.append((update_field, base_field))
 
     if dropped_pairs:
-        dropped_pairs_text = "; ".join([f"{update_field} {base_field}" for update_field, base_field in dropped_pairs])
+        dropped_pairs_text = "; ".join(
+            [
+                f"{update_field} {base_field}"
+                for update_field, base_field in dropped_pairs
+            ]
+        )
         log(
             "Warning: dropping "
             f"{len(dropped_pairs)} field pair(s) not found in both datasets: {dropped_pairs_text}"
@@ -150,8 +155,12 @@ def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=No
     text_source = text_fields if text_fields is not None else []
     numeric_source = numeric_fields if numeric_fields is not None else []
 
-    text_existing = [field_map[name.lower()] for name in text_source if name.lower() in field_map]
-    numeric_existing = [field_map[name.lower()] for name in numeric_source if name.lower() in field_map]
+    text_existing = [
+        field_map[name.lower()] for name in text_source if name.lower() in field_map
+    ]
+    numeric_existing = [
+        field_map[name.lower()] for name in numeric_source if name.lower() in field_map
+    ]
     field_names = text_existing + numeric_existing
 
     if not field_names:
@@ -165,7 +174,8 @@ def normalize_fields(feature_class, profile, text_fields=None, numeric_fields=No
                 field_name = text_existing[idx]
                 replacement = _normalize_text_value(
                     value,
-                    force_uppercase=field_name.upper() in profile.uppercase_normalize_fields,
+                    force_uppercase=field_name.upper()
+                    in profile.uppercase_normalize_fields,
                 )
 
                 if replacement != value:
@@ -198,7 +208,9 @@ def resolve_county_profile(county, profiles=None):
 
 def resolve_required_inputs(args):
     if not args.county:
-        raise RuntimeError("Missing required input. Provide --county to select a field mapping profile.")
+        raise RuntimeError(
+            "Missing required input. Provide --county to select a field mapping profile."
+        )
     if not args.update_features or not args.base_features:
         raise RuntimeError(
             "Missing required input paths. Provide both --update-features and --base-features."
@@ -208,7 +220,9 @@ def resolve_required_inputs(args):
 
 def ensure_required_fields(feature_class, required_fields, dataset_label):
     lookup = get_field_name_map(feature_class)
-    missing = [field_name for field_name in required_fields if field_name.lower() not in lookup]
+    missing = [
+        field_name for field_name in required_fields if field_name.lower() not in lookup
+    ]
     if missing:
         raise RuntimeError(
             f"{dataset_label} is missing required fields: {', '.join(missing)}"
@@ -240,27 +254,45 @@ def run_change_detection(
     out_feature = os.path.join(output_workspace, recents_name)
 
     if profile.required_fields:
-        ensure_required_fields(update_features, profile.required_fields, "Update features")
+        ensure_required_fields(
+            update_features, profile.required_fields, "Update features"
+        )
         ensure_required_fields(base_features, profile.required_fields, "Base features")
 
     if not compare_fields:
-        raise RuntimeError("Compare fields were not provided and county profile has no default compare mapping.")
+        raise RuntimeError(
+            "Compare fields were not provided and county profile has no default compare mapping."
+        )
 
-    resolved_match_pairs = resolve_field_pairs(update_features, base_features, match_fields)
+    resolved_match_pairs = resolve_field_pairs(
+        update_features, base_features, match_fields
+    )
     if not resolved_match_pairs:
         raise RuntimeError(
             "No valid match field pairs found between update and base feature classes. "
             "Pass --match-fields with fields that exist in both datasets."
         )
-    resolved_match_fields = "; ".join([f"{update_field} {base_field}" for update_field, base_field in resolved_match_pairs])
+    resolved_match_fields = "; ".join(
+        [
+            f"{update_field} {base_field}"
+            for update_field, base_field in resolved_match_pairs
+        ]
+    )
 
-    resolved_compare_pairs = resolve_field_pairs(update_features, base_features, compare_fields)
+    resolved_compare_pairs = resolve_field_pairs(
+        update_features, base_features, compare_fields
+    )
     if not resolved_compare_pairs:
         raise RuntimeError(
             "No valid compare field pairs found between update and base feature classes. "
             "Pass --compare-fields with fields that exist in both datasets."
         )
-    resolved_compare_fields = "; ".join([f"{update_field} {base_field}" for update_field, base_field in resolved_compare_pairs])
+    resolved_compare_fields = "; ".join(
+        [
+            f"{update_field} {base_field}"
+            for update_field, base_field in resolved_compare_pairs
+        ]
+    )
 
     log("Normalizing blank and null-like values before change detection")
     text_fields_update, numeric_fields_update = _detect_field_groups(update_features)
@@ -271,7 +303,9 @@ def run_change_detection(
         ("Base features", base_features, text_fields_base, numeric_fields_base),
     ]:
         dataset_name = arcpy.Describe(feature_class).name
-        log(f"Normalizing {dataset_label} ({dataset_name}): blank text values to empty strings, blank numeric values to 0")
+        log(
+            f"Normalizing {dataset_label} ({dataset_name}): blank text values to empty strings, blank numeric values to 0"
+        )
         normalize_fields(
             feature_class,
             profile,
@@ -280,7 +314,9 @@ def run_change_detection(
         )
 
     log("Running DetectFeatureChanges")
-    log(f"Beginning detect feature change process for {profile_key} at: {time.strftime('%c')}")
+    log(
+        f"Beginning detect feature change process for {profile_key} at: {time.strftime('%c')}"
+    )
     arcpy.management.DetectFeatureChanges(
         update_features,
         base_features,
@@ -321,12 +357,12 @@ def build_parser(prog: str | None = None):
         epilog=(
             "Examples:\n"
             "  python Get_Recent_Edits.py --county grand "
-            "--update-features \"Z:\\Documents\\gdb\\GRAND\\GrandCo_20260514.gdb\\GC__RDS_05_01_26\" "
-            "--base-features \"Z:\\Documents\\gdb\\GRAND\\GrandCo_20240812.gdb\\GRANDROADS_24\"\n"
+            '--update-features "Z:\\Documents\\gdb\\GRAND\\GrandCo_20260514.gdb\\GC__RDS_05_01_26" '
+            '--base-features "Z:\\Documents\\gdb\\GRAND\\GrandCo_20240812.gdb\\GRANDROADS_24"\n'
             "\n"
             "  python Get_Recent_Edits.py --county davis "
-            "--update-features \"Z:\\Documents\\gdb\\DavisCounty_20260626.gdb\\DavisRoads\" "
-            "--base-features \"Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads\""
+            '--update-features "Z:\\Documents\\gdb\\DavisCounty_20260626.gdb\\DavisRoads" '
+            '--base-features "Z:\\Documents\\gdb\\DavisCounty_20260604.gdb\\DavisRoads"'
         ),
     )
     parser.add_argument(
@@ -340,16 +376,31 @@ def build_parser(prog: str | None = None):
         ),
     )
 
-    parser.add_argument("--update-features", required=True, help="Full path to newest county road feature class.")
-    parser.add_argument("--base-features", required=True, help="Full path to previous county road feature class.")
+    parser.add_argument(
+        "--update-features",
+        required=True,
+        help="Full path to newest county road feature class.",
+    )
+    parser.add_argument(
+        "--base-features",
+        required=True,
+        help="Full path to previous county road feature class.",
+    )
 
     parser.add_argument(
         "--search-distance",
         default="200 Feet",
         help="Search distance for candidate matches in Detect Feature Changes.",
     )
-    parser.add_argument("--match-fields", help="Semicolon-delimited field mapping string used for matching.")
-    parser.add_argument("--change-tolerance", default="40", help="Change tolerance used by Detect Feature Changes.")
+    parser.add_argument(
+        "--match-fields",
+        help="Semicolon-delimited field mapping string used for matching.",
+    )
+    parser.add_argument(
+        "--change-tolerance",
+        default="40",
+        help="Change tolerance used by Detect Feature Changes.",
+    )
     parser.add_argument(
         "--compare-fields",
         help=(
@@ -357,9 +408,17 @@ def build_parser(prog: str | None = None):
             "When omitted, county defaults are used."
         ),
     )
-    parser.add_argument("--dfc-output-name", help="Output feature class name for Detect Feature Changes result.")
-    parser.add_argument("--stats-table-name", help="Output table name for Detect Feature Changes statistics.")
-    parser.add_argument("--recents-name", help="Output feature class name for selected changed roads.")
+    parser.add_argument(
+        "--dfc-output-name",
+        help="Output feature class name for Detect Feature Changes result.",
+    )
+    parser.add_argument(
+        "--stats-table-name",
+        help="Output table name for Detect Feature Changes statistics.",
+    )
+    parser.add_argument(
+        "--recents-name", help="Output feature class name for selected changed roads."
+    )
     parser.add_argument(
         "--profiles",
         default=None,
@@ -382,7 +441,11 @@ def main(argv=None, *, prog: str | None = None):
         ensure_detect_feature_changes_license()
 
         match_fields = args.match_fields or profile.match_fields
-        compare_fields = args.compare_fields if args.compare_fields is not None else profile.compare_fields
+        compare_fields = (
+            args.compare_fields
+            if args.compare_fields is not None
+            else profile.compare_fields
+        )
         dfc_output_name = args.dfc_output_name or profile.dfc_output_name
         stats_table_name = args.stats_table_name or profile.stats_table_name
         recents_name = args.recents_name or profile.recents_name

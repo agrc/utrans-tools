@@ -1,0 +1,34 @@
+name: Pull Request Events (CLI)
+
+on:
+  pull_request:
+    paths:
+      - "cli/**/*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v7
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: pyproject.toml
+
+      - name: ⬇️ Install dependencies
+        working-directory: cli
+        run: pip install .[dev]
+
+      - name: 🧹 Check formatting
+        working-directory: cli
+        run: |
+          ruff check . --output-format=github
+          ruff format . --check
