@@ -6,9 +6,10 @@
     "MVVM",
     "pytest",
     "pythonpath",
+    "recents",
     "testpaths",
     "UGRC",
-    "UTRANS",
-    "utrans"
+    "utrans",
+    "UTRANS"
   ]
 }
