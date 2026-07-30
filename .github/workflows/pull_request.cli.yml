@@ -21,7 +21,7 @@ jobs:
       - name: 🐍 Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version-file: pyproject.toml
+          python-version-file: cli/pyproject.toml
 
       - name: ⬇️ Install dependencies
         working-directory: cli
