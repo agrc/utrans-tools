@@ -1,6 +1,7 @@
 /* global $feature, $datastore, $layer, $map, FeatureSetByName, IIf, Buffer */
-// On CREATE and UPDATE
+// Emitted on: CREATE and UPDATE
 var name = IIf(IsEmpty($feature.NAME), "", $feature.NAME);
+name = Replace(name, "'", "");
 var postdir = IIf(IsEmpty($feature.POSTDIR), "", $feature.POSTDIR);
 var posttype = IIf(IsEmpty($feature.POSTTYPE), "", $feature.POSTTYPE);
 var concatenated = name + " " + postdir + " " + posttype;
