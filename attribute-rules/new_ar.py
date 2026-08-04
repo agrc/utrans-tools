@@ -30,8 +30,7 @@ def _parse_args() -> argparse.Namespace:
 		epilog=(
 			"Notes:\n"
 			"- script_name can be either name or name.arcade.\n"
-			"- If --folder is omitted, the script is searched recursively under attribute-rules.\n"
-			"- Exclude from client evaluation should be used for server workflows, not local/file geodatabases."
+			"- If --folder is omitted, the script is searched recursively under attribute-rules."
 		),
 		formatter_class=argparse.RawDescriptionHelpFormatter,
 	)
@@ -55,19 +54,9 @@ def _parse_args() -> argparse.Namespace:
 		help="Optional explicit rule name. Defaults to a title-cased name from the script filename.",
 	)
 	parser.add_argument(
-		"--replace",
-		action="store_true",
-		help="Replace an existing rule with the same name.",
-	)
-	parser.add_argument(
 		"--dry-run",
 		action="store_true",
 		help="Preview the resolved script, rule name, and parameters without writing changes.",
-	)
-	parser.add_argument(
-		"--server",
-		action="store_true",
-		help="Convenience flag for server workflows (AUTO client evaluation resolves to EXCLUDE).",
 	)
 
 	parser.add_argument(
@@ -91,21 +80,6 @@ def _parse_args() -> argparse.Namespace:
 		default="NONEDITABLE",
 		choices=["EDITABLE", "NONEDITABLE"],
 		help="Whether users can manually edit values managed by the rule.",
-	)
-	parser.add_argument(
-		"--exclude-from-client-evaluation",
-		default="AUTO",
-		choices=["AUTO", "EXCLUDE", "INCLUDE"],
-		help=(
-			"AUTO resolves to INCLUDE locally and EXCLUDE with --server. "
-			"Use EXCLUDE for server workflows only."
-		),
-	)
-	parser.add_argument(
-		"--batch",
-		default="NOT_BATCH",
-		choices=["BATCH", "NOT_BATCH"],
-		help="Whether calculation rule runs in batch mode.",
 	)
 	parser.add_argument(
 		"--error-number",
@@ -178,15 +152,7 @@ def _get_rule_names(in_table: str) -> set[str]:
 	return {rule.name for rule in rules}
 
 
-def _delete_rule_if_exists(in_table: str, rule_name: str) -> None:
-	if rule_name not in _get_rule_names(in_table):
-		return
-	_log(f"Deleting existing rule '{rule_name}'")
-	arcpy.management.DeleteAttributeRule(in_table, rule_name)
-
-
 def _add_attribute_rule(args: argparse.Namespace, script_text: str, rule_name: str) -> None:
-	effective_exclude = _resolve_exclude_from_client_evaluation(args)
 	arcpy.management.AddAttributeRule(
 		in_table=args.in_table,
 		name=rule_name,
@@ -198,18 +164,8 @@ def _add_attribute_rule(args: argparse.Namespace, script_text: str, rule_name: s
 		error_message=args.error_message,
 		description=args.description,
 		subtype=args.subtype,
-		field=args.field,
-		exclude_from_client_evaluation=effective_exclude,
-		batch=args.batch,
+		field=args.field
 	)
-
-
-def _resolve_exclude_from_client_evaluation(args: argparse.Namespace) -> str:
-	if args.exclude_from_client_evaluation in {"EXCLUDE", "INCLUDE"}:
-		return args.exclude_from_client_evaluation
-	if args.server:
-		return "EXCLUDE"
-	return "INCLUDE"
 
 
 def main() -> None:
@@ -220,7 +176,6 @@ def main() -> None:
 
 	arcade_path = _resolve_arcade_path(args.script_name, args.folder)
 	rule_name = args.rule_name or _default_rule_name_from_stem(arcade_path.stem)
-	effective_exclude = _resolve_exclude_from_client_evaluation(args)
 	existing_rules = _get_rule_names(args.in_table)
 
 	if args.dry_run:
@@ -231,21 +186,18 @@ def main() -> None:
 		_log(f"- type: {args.type}")
 		_log(f"- field: {args.field or '(none)'}")
 		_log(f"- triggering_events: {args.triggering_events}")
-		_log(f"- exclude_from_client_evaluation: {effective_exclude}")
+		_log("- exclude_from_client_evaluation: default fixed value (unchecked)")
+		_log("- batch: default fixed value (unchecked)")
 		_log(f"- existing_rule_found: {'yes' if rule_name in existing_rules else 'no'}")
-		_log(f"- replace: {'yes' if args.replace else 'no'}")
 		return
 
-	if rule_name in existing_rules and not args.replace:
+	if rule_name in existing_rules:
 		raise RuntimeError(
 			f"Attribute rule '{rule_name}' already exists on {args.in_table}. "
-			"Use --replace to update it."
+			"Choose a different --rule-name or remove the existing rule first."
 		)
 
 	script_text = arcade_path.read_text(encoding="utf-8")
-
-	if args.replace:
-		_delete_rule_if_exists(args.in_table, rule_name)
 
 	_log(f"Adding rule '{rule_name}' from script: {arcade_path}")
 	_add_attribute_rule(args, script_text, rule_name)
