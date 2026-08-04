@@ -29,75 +29,85 @@ def _parse_args() -> argparse.Namespace:
 		),
 		epilog=(
 			"Notes:\n"
+			"- Required inputs: script_name and --in-table.\n"
 			"- script_name can be either name or name.arcade.\n"
 			"- If --folder is omitted, the script is searched recursively under attribute-rules."
 		),
 		formatter_class=argparse.RawDescriptionHelpFormatter,
+		add_help=False,
 	)
+	required_args = parser.add_argument_group("required arguments")
+	optional_args = parser.add_argument_group("optional arguments")
 
+	optional_args.add_argument(
+		"-h",
+		"--help",
+		action="help",
+		help="show this help message and exit",
+	)
 	parser.add_argument(
 		"script_name",
 		help="Arcade script filename with or without .arcade extension.",
 	)
-	parser.add_argument(
+	required_args.add_argument(
 		"--in-table",
 		required=True,
 		help="Target feature class or table where the rule will be created.",
 	)
-	parser.add_argument(
+	optional_args.add_argument(
 		"--folder",
 		default="",
 		help="Optional subfolder under attribute-rules that contains the .arcade file.",
 	)
-	parser.add_argument(
+	optional_args.add_argument(
 		"--rule-name",
 		help="Optional explicit rule name. Defaults to a title-cased name from the script filename.",
 	)
-	parser.add_argument(
+	optional_args.add_argument(
 		"--dry-run",
 		action="store_true",
 		help="Preview the resolved script, rule name, and parameters without writing changes.",
 	)
 
-	parser.add_argument(
+	optional_args.add_argument(
 		"--type",
 		default="CALCULATION",
 		choices=["CALCULATION", "CONSTRAINT", "VALIDATION"],
 		help="Attribute rule type.",
 	)
-	parser.add_argument(
+	optional_args.add_argument(
 		"--field",
 		default="",
 		help="Target field for the rule when applicable (commonly used for CALCULATION).",
 	)
-	parser.add_argument(
+	optional_args.add_argument(
 		"--triggering-events",
 		default="INSERT;UPDATE",
 		help="Semicolon-delimited events, e.g. INSERT;UPDATE or UPDATE.",
 	)
-	parser.add_argument(
+	optional_args.add_argument(
 		"--is-editable",
 		default="NONEDITABLE",
 		choices=["EDITABLE", "NONEDITABLE"],
 		help="Whether users can manually edit values managed by the rule.",
 	)
-	parser.add_argument(
+	optional_args.add_argument(
 		"--error-number",
 		type=int,
 		default=1,
 		help="Error number for CONSTRAINT/VALIDATION rules.",
 	)
-	parser.add_argument(
+	optional_args.add_argument(
 		"--error-message",
 		default="Attribute rule violation.",
 		help="Error message for CONSTRAINT/VALIDATION rules.",
 	)
-	parser.add_argument(
+	optional_args.add_argument(
 		"--description",
 		default="",
 		help="Optional attribute rule description.",
 	)
-	parser.add_argument(
+	optional_args.add_argument(
 		"--subtype",
 		default="",
 		help="Optional subtype code.",
