@@ -24,21 +24,32 @@ internal sealed class LayerValidationService
                 );
             var layers = map.GetLayersAsFlattenedList().OfType<FeatureLayer>().ToList();
             var missingAliases = new List<string>();
+            var invalidAliases = new List<string>();
 
             FeatureLayer GetLayer(string name)
             {
                 var layer = layers.FirstOrDefault(candidate =>
                     string.Equals(candidate.Name, name, StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(
-                        candidate.GetFeatureClass().GetDefinition().GetAliasName(),
-                        name,
-                        StringComparison.OrdinalIgnoreCase
-                    )
                 );
 
                 if (layer is null)
                 {
                     missingAliases.Add(name);
+                }
+                else
+                {
+                    try
+                    {
+                        using var featureClass = layer.GetFeatureClass();
+                        if (featureClass is null)
+                        {
+                            invalidAliases.Add(name);
+                        }
+                    }
+                    catch
+                    {
+                        invalidAliases.Add(name);
+                    }
                 }
 
                 return layer!;
@@ -56,6 +67,13 @@ internal sealed class LayerValidationService
             {
                 throw new InvalidOperationException(
                     $"The active map is missing required layers: {string.Join(", ", missingAliases)}."
+                );
+            }
+
+            if (invalidAliases.Count > 0)
+            {
+                throw new InvalidOperationException(
+                    $"The active map has required layers with broken or unavailable data sources: {string.Join(", ", invalidAliases)}. Repair the layer data sources and try again."
                 );
             }
 
