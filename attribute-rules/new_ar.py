@@ -87,7 +87,7 @@ def _parse_args() -> argparse.Namespace:
 	)
 	optional_args.add_argument(
 		"--is-editable",
-		default="NONEDITABLE",
+		default="EDITABLE",
 		choices=["EDITABLE", "NONEDITABLE"],
 		help="Whether users can manually edit values managed by the rule.",
 	)
