@@ -1,5 +1,6 @@
 /* global $feature, $datastore, $layer, $map, FeatureSetByName, IIf, Buffer */
 var textFields = ['BIKE_L', 'BIKE_R', 'BIKE_PLN_L', 'BIKE_PLN_R', 'DOT_HWYNAM', 'DOT_RTNAME', 'DOT_RTPART'];
+Expects($feature, 'BIKE_L', 'BIKE_R', 'BIKE_PLN_L', 'BIKE_PLN_R', 'DOT_HWYNAM', 'DOT_RTNAME', 'DOT_RTPART');
 var updates = {};
 
 for (var i in textFields) {
