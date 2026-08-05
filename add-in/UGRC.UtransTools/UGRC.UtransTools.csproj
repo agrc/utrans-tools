@@ -104,6 +104,24 @@
     Project="C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets"
     Condition="Exists('C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets') AND !Exists('Esri.ArcGISPro.Extensions.targets') AND '$(MSBuildRuntimeType)' == 'Full'"
   />
+  <Target
+    Name="BumpAddInVersionForRelease"
+    BeforeTargets="PreBuild"
+    Condition="'$(Configuration)' == 'Release'"
+  >
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\Build\BumpAddInVersion.ps1&quot; -ConfigPath &quot;$(MSBuildProjectDirectory)\Config.daml&quot;" />
+  </Target>
+  <Target
+    Name="CopyReleaseAddInPackage"
+    AfterTargets="Build"
+    Condition="'$(Configuration)' == 'Release'"
+  >
+    <Copy
+      SourceFiles="$(TargetDir)UGRC.UtransTools.esriAddinX"
+      DestinationFolder="L:\agrc\utrans\UtransEditing\Pro Add-ins"
+      SkipUnchangedFiles="true"
+    />
+  </Target>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="rmdir /s /q &quot;%25LocalAppData%25\ESRI\ArcGISPro\AssemblyCache&quot;" />
   </Target>
