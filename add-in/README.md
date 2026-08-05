@@ -37,3 +37,15 @@ This project uses **[CSharpier](https://csharpier.com/)** for opinionated, autom
   ```bash
   dotnet csharpier --check .
   ```
+
+### Release Package
+
+Build the add-in in Release mode from the `add-in` directory:
+
+```powershell
+dotnet build .\UGRC.UtransTools\UGRC.UtransTools.csproj --configuration Release
+```
+
+Or use Visual Studio to build the project in Release mode.
+
+The build copies `UGRC.UtransTools.esriAddinX` to `L:\agrc\utrans\UtransEditing\Pro Add-ins`.
