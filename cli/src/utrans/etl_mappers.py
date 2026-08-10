@@ -75,7 +75,7 @@ def _excluded_values(profile: CountyProfile) -> dict[str, set[str]]:
         pairs = (item.strip() for item in value.split(";") if item.strip())
         try:
             return {
-                field.strip(): {item.strip().upper() for item in values.split(",")}
+                field.strip().upper(): {item.strip().upper() for item in values.split(",")}
                 for field, values in (pair.split("=", maxsplit=1) for pair in pairs)
             }
         except ValueError as exc:
@@ -87,7 +87,7 @@ def _excluded_values(profile: CountyProfile) -> dict[str, set[str]]:
             f"Profile '{profile.key}' setting 'exclude_if_any' must be an object."
         )
     return {
-        str(field): {str(item).strip().upper() for item in values}
+        str(field).upper(): {str(item).strip().upper() for item in values}
         for field, values in value.items()
         if isinstance(values, Sequence) and not isinstance(values, str)
     }
@@ -154,7 +154,7 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
                     row[target_index] = row[source_index]
                     continue
                 source_value = row[source_index]
-                if vertical_translation and target == "VERT_LEVEL":
+                if vertical_translation and target.upper() == "VERT_LEVEL":
                     source_value = {"1": "0", "2": "1", "3": "2"}.get(
                         str(source_value).strip(), source_value
                     )
