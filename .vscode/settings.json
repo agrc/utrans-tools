@@ -1,18 +1,39 @@
 {
   "python-envs.defaultEnvManager": "ms-python.python:conda",
   "cSpell.words": [
+    "ACCESSCODE",
     "arcpy",
+    "boxelder",
+    "CARTOCODE",
+    "daggett",
     "daml",
+    "duchesne",
+    "fips",
+    "FROMADDR",
+    "geodatabase",
     "Geospatial",
+    "HWYNAM",
     "MVVM",
     "pathspec",
+    "POSTDIR",
+    "POSTTYPE",
+    "posttypes",
+    "PREDIR",
     "pyproject",
     "pytest",
     "pythonpath",
     "recents",
+    "saltlake",
+    "SRFTYP",
+    "STREETNAME",
     "testpaths",
+    "TOADDR",
     "UGRC",
     "utrans",
-    "UTRANS"
-  ]
+    "UTRANS",
+    "vecc"
+  ],
+  "python.testing.pytestArgs": ["cli"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }
