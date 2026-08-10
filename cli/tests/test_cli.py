@@ -1,4 +1,5 @@
 from importlib.metadata import version
+from unittest.mock import Mock
 
 import pytest
 
@@ -10,6 +11,33 @@ from utrans.profiles import load_profiles
 
 def test_package_version_comes_from_distribution_metadata():
     assert utrans.__version__ == version("ugrc-utrans-tools")
+
+
+def test_version(capsys):
+    assert cli.main(["--version"]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.out == f"utrans {utrans.__version__}\n"
+
+
+@pytest.mark.parametrize(
+    ("command", "main_name"),
+    [
+        ("get-recent-edits", "recent_edits_main"),
+        ("etl", "etl_main"),
+    ],
+)
+def test_subcommands_print_version_banner(monkeypatch, capsys, command, main_name):
+    subcommand_main = Mock(return_value=0)
+    monkeypatch.setattr(cli, main_name, subcommand_main)
+
+    assert cli.main([command, "--example-option"]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.out == f"utrans {utrans.__version__}\n"
+    subcommand_main.assert_called_once_with(
+        ["--example-option"], prog=f"utrans {command}"
+    )
 
 
 def test_get_recent_edits_help(capsys):
