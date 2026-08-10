@@ -75,7 +75,9 @@ def _excluded_values(profile: CountyProfile) -> dict[str, set[str]]:
         pairs = (item.strip() for item in value.split(";") if item.strip())
         try:
             return {
-                field.strip().upper(): {item.strip().upper() for item in values.split(",")}
+                field.strip().upper(): {
+                    item.strip().upper() for item in values.split(",")
+                }
                 for field, values in (pair.split("=", maxsplit=1) for pair in pairs)
             }
         except ValueError as exc:
