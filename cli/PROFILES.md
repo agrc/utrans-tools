@@ -1,8 +1,53 @@
 # County Profiles Configuration
 
-`profiles.json` defines per-county field mapping profiles used by `Get_Recent_Edits.py` to run ArcGIS Pro's **Detect Feature Changes** tool between two versions of a county road centerline dataset.
+`profiles.json` defines flat, per-county settings shared by UTRANS commands. `get-recent-edits` uses its field-mapping settings to run ArcGIS Pro's **Detect Feature Changes** tool between two versions of a county road centerline dataset. `etl` uses the same county key and its `fips` setting to select the matching county transformation.
 
 Each key in the JSON object is a county identifier (e.g. `"grand"`, `"davis"`). The script resolves the correct profile at runtime using the `--county` argument.
+
+`saltlake` is the Salt Lake County identifier for every command. The former `vecc` identifier is not supported.
+
+## Shared ETL Field
+
+### `fips`
+
+**Type:** `string` | **Required by `etl`**
+
+The county's five-digit FIPS code written to `COUNTY_L` and `COUNTY_R` during ETL.
+
+### `field_mappings`
+
+**Type:** `string` | **Required by `etl`**
+
+A semicolon-delimited list of `UTRANS_FIELD=COUNTY_FIELD` assignments. These map
+county source fields into the target schema after colliding source fields have been
+renamed with an underscore. When the UTRANS destination has a coded-value domain,
+the assignment is validated against that domain from `--utrans-roads`; invalid values
+are appended to `UTRANS_NOTES`.
+
+```json
+"field_mappings": "FROMADDR_L=L_F_ADD; TOADDR_L=L_T_ADD; NAME=STREETNAME"
+```
+
+### `parse_sources`
+
+**Type:** `string` | **Optional**
+
+A semicolon-delimited list of `COUNTY_FIELD=TARGET` values used to parse full street
+names. `TARGET` is `PRIMARY`, `A1`, or `A2`.
+
+### `translate_vertical_levels`
+
+**Type:** `boolean` | **Optional** — defaults to `false`
+
+When `true`, legacy vertical values `1`, `2`, and `3` are translated to `0`, `1`,
+and `2` before target-domain validation.
+
+### `exclude_if_any`
+
+**Type:** `string` | **Optional**
+
+A semicolon-delimited list of `COUNTY_FIELD=VALUE,VALUE` exclusions. A feature is
+removed when any configured field contains a listed value.
 
 County selection is strict:
 
@@ -149,10 +194,10 @@ Name of the final output feature class containing only roads that changed (i.e. 
 
 Most profile values can be overridden at runtime without editing `profiles.json`:
 
-| Profile field      | CLI argument          |
-|--------------------|-----------------------|
-| `match_fields`     | `--match-fields`      |
-| `compare_fields`   | `--compare-fields`    |
-| `dfc_output_name`  | `--dfc-output-name`   |
-| `stats_table_name` | `--stats-table-name`  |
-| `recents_name`     | `--recents-name`      |
+| Profile field      | CLI argument         |
+| ------------------ | -------------------- |
+| `match_fields`     | `--match-fields`     |
+| `compare_fields`   | `--compare-fields`   |
+| `dfc_output_name`  | `--dfc-output-name`  |
+| `stats_table_name` | `--stats-table-name` |
+| `recents_name`     | `--recents-name`     |

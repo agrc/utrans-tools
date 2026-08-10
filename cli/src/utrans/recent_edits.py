@@ -7,13 +7,15 @@ Requires explicit full feature class paths:
 """
 
 import argparse
-import json
 import os
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import arcpy
+
+from utrans.profiles import load_profiles as load_shared_profiles
+from utrans.utilities import log
 
 NUMERIC_TYPES = {"SmallInteger", "Integer", "Single", "Double", "BigInteger"}
 
@@ -48,12 +50,9 @@ class CountyProfile:
 
 
 def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
-    profiles_path = path or Path(__file__).parent / "profiles.json"
-    with profiles_path.open(encoding="utf-8") as f:
-        raw = json.load(f)
-
     profiles = {}
-    for key, data in raw.items():
+    for key, shared_profile in load_shared_profiles(path).items():
+        data = shared_profile.values
         profiles[key] = CountyProfile(
             match_fields=data["match_fields"],
             compare_fields=data.get("compare_fields"),
@@ -68,10 +67,6 @@ def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
 
 
 PROFILES = _load_profiles()
-
-
-def log(message):
-    print(message)
 
 
 def get_field_name_map(feature_class):
