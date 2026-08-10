@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
@@ -186,7 +187,7 @@ def main(argv: list[str] | None = None, *, prog: str | None = None) -> int:
             args.output_name or _default_output_name(profile.key),
             args.county_boundary_name,
         )
-    except (RuntimeError, TypeError) as exc:
+    except (RuntimeError, TypeError, FileNotFoundError, json.JSONDecodeError) as exc:
         log(str(exc))
         return 2
     return 0
