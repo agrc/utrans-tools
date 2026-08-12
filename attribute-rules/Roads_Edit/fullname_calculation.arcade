@@ -1,9 +1,27 @@
 /* global $feature, $datastore, $layer, $map, FeatureSetByName, IIf, Buffer */
 // Emitted on: CREATE and UPDATE
-var name = IIf(IsEmpty($feature.NAME), "", $feature.NAME);
-name = Replace(name, "'", "");
-var postdir = IIf(IsEmpty($feature.POSTDIR), "", $feature.POSTDIR);
-var posttype = IIf(IsEmpty($feature.POSTTYPE), "", $feature.POSTTYPE);
-var concatenated = name + " " + postdir + " " + posttype;
-var fullname = Trim(Replace(Replace(concatenated, "  ", " "), "  ", " "));
-return fullname;
+function normalizePart(value) {
+	var part = Trim(IIf(IsEmpty(value), "", Text(value)));
+	while (Find("  ", part) > -1) {
+		part = Replace(part, "  ", " ");
+	}
+	return part;
+}
+
+var name = normalizePart(Replace(IIf(IsEmpty($feature.NAME), "", $feature.NAME), "'", ""));
+var postdir = normalizePart($feature.POSTDIR);
+var posttype = normalizePart($feature.POSTTYPE);
+
+var parts = [];
+if (!IsEmpty(name)) {
+	Push(parts, name);
+}
+if (!IsEmpty(postdir)) {
+	Push(parts, postdir);
+}
+if (!IsEmpty(posttype)) {
+	Push(parts, posttype);
+}
+
+// Test case: NAME="  MAIN  ", POSTDIR=null, POSTTYPE="  RD  " -> "MAIN RD"
+return Concatenate(parts, " ");

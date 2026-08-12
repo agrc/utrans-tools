@@ -170,6 +170,11 @@ def _default_rule_name_from_stem(stem: str) -> str:
 	return " ".join(word.capitalize() for word in spaced.split())
 
 
+def _normalize_rule_name_for_lookup(name: str) -> str:
+	# ArcGIS treats rule names effectively case-insensitively; normalize lookups for idempotency.
+	return _as_text(name).strip().casefold()
+
+
 def _resolve_arcade_path(script_name: str, folder: str) -> Path:
 	arcade_filename = _normalize_script_name(script_name)
 	if folder:
@@ -201,8 +206,39 @@ def _as_text(value: object) -> str:
 	return str(value)
 
 
-def _normalize_events(value: str) -> str:
-	events = [part.strip().upper() for part in value.split(";") if part.strip()]
+def _normalize_type(value: object) -> str:
+	text = _as_text(value).strip().upper()
+	if text.startswith("ESRIART"):
+		return text.removeprefix("ESRIART")
+	return text
+
+
+def _normalize_subtype(value: object) -> str:
+	text = _as_text(value).strip()
+	if text in {"", "-1"}:
+		return ""
+	return text
+
+
+def _normalize_events(value: object) -> str:
+	if isinstance(value, (list, tuple, set)):
+		raw_parts = [_as_text(part) for part in value]
+	else:
+		text = _as_text(value)
+		if "[" in text and "]" in text:
+			raw_parts = re.findall(r"[A-Za-z0-9_]+", text)
+		else:
+			raw_parts = re.split(r"[;,]", text)
+
+	events: list[str] = []
+	for part in raw_parts:
+		token = part.strip().strip("\"'").upper()
+		if not token:
+			continue
+		if token.startswith("ESRIARTE"):
+			token = token.removeprefix("ESRIARTE")
+		events.append(token)
+
 	return ";".join(sorted(set(events)))
 
 
@@ -222,21 +258,28 @@ def _normalize_script(script_expression: str) -> str:
 
 
 def _rule_state_from_args(args: argparse.Namespace, rule_name: str, script_text: str) -> RuleState:
-	type_name = _as_text(args.type).strip().upper()
+	type_name = _normalize_type(args.type)
 	triggering_events = _normalize_events(args.triggering_events)
 	if type_name == "VALIDATION":
 		triggering_events = ""
+
+	error_number = _as_text(args.error_number).strip()
+	error_message = _as_text(args.error_message)
+	if type_name == "CALCULATION":
+		# ArcGIS commonly stores calc-rule error metadata as unset/sentinel values.
+		error_number = "-1"
+		error_message = ""
 
 	return RuleState(
 		name=rule_name,
 		type=type_name,
 		field=_as_text(args.field).strip(),
-		subtype=_as_text(args.subtype).strip(),
+		subtype=_normalize_subtype(args.subtype),
 		is_editable=_normalize_editable(args.is_editable),
 		triggering_events=triggering_events,
 		script_expression=_normalize_script(script_text),
-		error_number=_as_text(args.error_number).strip(),
-		error_message=_as_text(args.error_message),
+		error_number=error_number,
+		error_message=error_message,
 		description=_as_text(args.description),
 	)
 
@@ -244,11 +287,11 @@ def _rule_state_from_args(args: argparse.Namespace, rule_name: str, script_text:
 def _rule_state_from_existing(rule: object) -> RuleState:
 	return RuleState(
 		name=_as_text(getattr(rule, "name", "")).strip(),
-		type=_as_text(getattr(rule, "type", "")).strip().upper(),
+		type=_normalize_type(getattr(rule, "type", "")),
 		field=_as_text(getattr(rule, "fieldName", "")).strip(),
-		subtype=_as_text(getattr(rule, "subtypeCode", "")).strip(),
+		subtype=_normalize_subtype(getattr(rule, "subtypeCode", "")),
 		is_editable=_normalize_editable(getattr(rule, "isEditable", "")),
-		triggering_events=_normalize_events(_as_text(getattr(rule, "triggeringEvents", ""))),
+		triggering_events=_normalize_events(getattr(rule, "triggeringEvents", "")),
 		script_expression=_normalize_script(_as_text(getattr(rule, "scriptExpression", ""))),
 		error_number=_as_text(getattr(rule, "errorNumber", "")).strip(),
 		error_message=_as_text(getattr(rule, "errorMessage", "")),
@@ -259,7 +302,11 @@ def _rule_state_from_existing(rule: object) -> RuleState:
 def _get_rule_states(in_table: str) -> dict[str, RuleState]:
 	desc = arcpy.Describe(in_table)
 	rules = getattr(desc, "attributeRules", None) or []
-	return {rule.name: _rule_state_from_existing(rule) for rule in rules}
+	states: dict[str, RuleState] = {}
+	for rule in rules:
+		state = _rule_state_from_existing(rule)
+		states[_normalize_rule_name_for_lookup(state.name)] = state
+	return states
 
 
 def _add_attribute_rule(args: argparse.Namespace, script_text: str, rule_name: str) -> None:
@@ -309,7 +356,7 @@ def _diffs(existing: RuleState, desired: RuleState) -> tuple[list[str], list[str
 		immutable_diffs.append(f"field: existing={existing.field!r} desired={desired.field!r}")
 	if existing.subtype != desired.subtype:
 		immutable_diffs.append(f"subtype: existing={existing.subtype!r} desired={desired.subtype!r}")
-	if existing.is_editable != desired.is_editable:
+	if existing.is_editable and desired.is_editable and existing.is_editable != desired.is_editable:
 		immutable_diffs.append(
 			f"is_editable: existing={existing.is_editable!r} desired={desired.is_editable!r}"
 		)
@@ -476,7 +523,7 @@ def main(argv: list[str] | None = None) -> None:
 	script_text = arcade_path.read_text(encoding="utf-8")
 
 	rules = _get_rule_states(args.in_table)
-	existing = rules.get(rule_name)
+	existing = rules.get(_normalize_rule_name_for_lookup(rule_name))
 	desired = _rule_state_from_args(args, rule_name, script_text)
 	immutable_diffs: list[str] = []
 	mutable_diffs: list[str] = []
