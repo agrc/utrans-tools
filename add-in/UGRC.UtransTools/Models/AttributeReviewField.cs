@@ -28,7 +28,7 @@ public sealed class AttributeReviewField : INotifyPropertyChanged
     public string OriginalUtransValue { get; }
     public bool IsAddressRange { get; }
     public bool IsDifferent =>
-        !string.Equals(CountyValue, OriginalUtransValue, System.StringComparison.OrdinalIgnoreCase);
+        !string.Equals(CountyValue, UtransValue, System.StringComparison.OrdinalIgnoreCase);
     public bool IsEdited =>
         !string.Equals(UtransValue, OriginalUtransValue, System.StringComparison.Ordinal);
     public bool IsUsingCountyValue => _isUsingCountyValue;
@@ -50,6 +50,7 @@ public sealed class AttributeReviewField : INotifyPropertyChanged
 
             _utransValue = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(IsDifferent));
             OnPropertyChanged(nameof(IsEdited));
         }
     }
