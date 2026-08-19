@@ -6,6 +6,7 @@
 
 ```powershell
 conda create --name utrans-tools --clone arcgispro-py3
+conda activate utrans-tools
 pip install ugrc-utrans-tools
 ```
 
