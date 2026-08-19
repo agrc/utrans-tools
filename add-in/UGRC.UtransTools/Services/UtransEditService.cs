@@ -144,7 +144,7 @@ internal sealed class UtransEditService
             ["CARTOCODE"] = state.Cartocode,
             ["ONEWAY"] = state.Oneway,
             ["VERT_LEVEL"] = state.VerticalLevel,
-            ["SPEED_LMT"] = string.IsNullOrWhiteSpace(state.SpeedLimit) ? null : state.SpeedLimit,
+            ["SPEED_LMT"] = state.SpeedLimit,
             ["FULLNAME"] = BuildFullName(values),
         };
 
