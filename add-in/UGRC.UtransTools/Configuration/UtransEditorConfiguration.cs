@@ -67,6 +67,7 @@ internal static class UtransEditorConfiguration
         "ONEWAY",
         "VERT_LEVEL",
         "SPEED_LMT",
+        "STATUS",
     };
 
     internal static readonly IReadOnlyDictionary<string, string> CountyOwnershipNames =

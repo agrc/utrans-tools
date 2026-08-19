@@ -148,6 +148,8 @@ internal sealed class UtransEditService
             ["FULLNAME"] = BuildFullName(values),
         };
 
+        values["STATUS"] = state.Status;
+
         return values;
     }
 

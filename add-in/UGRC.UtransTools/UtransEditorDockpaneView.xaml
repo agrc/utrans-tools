@@ -444,7 +444,7 @@
           <ColumnDefinition Width="*" MinWidth="150" />
           <ColumnDefinition Width="*" MinWidth="130" />
           <ColumnDefinition Width="*" MinWidth="130" />
-          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="*" MinWidth="120" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
@@ -513,16 +513,9 @@
         </GroupBox>
         <Button
           Grid.Column="4"
-          Content="Next"
-          Command="{Binding NextCommand}"
-          CommandParameter="{Binding ReviewState}"
-          FontSize="12"
-          FontWeight="Bold"
-          Height="50"
-          Width="150"
-          VerticalAlignment="Center"
-          Margin="3"
-          Grid.RowSpan="2"
+          Content="Save in UTRANS"
+          Command="{Binding SaveCommand}"
+          Margin="6 12 6 6"
         />
 
         <StackPanel Grid.Row="1" Margin="3" VerticalAlignment="Bottom">
@@ -566,14 +559,22 @@
             Margin="3"
           />
         </GroupBox>
+        <GroupBox Grid.Row="1" Grid.Column="3" Header="STATUS">
+          <ComboBox
+            ItemsSource="{Binding StatusValues}"
+            DisplayMemberPath="Description"
+            SelectedValuePath="Code"
+            SelectedValue="{Binding ReviewState.Status}"
+            Margin="3"
+          />
+        </GroupBox>
         <Button
           Grid.Row="1"
-          Grid.Column="3"
-          Height="25"
-          Content="Save in UTRANS"
-          Command="{Binding SaveCommand}"
-          VerticalAlignment="Center"
-          Margin="6"
+          Grid.Column="4"
+          Content="Next"
+          Command="{Binding NextCommand}"
+          CommandParameter="{Binding ReviewState}"
+          Margin="6 12 6 6"
         />
       </Grid>
     </Grid>
