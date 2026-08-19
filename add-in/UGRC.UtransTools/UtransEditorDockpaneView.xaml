@@ -438,7 +438,7 @@
         </Grid>
       </GroupBox>
 
-      <Grid Grid.Row="4" Margin="3" IsEnabled="{Binding HasReviewState}">
+      <Grid Grid.Row="4" Margin="3">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="*" MinWidth="150" />
@@ -451,7 +451,7 @@
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <GroupBox Header="Split a line OR wrong segment ID?">
+        <GroupBox Header="Split a line OR wrong segment ID?" IsEnabled="{Binding HasReviewState}">
           <StackPanel>
             <Button
               Content="Update DFC ObjectID"
@@ -466,7 +466,7 @@
             />
           </StackPanel>
         </GroupBox>
-        <GroupBox Grid.Column="1" Header="CARTOCODE">
+        <GroupBox Grid.Column="1" Header="CARTOCODE" IsEnabled="{Binding HasReviewState}">
           <GroupBox.Style>
             <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
               <Style.Triggers>
@@ -485,7 +485,7 @@
             Margin="3"
           />
         </GroupBox>
-        <GroupBox Grid.Column="2" Header="ONEWAY">
+        <GroupBox Grid.Column="2" Header="ONEWAY" IsEnabled="{Binding HasReviewState}">
           <GroupBox.Style>
             <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
               <Style.Triggers>
@@ -504,7 +504,7 @@
             Margin="3"
           />
         </GroupBox>
-        <GroupBox Grid.Column="3" Header="Change Status">
+        <GroupBox Grid.Column="3" Header="Change Status" IsEnabled="{Binding HasReviewState}">
           <ComboBox
             ItemsSource="{Binding DfcStatusValues}"
             SelectedItem="{Binding ReviewState.DfcStatus}"
@@ -516,14 +516,25 @@
           Content="Save in UTRANS"
           Command="{Binding SaveCommand}"
           Margin="6 12 6 6"
+          IsEnabled="{Binding HasReviewState}"
         />
 
-        <StackPanel Grid.Row="1" Margin="3" VerticalAlignment="Bottom">
+        <StackPanel
+          Grid.Row="1"
+          Margin="3"
+          VerticalAlignment="Bottom"
+          IsEnabled="{Binding HasReviewState}"
+        >
           <TextBlock VerticalAlignment="Bottom" Text="UTrans Database Version:" />
           <TextBlock VerticalAlignment="Bottom" Text="{Binding UtransDatabaseVersion}" />
         </StackPanel>
 
-        <GroupBox Grid.Row="1" Grid.Column="1" Header="VERT_LEVEL">
+        <GroupBox
+          Grid.Row="1"
+          Grid.Column="1"
+          Header="VERT_LEVEL"
+          IsEnabled="{Binding HasReviewState}"
+        >
           <GroupBox.Style>
             <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
               <Style.Triggers>
@@ -542,7 +553,12 @@
             Margin="3"
           />
         </GroupBox>
-        <GroupBox Grid.Row="1" Grid.Column="2" Header="SPEED_LMT">
+        <GroupBox
+          Grid.Row="1"
+          Grid.Column="2"
+          Header="SPEED_LMT"
+          IsEnabled="{Binding HasReviewState}"
+        >
           <GroupBox.Style>
             <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
               <Style.Triggers>
@@ -559,7 +575,7 @@
             Margin="3"
           />
         </GroupBox>
-        <GroupBox Grid.Row="1" Grid.Column="3" Header="STATUS">
+        <GroupBox Grid.Row="1" Grid.Column="3" Header="STATUS" IsEnabled="{Binding HasReviewState}">
           <ComboBox
             ItemsSource="{Binding StatusValues}"
             DisplayMemberPath="Description"
@@ -573,9 +589,18 @@
           Grid.Column="4"
           Content="Next"
           Command="{Binding NextCommand}"
-          CommandParameter="{Binding ReviewState}"
           Margin="6 12 6 6"
-        />
+        >
+          <Button.Style>
+            <Style TargetType="Button">
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding RemainingDfcRecords}" Value="0">
+                  <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </Button.Style>
+        </Button>
       </Grid>
     </Grid>
   </ScrollViewer>
