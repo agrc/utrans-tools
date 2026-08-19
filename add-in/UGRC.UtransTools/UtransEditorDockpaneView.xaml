@@ -513,10 +513,17 @@
         </GroupBox>
         <Button
           Grid.Column="4"
+          Content="Add New"
+          Command="{Binding AddNewCommand}"
+          Margin="6 12 6 6"
+          Visibility="{Binding CanAddNew, Converter={StaticResource BooleanToVisibilityConverter}}"
+        />
+        <Button
+          Grid.Column="4"
           Content="Save in UTRANS"
           Command="{Binding SaveCommand}"
           Margin="6 12 6 6"
-          IsEnabled="{Binding HasReviewState}"
+          Visibility="{Binding HasReviewState, Converter={StaticResource BooleanToVisibilityConverter}}"
         />
 
         <StackPanel
