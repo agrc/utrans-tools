@@ -58,7 +58,9 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
         VerticalLevel = string.IsNullOrWhiteSpace(utransRoad?.GetText("VERT_LEVEL"))
             ? "0"
             : utransRoad!.GetText("VERT_LEVEL");
-        SpeedLimit = utransRoad?.GetText("SPEED_LMT") ?? string.Empty;
+        SpeedLimit = string.IsNullOrWhiteSpace(utransRoad?.GetText("SPEED_LMT"))
+            ? "25"
+            : utransRoad!.GetText("SPEED_LMT");
         _initialCartocode = Cartocode;
         _initialOneway = Oneway;
         _initialVerticalLevel = VerticalLevel;
