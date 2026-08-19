@@ -184,6 +184,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     public IReadOnlyList<CodedValueOption> CartocodeValues { get; private set; } = [];
     public IReadOnlyList<CodedValueOption> OnewayValues { get; private set; } = [];
     public IReadOnlyList<CodedValueOption> VerticalLevelValues { get; private set; } = [];
+    public IReadOnlyList<CodedValueOption> StatusValues { get; private set; } = [];
     public IReadOnlyList<string> SpeedLimitValues { get; } = CreateRange(5, 80, 5);
     public IReadOnlyList<string> DfcStatusValues { get; } =
         new[] { "COMPLETED", "IGNORE", "REVISIT" };
@@ -310,10 +311,12 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
         CartocodeValues = options["CARTOCODE"];
         OnewayValues = options["ONEWAY"];
         VerticalLevelValues = options["VERT_LEVEL"];
+        StatusValues = options["STATUS"];
         _codedValueOptionsLoaded = true;
         OnPropertyChanged(nameof(CartocodeValues));
         OnPropertyChanged(nameof(OnewayValues));
         OnPropertyChanged(nameof(VerticalLevelValues));
+        OnPropertyChanged(nameof(StatusValues));
     }
 
     private static IReadOnlyList<string> CreateRange(int start, int end)

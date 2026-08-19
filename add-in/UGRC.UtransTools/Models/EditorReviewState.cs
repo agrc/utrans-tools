@@ -18,6 +18,7 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
     private string _oneway = string.Empty;
     private string _verticalLevel = string.Empty;
     private string _speedLimit = string.Empty;
+    private string _status = string.Empty;
 
     internal EditorReviewState()
     {
@@ -61,6 +62,9 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
         SpeedLimit = string.IsNullOrWhiteSpace(utransRoad?.GetText("SPEED_LMT"))
             ? "25"
             : utransRoad!.GetText("SPEED_LMT");
+        Status = string.IsNullOrWhiteSpace(utransRoad?.GetText("STATUS"))
+            ? "Active"
+            : utransRoad!.GetText("STATUS");
         _initialCartocode = Cartocode;
         _initialOneway = Oneway;
         _initialVerticalLevel = VerticalLevel;
@@ -83,6 +87,21 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
                 utransRoad?.GetText(fieldName) ?? string.Empty,
                 isAddressRange
             );
+    }
+
+    public string Status
+    {
+        get => _status;
+        set
+        {
+            if (_status == value)
+            {
+                return;
+            }
+
+            _status = value;
+            OnPropertyChanged();
+        }
     }
 
     internal DfcSelectionSnapshot? Selection { get; }
