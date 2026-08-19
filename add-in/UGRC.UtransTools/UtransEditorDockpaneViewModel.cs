@@ -33,6 +33,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
 
     internal UtransEditorDockpaneViewModel()
     {
+        AddNewCommand = new AsyncRelayCommand(AddNewAsync);
         SaveCommand = new AsyncRelayCommand(SaveAsync);
         NextCommand = new AsyncRelayCommand(SelectNextDfcAsync);
         UpdateDfcObjectIdCommand = new AsyncRelayCommand(RepairDfcIdentifierAsync);
@@ -93,10 +94,13 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
             OnPropertyChanged();
             OnPropertyChanged(nameof(HasReviewState));
             OnPropertyChanged(nameof(AvailableReviewState));
+            OnPropertyChanged(nameof(CanAddNew));
         }
     }
 
-    public bool HasReviewState => ReviewState is not null;
+    public bool HasReviewState => ReviewState?.Selection?.UtransRoad is not null;
+
+    public bool CanAddNew => ReviewState?.Selection?.IsNotYetCopiedNewRecord == true;
 
     public EditorReviewState AvailableReviewState => ReviewState ?? EmptyReviewState;
 
@@ -175,6 +179,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
         }
     }
 
+    public ICommand AddNewCommand { get; }
     public ICommand SaveCommand { get; }
     public ICommand NextCommand { get; }
     public ICommand UpdateDfcObjectIdCommand { get; }
@@ -192,6 +197,27 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     internal static void Show()
     {
         FrameworkApplication.DockPaneManager.Find(DockPaneId)?.Activate();
+    }
+
+    private async Task AddNewAsync()
+    {
+        if (ReviewState is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var layers = await _layerValidationService.GetRequiredLayersAsync();
+            var dfcObjectId = ReviewState.Selection.ObjectId;
+            await _utransEditService.CreateNewUtransRoadAsync(layers, ReviewState);
+            await LoadSelectedDfcAsync();
+            StatusMessage = $"Created the target UTRANS road for DFC record {dfcObjectId}.";
+        }
+        catch (Exception exception)
+        {
+            StatusMessage = exception.Message;
+        }
     }
 
     private async Task SaveAsync()
