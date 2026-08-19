@@ -9,6 +9,18 @@ conda create --name utrans-tools --clone arcgispro-py3
 pip install ugrc-utrans-tools
 ```
 
+Show help:
+
+```powershell
+utrans --help
+```
+
+Upgrade to a new version:
+
+```powershell
+pip install --upgrade ugrc-utrans-tools
+```
+
 ## Install for development
 
 From this directory:

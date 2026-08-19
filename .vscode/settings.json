@@ -2,6 +2,7 @@
   "python-envs.defaultEnvManager": "ms-python.python:conda",
   "cSpell.words": [
     "ACCESSCODE",
+    "arcgispro",
     "arcpy",
     "boxelder",
     "CARTOCODE",
