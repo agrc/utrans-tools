@@ -205,7 +205,10 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
         {
             var layers = await _layerValidationService.GetRequiredLayersAsync();
             await _utransEditService.SaveAsync(layers, ReviewState);
-            StatusMessage = $"Saved DFC record {ReviewState.Selection.ObjectId}.";
+            var savedObjectId = ReviewState.Selection.ObjectId;
+            ReviewState = null;
+            ChangeTypeMessage = "Please select one feature from DFC_RESULT layer.";
+            StatusMessage = $"Saved DFC record {savedObjectId}.";
         }
         catch (Exception exception)
         {
