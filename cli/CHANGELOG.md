@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1](https://github.com/agrc/utrans-tools/compare/ugrc-utrans-tools-v1.0.0...ugrc-utrans-tools-v1.0.1) (2026-08-20)
+
+
+### Bug Fixes
+
+* **cli:** make sure that UTRANS_NOTES values are truncated to 200 characters during etl ([1676c43](https://github.com/agrc/utrans-tools/commit/1676c431efd3a492cc43d5f3e014a378ca649413))
+* **cli:** preserve invalid values for coded-value domain fields ([ef3897a](https://github.com/agrc/utrans-tools/commit/ef3897a17f080450f52f76cbcfa5d69d7bd21009)), closes [#19](https://github.com/agrc/utrans-tools/issues/19)
+
 ## [1.0.0](https://github.com/agrc/utrans-tools/compare/ugrc-utrans-tools-v0.1.0...ugrc-utrans-tools-v1.0.0) (2026-08-19)
 
 
