@@ -169,7 +169,7 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
                     if notes_index is not None:
                         row[notes_index] = (
                             f"{row[notes_index] or ''}{target}: {row[source_index]}; "
-                        )
+                        )[:200]
             for source, alias in parse_sources:
                 source_index = indexes.get(source.upper())
                 if source_index is None:
