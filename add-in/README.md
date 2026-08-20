@@ -43,13 +43,13 @@ This project uses **[CSharpier](https://csharpier.com/)** for opinionated, autom
 - **Format all files manually:**
 
   ```bash
-  dotnet csharpier .
+  dotnet csharpier format .
   ```
 
 - **Verify formatting (used in CI):**
 
   ```bash
-  dotnet csharpier --check .
+  dotnet csharpier check .
   ```
 
 ### Release Package
