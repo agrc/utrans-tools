@@ -15,6 +15,7 @@
     "Geospatial",
     "HWYNAM",
     "MVVM",
+    "ONEWAY",
     "pathspec",
     "POSTDIR",
     "POSTTYPE",
@@ -36,5 +37,11 @@
   ],
   "python.testing.pytestArgs": ["cli"],
   "python.testing.unittestEnabled": false,
-  "python.testing.pytestEnabled": true
+  "python.testing.pytestEnabled": true,
+  "chat.tools.terminal.autoApprove": {
+    "/^dotnet build add-in\\\\UGRC\\.UtransTools\\\\UGRC\\.UtransTools\\.csproj --no-restore$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
+  }
 }

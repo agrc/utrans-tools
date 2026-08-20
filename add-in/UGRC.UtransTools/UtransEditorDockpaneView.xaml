@@ -72,6 +72,12 @@
             Foreground="DarkGoldenrod"
             FontWeight="Bold"
           />
+          <TextBlock
+            Text="{Binding SelectedDfcObjectIds, StringFormat= (DFC ObjectIDs: {0})}"
+            Foreground="DarkGoldenrod"
+            FontWeight="Bold"
+            Visibility="{Binding HasMultipleNewRecords, Converter={StaticResource BooleanToVisibilityConverter}}"
+          />
         </StackPanel>
         <TextBlock
           Grid.Column="2"
@@ -466,11 +472,11 @@
             />
           </StackPanel>
         </GroupBox>
-        <GroupBox Grid.Column="1" Header="CARTOCODE" IsEnabled="{Binding HasReviewState}">
+        <GroupBox Grid.Column="1" Header="CARTOCODE" IsEnabled="{Binding CanEditRoadValues}">
           <GroupBox.Style>
             <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
               <Style.Triggers>
-                <DataTrigger Binding="{Binding ReviewState.IsCartocodeChanged}" Value="True">
+                <DataTrigger Binding="{Binding RoadValueState.IsCartocodeChanged}" Value="True">
                   <Setter Property="BorderBrush" Value="{StaticResource HighlightYellowBrush}" />
                   <Setter Property="BorderThickness" Value="3" />
                 </DataTrigger>
@@ -481,15 +487,15 @@
             ItemsSource="{Binding CartocodeValues}"
             DisplayMemberPath="Description"
             SelectedValuePath="Code"
-            SelectedValue="{Binding ReviewState.Cartocode}"
+            SelectedValue="{Binding RoadValueState.Cartocode}"
             Margin="3"
           />
         </GroupBox>
-        <GroupBox Grid.Column="2" Header="ONEWAY" IsEnabled="{Binding HasReviewState}">
+        <GroupBox Grid.Column="2" Header="ONEWAY" IsEnabled="{Binding CanEditRoadValues}">
           <GroupBox.Style>
             <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
               <Style.Triggers>
-                <DataTrigger Binding="{Binding ReviewState.IsOnewayChanged}" Value="True">
+                <DataTrigger Binding="{Binding RoadValueState.IsOnewayChanged}" Value="True">
                   <Setter Property="BorderBrush" Value="{StaticResource HighlightYellowBrush}" />
                   <Setter Property="BorderThickness" Value="3" />
                 </DataTrigger>
@@ -500,24 +506,25 @@
             ItemsSource="{Binding OnewayValues}"
             DisplayMemberPath="Description"
             SelectedValuePath="Code"
-            SelectedValue="{Binding ReviewState.Oneway}"
+            SelectedValue="{Binding RoadValueState.Oneway}"
             Margin="3"
           />
         </GroupBox>
         <GroupBox Grid.Column="3" Header="Change Status" IsEnabled="{Binding HasReviewState}">
           <ComboBox
             ItemsSource="{Binding DfcStatusValues}"
-            SelectedItem="{Binding ReviewState.DfcStatus}"
+            SelectedItem="{Binding DisplayDfcStatus, Mode=OneWay}"
             Margin="3"
           />
         </GroupBox>
         <Button
           Grid.Column="4"
-          Content="Add New"
           Command="{Binding AddNewCommand}"
           Margin="6 12 6 6"
           Visibility="{Binding CanAddNew, Converter={StaticResource BooleanToVisibilityConverter}}"
-        />
+        >
+          <TextBlock Text="Add New" HorizontalAlignment="Center" />
+        </Button>
         <Button
           Grid.Column="4"
           Content="Save in UTRANS"
@@ -530,7 +537,7 @@
           Grid.Row="1"
           Margin="3"
           VerticalAlignment="Bottom"
-          IsEnabled="{Binding HasReviewState}"
+          IsEnabled="{Binding CanEditRoadValues}"
         >
           <TextBlock VerticalAlignment="Bottom" Text="UTrans Database Version:" />
           <TextBlock VerticalAlignment="Bottom" Text="{Binding UtransDatabaseVersion}" />
@@ -539,13 +546,13 @@
         <GroupBox
           Grid.Row="1"
           Grid.Column="1"
-          Header="VERT_LEVEL"
-          IsEnabled="{Binding HasReviewState}"
+          Header="VERT__LEVEL"
+          IsEnabled="{Binding CanEditRoadValues}"
         >
           <GroupBox.Style>
             <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
               <Style.Triggers>
-                <DataTrigger Binding="{Binding ReviewState.IsVerticalLevelChanged}" Value="True">
+                <DataTrigger Binding="{Binding RoadValueState.IsVerticalLevelChanged}" Value="True">
                   <Setter Property="BorderBrush" Value="{StaticResource HighlightYellowBrush}" />
                   <Setter Property="BorderThickness" Value="3" />
                 </DataTrigger>
@@ -556,20 +563,20 @@
             ItemsSource="{Binding VerticalLevelValues}"
             DisplayMemberPath="Description"
             SelectedValuePath="Code"
-            SelectedValue="{Binding ReviewState.VerticalLevel}"
+            SelectedValue="{Binding RoadValueState.VerticalLevel}"
             Margin="3"
           />
         </GroupBox>
         <GroupBox
           Grid.Row="1"
           Grid.Column="2"
-          Header="SPEED_LMT"
-          IsEnabled="{Binding HasReviewState}"
+          Header="SPEED__LMT"
+          IsEnabled="{Binding CanEditRoadValues}"
         >
           <GroupBox.Style>
             <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
               <Style.Triggers>
-                <DataTrigger Binding="{Binding ReviewState.IsSpeedLimitChanged}" Value="True">
+                <DataTrigger Binding="{Binding RoadValueState.IsSpeedLimitChanged}" Value="True">
                   <Setter Property="BorderBrush" Value="{StaticResource HighlightYellowBrush}" />
                   <Setter Property="BorderThickness" Value="3" />
                 </DataTrigger>
@@ -578,16 +585,21 @@
           </GroupBox.Style>
           <ComboBox
             ItemsSource="{Binding SpeedLimitValues}"
-            SelectedItem="{Binding ReviewState.SpeedLimit}"
+            SelectedItem="{Binding RoadValueState.SpeedLimit}"
             Margin="3"
           />
         </GroupBox>
-        <GroupBox Grid.Row="1" Grid.Column="3" Header="STATUS" IsEnabled="{Binding HasReviewState}">
+        <GroupBox
+          Grid.Row="1"
+          Grid.Column="3"
+          Header="STATUS"
+          IsEnabled="{Binding CanEditRoadValues}"
+        >
           <ComboBox
             ItemsSource="{Binding StatusValues}"
             DisplayMemberPath="Description"
             SelectedValuePath="Code"
-            SelectedValue="{Binding ReviewState.Status}"
+            SelectedValue="{Binding RoadValueState.Status}"
             Margin="3"
           />
         </GroupBox>

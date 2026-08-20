@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,6 +30,9 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     private string _statusMessage = "Select one DFC_RESULT feature to load it in the editor";
     private string _updateDfcObjectIdErrorMessage = string.Empty;
     private string _utransDatabaseVersion = DefaultVersionMessage;
+    private IReadOnlyList<DfcSelectionSnapshot> _selectedNewRecords = [];
+    private EditorReviewState? _newRoadValueState;
+    private string _selectedDfcObjectIds = string.Empty;
     private bool _codedValueOptionsLoaded;
 
     internal UtransEditorDockpaneViewModel()
@@ -95,14 +99,27 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
             OnPropertyChanged(nameof(HasReviewState));
             OnPropertyChanged(nameof(AvailableReviewState));
             OnPropertyChanged(nameof(CanAddNew));
+            OnPropertyChanged(nameof(CanEditRoadValues));
+            OnPropertyChanged(nameof(RoadValueState));
+            OnPropertyChanged(nameof(DisplayDfcStatus));
         }
     }
 
     public bool HasReviewState => ReviewState?.Selection?.UtransRoad is not null;
 
-    public bool CanAddNew => ReviewState?.Selection?.IsNotYetCopiedNewRecord == true;
+    public bool CanAddNew =>
+        _selectedNewRecords.Count > 0 || ReviewState?.Selection?.IsNotYetCopiedNewRecord == true;
+
+    public bool CanEditRoadValues => HasReviewState || CanAddNew;
+
+    public bool HasMultipleNewRecords => _selectedNewRecords.Count > 1;
+
+    public string DisplayDfcStatus =>
+        HasMultipleNewRecords ? "COMPLETED" : ReviewState?.DfcStatus ?? string.Empty;
 
     public EditorReviewState AvailableReviewState => ReviewState ?? EmptyReviewState;
+    public EditorReviewState RoadValueState =>
+        _newRoadValueState ?? ReviewState ?? EmptyReviewState;
 
     public string ChangeTypeMessage
     {
@@ -115,6 +132,21 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
             }
 
             _changeTypeMessage = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SelectedDfcObjectIds
+    {
+        get => _selectedDfcObjectIds;
+        private set
+        {
+            if (_selectedDfcObjectIds == value)
+            {
+                return;
+            }
+
+            _selectedDfcObjectIds = value;
             OnPropertyChanged();
         }
     }
@@ -201,7 +233,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
 
     private async Task AddNewAsync()
     {
-        if (ReviewState is null)
+        if (_selectedNewRecords.Count == 0 && ReviewState is null)
         {
             return;
         }
@@ -209,10 +241,14 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
         try
         {
             var layers = await _layerValidationService.GetRequiredLayersAsync();
-            var dfcObjectId = ReviewState.Selection.ObjectId;
-            await _utransEditService.CreateNewUtransRoadAsync(layers, ReviewState);
-            await LoadSelectedDfcAsync();
-            StatusMessage = $"Created the target UTRANS road for DFC record {dfcObjectId}.";
+            var selections =
+                _selectedNewRecords.Count > 0 ? _selectedNewRecords
+                : ReviewState?.Selection is { IsNotYetCopiedNewRecord: true } selection
+                    ? [selection]
+                : [];
+            await _utransEditService.CreateNewUtransRoadsAsync(layers, selections, RoadValueState);
+            StatusMessage =
+                $"Created {selections.Count} UTRANS road(s) for DFC record(s) {string.Join(", ", selections.Select(selection => selection.ObjectId))}.";
         }
         catch (Exception exception)
         {
@@ -307,6 +343,19 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
             RemainingDfcRecords = await _dfcSelectionService.GetRemainingCountAsync(layers);
             UtransDatabaseVersion = await versionTask;
 
+            var selectedNewRecords = await _dfcSelectionService.LoadSelectedNewRecordsAsync(layers);
+            if (selectedNewRecords.Count > 0)
+            {
+                ReviewState = null;
+                SetSelectedNewRecords(selectedNewRecords);
+                ChangeTypeMessage = "New";
+                StatusMessage =
+                    $"Selected new DFC records {SelectedDfcObjectIds}. Click Add New to create UTRANS roads.";
+                return;
+            }
+
+            SetSelectedNewRecords([]);
+
             var selection = await _dfcSelectionService.LoadSelectedAsync(layers);
             if (selection is null)
             {
@@ -323,10 +372,31 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
         catch (Exception exception)
         {
             ReviewState = null;
+            SetSelectedNewRecords([]);
             ChangeTypeMessage = exception.Message;
             RemainingDfcRecords = null;
             StatusMessage = exception.Message;
         }
+    }
+
+    private void SetSelectedNewRecords(IReadOnlyList<DfcSelectionSnapshot> selections)
+    {
+        _selectedNewRecords = selections;
+        _newRoadValueState = selections.Count switch
+        {
+            0 => null,
+            1 => new EditorReviewState(selections[0]),
+            _ => new EditorReviewState(),
+        };
+        SelectedDfcObjectIds = string.Join(
+            ", ",
+            selections.Select(selection => selection.ObjectId)
+        );
+        OnPropertyChanged(nameof(CanAddNew));
+        OnPropertyChanged(nameof(CanEditRoadValues));
+        OnPropertyChanged(nameof(HasMultipleNewRecords));
+        OnPropertyChanged(nameof(DisplayDfcStatus));
+        OnPropertyChanged(nameof(RoadValueState));
     }
 
     private async Task LoadCodedValueOptionsAsync(EditorLayerContext layers)
