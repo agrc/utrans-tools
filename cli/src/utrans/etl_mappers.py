@@ -164,6 +164,7 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
                 if resolved is not None:
                     row[target_index] = resolved
                 elif has_value(row[source_index]):
+                    row[target_index] = source_value
                     notes_index = indexes.get("UTRANS_NOTES")
                     if notes_index is not None:
                         row[notes_index] = (
