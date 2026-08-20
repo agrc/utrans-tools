@@ -43,5 +43,12 @@
       "approve": true,
       "matchCommandLine": true
     }
-  }
+  },
+  "[csharp]": {
+    "editor.defaultFormatter": "csharpier.csharpier-vscode"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "csharpier.csharpier-vscode"
+  },
+  "editor.formatOnSave": false,
 }
