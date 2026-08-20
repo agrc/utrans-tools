@@ -31,6 +31,16 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
                     )
                 )
         );
+        Cartocode = "11";
+        Oneway = "0";
+        VerticalLevel = "0";
+        SpeedLimit = "25";
+        Status = "Active";
+        DfcStatus = "COMPLETED";
+        _initialCartocode = Cartocode;
+        _initialOneway = Oneway;
+        _initialVerticalLevel = VerticalLevel;
+        _initialSpeedLimit = SpeedLimit;
 
         static AttributeReviewField CreateEmptyField(string fieldName, bool isAddressRange) =>
             new(fieldName, string.Empty, string.Empty, isAddressRange);
@@ -40,6 +50,7 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
     {
         Selection = selection;
         var utransRoad = selection.UtransRoad;
+        var roadValues = utransRoad ?? selection.CountyRoad;
         Fields = new ObservableCollection<AttributeReviewField>(
             UtransEditorConfiguration
                 .EditableAddressFields.Select(field => CreateField(field, true))
@@ -50,21 +61,21 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
                 )
         );
 
-        Cartocode = string.IsNullOrWhiteSpace(utransRoad?.GetText("CARTOCODE"))
+        Cartocode = string.IsNullOrWhiteSpace(roadValues.GetText("CARTOCODE"))
             ? "11"
-            : utransRoad!.GetText("CARTOCODE");
-        Oneway = string.IsNullOrWhiteSpace(utransRoad?.GetText("ONEWAY"))
+            : roadValues.GetText("CARTOCODE");
+        Oneway = string.IsNullOrWhiteSpace(roadValues.GetText("ONEWAY"))
             ? "0"
-            : utransRoad!.GetText("ONEWAY");
-        VerticalLevel = string.IsNullOrWhiteSpace(utransRoad?.GetText("VERT_LEVEL"))
+            : roadValues.GetText("ONEWAY");
+        VerticalLevel = string.IsNullOrWhiteSpace(roadValues.GetText("VERT_LEVEL"))
             ? "0"
-            : utransRoad!.GetText("VERT_LEVEL");
-        SpeedLimit = string.IsNullOrWhiteSpace(utransRoad?.GetText("SPEED_LMT"))
+            : roadValues.GetText("VERT_LEVEL");
+        SpeedLimit = string.IsNullOrWhiteSpace(roadValues.GetText("SPEED_LMT"))
             ? "25"
-            : utransRoad!.GetText("SPEED_LMT");
-        Status = string.IsNullOrWhiteSpace(utransRoad?.GetText("STATUS"))
+            : roadValues.GetText("SPEED_LMT");
+        Status = string.IsNullOrWhiteSpace(roadValues.GetText("STATUS"))
             ? "Active"
-            : utransRoad!.GetText("STATUS");
+            : roadValues.GetText("STATUS");
         _initialCartocode = Cartocode;
         _initialOneway = Oneway;
         _initialVerticalLevel = VerticalLevel;

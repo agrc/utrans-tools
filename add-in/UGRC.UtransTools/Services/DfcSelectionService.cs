@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using ArcGIS.Core.Data;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -61,6 +62,53 @@ internal sealed class DfcSelectionService
             }
 
             return (int)featureClass.GetCount(queryFilter);
+        });
+    }
+
+    internal Task<IReadOnlyList<DfcSelectionSnapshot>> LoadSelectedNewRecordsAsync(
+        EditorLayerContext layers
+    )
+    {
+        return QueuedTask.Run(() =>
+        {
+            var selectedObjectIds = layers.DfcResults.GetSelection().GetObjectIDs();
+            if (selectedObjectIds.Count < 2)
+            {
+                return (IReadOnlyList<DfcSelectionSnapshot>)[];
+            }
+
+            var dfcFeatureClass = layers.DfcResults.GetFeatureClass();
+            var selections = selectedObjectIds
+                .Select(objectId =>
+                {
+                    var dfc = ReadFeature(dfcFeatureClass, objectId);
+                    var updateFeatureId = ReadInt64(dfc.Attributes, "UPDATE_FID");
+                    var baseFeatureId = ReadInt64(dfc.Attributes, "BASE_FID");
+                    var changeType = dfc.GetText("CHANGE_TYPE");
+                    return new DfcSelectionSnapshot(
+                        dfc.ObjectId,
+                        updateFeatureId,
+                        baseFeatureId,
+                        changeType,
+                        GetChangeLabel(changeType, baseFeatureId),
+                        dfc,
+                        ReadFeature(layers.CountyRoads.GetFeatureClass(), updateFeatureId),
+                        null
+                    );
+                })
+                .ToList();
+
+            var ineligibleObjectIds = selections
+                .Where(selection => !selection.IsNotYetCopiedNewRecord)
+                .Select(selection => selection.ObjectId);
+            if (ineligibleObjectIds.Any())
+            {
+                throw new InvalidOperationException(
+                    $"Only unlinked New DFC_RESULT features can be copied. Ineligible ObjectIDs: {string.Join(", ", ineligibleObjectIds)}."
+                );
+            }
+
+            return selections;
         });
     }
 

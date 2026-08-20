@@ -13,14 +13,21 @@ namespace UGRC.UtransTools.Services;
 
 internal sealed class UtransEditService
 {
-    internal Task CreateNewUtransRoadAsync(EditorLayerContext layers, EditorReviewState state)
+    internal Task CreateNewUtransRoadsAsync(
+        EditorLayerContext layers,
+        IReadOnlyList<DfcSelectionSnapshot> selections,
+        EditorReviewState roadValues
+    )
     {
         return QueuedTask.Run(async () =>
         {
-            if (state.Selection is not { IsNotYetCopiedNewRecord: true } selection)
+            if (
+                selections.Count == 0
+                || selections.Any(selection => !selection.IsNotYetCopiedNewRecord)
+            )
             {
                 throw new InvalidOperationException(
-                    "The selected DFC record is not eligible to create a new UTRANS road."
+                    "All selected DFC records must be unlinked New records to create UTRANS roads."
                 );
             }
 
@@ -29,15 +36,27 @@ internal sealed class UtransEditService
                 Name = "Add new UTRANS road",
                 SelectModifiedFeatures = false,
             };
-            var newRoad = createOperation.Create(
-                layers.UtransRoads,
-                selection.CountyRoad.Shape,
-                GetCountyRoadValues(selection.CountyRoad)
-            );
+            var utransFeatureClass = layers.UtransRoads.GetFeatureClass();
+            var newRoads = selections
+                .Select(selection => new
+                {
+                    Selection = selection,
+                    NewRoad = createOperation.Create(
+                        layers.UtransRoads,
+                        selection.CountyRoad.Shape,
+                        GetCountyRoadValues(
+                            selection.CountyRoad,
+                            utransFeatureClass,
+                            roadValues,
+                            selections.Count > 1
+                        )
+                    ),
+                })
+                .ToList();
             if (!await createOperation.ExecuteAsync())
             {
                 throw new InvalidOperationException(
-                    createOperation.ErrorMessage ?? "The new UTRANS road could not be created."
+                    createOperation.ErrorMessage ?? "The new UTRANS roads could not be created."
                 );
             }
 
@@ -46,35 +65,25 @@ internal sealed class UtransEditService
                 Name = "Link DFC record to new UTRANS road",
                 SelectModifiedFeatures = false,
             };
-            linkOperation.Modify(
-                layers.DfcResults,
-                selection.ObjectId,
-                new Dictionary<string, object?> { ["BASE_FID"] = newRoad.ObjectID }
-            );
+            foreach (var newRoad in newRoads)
+            {
+                var values = new Dictionary<string, object?>
+                {
+                    ["BASE_FID"] = newRoad.NewRoad.ObjectID,
+                    [UtransEditorConfiguration.DfcDispositionField] = "COMPLETED",
+                };
+
+                linkOperation.Modify(layers.DfcResults, newRoad.Selection.ObjectId, values);
+            }
             if (!await linkOperation.ExecuteAsync())
             {
                 throw new InvalidOperationException(
-                    linkOperation.ErrorMessage ?? "The new UTRANS road could not be linked to DFC."
+                    linkOperation.ErrorMessage ?? "The new UTRANS roads could not be linked to DFC."
                 );
             }
 
-            var dfcObjectIdField = layers
-                .DfcResults.GetFeatureClass()
-                .GetDefinition()
-                .GetObjectIDField();
-            layers.DfcResults.Select(
-                new QueryFilter { WhereClause = $"{dfcObjectIdField} = {selection.ObjectId}" },
-                SelectionCombinationMethod.New
-            );
-
-            var utransObjectIdField = layers
-                .UtransRoads.GetFeatureClass()
-                .GetDefinition()
-                .GetObjectIDField();
-            layers.UtransRoads.Select(
-                new QueryFilter { WhereClause = $"{utransObjectIdField} = {newRoad.ObjectID}" },
-                SelectionCombinationMethod.New
-            );
+            layers.DfcResults.ClearSelection();
+            layers.UtransRoads.ClearSelection();
         });
     }
 
@@ -199,19 +208,38 @@ internal sealed class UtransEditService
         return values;
     }
 
-    private static Dictionary<string, object?> GetCountyRoadValues(RoadSnapshot countyRoad)
+    private static Dictionary<string, object?> GetCountyRoadValues(
+        RoadSnapshot countyRoad,
+        FeatureClass utransFeatureClass,
+        EditorReviewState roadValues,
+        bool applyRoadValueOverrides
+    )
     {
         var values = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
-        foreach (var fieldName in UtransEditorConfiguration.CommonRoadFields)
+        foreach (var field in utransFeatureClass.GetDefinition().GetFields())
         {
-            if (countyRoad.Attributes.TryGetValue(fieldName, out var value))
+            if (field.IsEditable && countyRoad.Attributes.TryGetValue(field.Name, out var value))
             {
-                values[fieldName] = value;
+                values[field.Name] = value;
             }
+        }
+
+        if (applyRoadValueOverrides)
+        {
+            values["CARTOCODE"] = roadValues.Cartocode;
+            values["ONEWAY"] = roadValues.Oneway;
+            values["VERT_LEVEL"] = roadValues.VerticalLevel;
+            values["SPEED_LMT"] = roadValues.SpeedLimit;
+            values["STATUS"] = roadValues.Status;
         }
 
         return values;
     }
+
+    private static string BuildObjectIdWhereClause(
+        string objectIdField,
+        IEnumerable<long> objectIds
+    ) => $"{objectIdField} IN ({string.Join(", ", objectIds)})";
 
     private static string BuildFullName(IReadOnlyDictionary<string, object?> values)
     {
