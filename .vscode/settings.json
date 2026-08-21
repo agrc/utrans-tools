@@ -50,5 +50,8 @@
   "[xml]": {
     "editor.defaultFormatter": "csharpier.csharpier-vscode"
   },
+  "[xaml]": {
+    "editor.formatOnSave": false
+  },
   "editor.formatOnSave": true
 }

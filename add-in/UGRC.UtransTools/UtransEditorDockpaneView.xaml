@@ -513,7 +513,7 @@
         <GroupBox Grid.Column="3" Header="Change Status" IsEnabled="{Binding HasReviewState}">
           <ComboBox
             ItemsSource="{Binding DfcStatusValues}"
-            SelectedItem="{Binding DisplayDfcStatus, Mode=OneWay}"
+            SelectedItem="{Binding ReviewState.DfcStatus, Mode=TwoWay, FallbackValue=COMPLETED}"
             Margin="3"
           />
         </GroupBox>

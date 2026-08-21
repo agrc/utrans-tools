@@ -36,7 +36,7 @@ internal sealed class UtransEditService
                 Name = "Add new UTRANS road",
                 SelectModifiedFeatures = false,
             };
-            var utransFeatureClass = layers.UtransRoads.GetFeatureClass();
+            using var utransFeatureClass = layers.UtransRoads.GetFeatureClass();
             var newRoads = selections
                 .Select(selection => new
                 {
@@ -235,11 +235,6 @@ internal sealed class UtransEditService
 
         return values;
     }
-
-    private static string BuildObjectIdWhereClause(
-        string objectIdField,
-        IEnumerable<long> objectIds
-    ) => $"{objectIdField} IN ({string.Join(", ", objectIds)})";
 
     private static string BuildFullName(IReadOnlyDictionary<string, object?> values)
     {

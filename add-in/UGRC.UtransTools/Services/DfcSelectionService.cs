@@ -77,7 +77,8 @@ internal sealed class DfcSelectionService
                 return (IReadOnlyList<DfcSelectionSnapshot>)[];
             }
 
-            var dfcFeatureClass = layers.DfcResults.GetFeatureClass();
+            using var dfcFeatureClass = layers.DfcResults.GetFeatureClass();
+            using var countyRoadsFeatureClass = layers.CountyRoads.GetFeatureClass();
             var selections = selectedObjectIds
                 .Select(objectId =>
                 {
@@ -92,7 +93,7 @@ internal sealed class DfcSelectionService
                         changeType,
                         GetChangeLabel(changeType, baseFeatureId),
                         dfc,
-                        ReadFeature(layers.CountyRoads.GetFeatureClass(), updateFeatureId),
+                        ReadFeature(countyRoadsFeatureClass, updateFeatureId),
                         null
                     );
                 })
