@@ -50,5 +50,5 @@
   "[xml]": {
     "editor.defaultFormatter": "csharpier.csharpier-vscode"
   },
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true
 }
