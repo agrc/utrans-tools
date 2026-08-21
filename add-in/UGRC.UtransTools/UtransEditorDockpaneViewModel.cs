@@ -19,6 +19,8 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
 {
     private const string DockPaneId = "UGRC_UtransTools_UtransEditorDockpane";
     private const string DefaultVersionMessage = "not versioned";
+    private const string SelectDfcFeatureMessage =
+        "Please select one or more features from the DFC_RESULT layer.";
     private static readonly EditorReviewState EmptyReviewState = new();
     private readonly LayerValidationService _layerValidationService = new();
     private readonly DfcSelectionService _dfcSelectionService = new();
@@ -26,7 +28,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     private readonly UtransEditService _utransEditService = new();
     private EditorReviewState? _reviewState;
     private int? _remainingDfcRecords;
-    private string _changeTypeMessage = "Please select a feature from DFC_RESULT layer";
+    private string _changeTypeMessage = SelectDfcFeatureMessage;
     private string _statusMessage = "Select one DFC_RESULT feature to load it in the editor";
     private string _updateDfcObjectIdErrorMessage = string.Empty;
     private string _utransDatabaseVersion = DefaultVersionMessage;
@@ -247,6 +249,10 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
                     ? [selection]
                 : [];
             await _utransEditService.CreateNewUtransRoadsAsync(layers, selections, RoadValueState);
+            ReviewState = null;
+            SetSelectedNewRecords([]);
+            RemainingDfcRecords = await _dfcSelectionService.GetRemainingCountAsync(layers);
+            ChangeTypeMessage = SelectDfcFeatureMessage;
             StatusMessage =
                 $"Created {selections.Count} UTRANS road(s) for DFC record(s) {string.Join(", ", selections.Select(selection => selection.ObjectId))}.";
         }
@@ -269,7 +275,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
             await _utransEditService.SaveAsync(layers, ReviewState);
             var savedObjectId = ReviewState.Selection.ObjectId;
             ReviewState = null;
-            ChangeTypeMessage = "Please select one feature from DFC_RESULT layer.";
+            ChangeTypeMessage = SelectDfcFeatureMessage;
             StatusMessage = $"Saved DFC record {savedObjectId}.";
         }
         catch (Exception exception)
@@ -360,7 +366,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
             if (selection is null)
             {
                 ReviewState = null;
-                ChangeTypeMessage = "Please select one feature from DFC_RESULT layer.";
+                ChangeTypeMessage = SelectDfcFeatureMessage;
                 StatusMessage = "No DFC_RESULT feature is currently selected.";
                 return;
             }
