@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -105,7 +105,7 @@ def domain_values(utrans_roads: str) -> dict[str, dict[str, str]]:
     return resolved
 
 
-def resolve_domain_value(value: object, values: dict[str, str]) -> str | None:
+def resolve_domain_value(value: object, values: Mapping[str, str]) -> str | None:
     if not has_value(value):
         return ""
     normalized = str(value).strip().upper()

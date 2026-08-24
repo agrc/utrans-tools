@@ -13,6 +13,8 @@ from utrans.etl_common import (
     parse_full_address,
     resolve_domain_value,
 )
+from utrans.etl_handlers import profile_handler
+from utrans.etl_rules import apply_rules, profile_rules
 from utrans.profiles import CountyProfile
 
 
@@ -69,6 +71,61 @@ def _parse_sources(profile: CountyProfile) -> tuple[tuple[str, str], ...]:
     return tuple(result)
 
 
+def _value_mappings(profile: CountyProfile) -> dict[str, dict[str, str]]:
+    """Return configured source-value to target-value mappings by target field."""
+    value = profile.get("value_mappings", {})
+    if not isinstance(value, Mapping):
+        raise TypeError(
+            f"Profile '{profile.key}' setting 'value_mappings' must be an object."
+        )
+    mappings: dict[str, dict[str, str]] = {}
+    for target, values in value.items():
+        if not isinstance(target, str) or not isinstance(values, Mapping):
+            raise TypeError(
+                f"Profile '{profile.key}' value_mappings must map field names to objects."
+            )
+        if not all(
+            isinstance(source, str) and isinstance(destination, str)
+            for source, destination in values.items()
+        ):
+            raise TypeError(
+                f"Profile '{profile.key}' value_mappings for '{target}' must map strings to strings."
+            )
+        mappings[target.upper()] = {
+            source.strip().upper(): destination.strip()
+            for source, destination in values.items()
+        }
+    return mappings
+
+
+def _validate_value_mappings(
+    profile: CountyProfile,
+    value_mappings: Mapping[str, Mapping[str, str]],
+    names: Mapping[str, str],
+    domains: Mapping[str, Mapping[str, str]],
+) -> None:
+    for target, values in value_mappings.items():
+        if target not in names:
+            raise ValueError(
+                f"Profile '{profile.key}' value_mappings references unknown target field "
+                f"'{target}'."
+            )
+        domain = domains.get(target)
+        if domain is None:
+            continue
+        invalid = [
+            value
+            for value in values.values()
+            if resolve_domain_value(value, domain) is None
+        ]
+        if invalid:
+            rendered = ", ".join(repr(value) for value in invalid)
+            raise ValueError(
+                f"Profile '{profile.key}' value_mappings for '{target}' contains values "
+                f"outside the target domain: {rendered}."
+            )
+
+
 def _excluded_values(profile: CountyProfile) -> dict[str, set[str]]:
     value = profile.get("exclude_if_any", "")
     if isinstance(value, str):
@@ -113,6 +170,9 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
     if not mappings:
         raise RuntimeError(f"Profile '{profile.key}' requires field_mappings for ETL.")
     parse_sources = _parse_sources(profile)
+    value_mappings = _value_mappings(profile)
+    rules = profile_rules(profile)
+    handler = profile_handler(profile)
     names = field_name_map(feature_class)
     mappings = {
         **{
@@ -139,6 +199,7 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
     source_fields = [
         *mappings.values(),
         *(source for source, _ in parse_sources),
+        *(handler.required_fields if handler is not None else ()),
     ]
     fields = list(
         dict.fromkeys(
@@ -154,6 +215,7 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
         if field.type == "String"
     }
     domains = domain_values(utrans_roads)
+    _validate_value_mappings(profile, value_mappings, names, domains)
     posttypes = domains.get("POSTTYPE", {})
     vertical_translation = profile.get("translate_vertical_levels", False)
     if not isinstance(vertical_translation, bool):
@@ -177,6 +239,9 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
                     source_value = {"1": "0", "2": "1", "3": "2"}.get(
                         str(source_value).strip(), source_value
                     )
+                source_value = value_mappings.get(target.upper(), {}).get(
+                    str(source_value).strip().upper(), source_value
+                )
                 resolved = resolve_domain_value(source_value, values)
                 if resolved is not None:
                     row[target_index] = resolved
@@ -217,6 +282,9 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
                     index = indexes.get(f"{prefix}{suffix}".upper())
                     if index is not None:
                         row[index] = value
+            apply_rules(row, indexes, rules)
+            if handler is not None:
+                handler.apply(row, indexes, domains)
             for field, value in (
                 ("COUNTY_L", profile.require("fips")),
                 ("COUNTY_R", profile.require("fips")),

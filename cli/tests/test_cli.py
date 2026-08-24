@@ -78,7 +78,7 @@ def test_county_boundary_name_is_uppercase(county, expected):
 def test_saltlake_profile_replaces_vecc():
     profiles = load_profiles()
 
-    assert profiles["saltlake"].require("fips") == "49035"
+    assert profiles["saltlake"].require("fips") == "49035 - Salt Lake"
     assert "vecc" not in profiles
 
 
