@@ -20,12 +20,36 @@
     "field_mappings": "FROMADDR_L=FAL; TOADDR_L=TAL; FROMADDR_R=FAR; TOADDR_R=TAR; NAME=STNAME; A1_NAME=ALIAS; A2_NAME=ALIAS2",
     "parse_sources": "STNAME=PRIMARY; ALIAS=A1; ALIAS2=A2"
   },
+  "carbon": {
+    "fips": "49007",
+    "match_fields": "NAME NAME",
+    "compare_fields": "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R",
+    "field_mappings": "FULLNAME=FULLNAME_; FROMADDR_L=FROMADDR_L_; TOADDR_L=TOADDR_L_; FROMADDR_R=FROMADDR_R_; TOADDR_R=TOADDR_R_; PREDIR=PREDIR_; NAME=NAME_; POSTTYPE=POSTTYPE_; POSTDIR=POSTDIR_; LOCAL_UID=LOCAL_UID_"
+  },
   "daggett": {
     "fips": "49009",
     "match_fields": "S_NAME S_NAME",
     "compare_fields": "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ACS_ALIAS ACS_ALIAS; SUF_DIR SUF_DIR",
     "field_mappings": "FROMADDR_L=L_F_ADD; TOADDR_L=L_T_ADD; FROMADDR_R=R_F_ADD; TOADDR_R=R_T_ADD; PREDIR=PRE_DIR; NAME=S_NAME; A2_NAME=ALIAS2; LOCAL_UID=CO_UNIQUE; STATUS=S_STATUS; POSTTYPE=S_TYPE; A2_POSTTYPE=ALIAS2_TYP; DOT_CLASS=CLASS; ONEWAY=ONE_WAY; DOT_SRFTYP=S_SURF2; SPEED_LMT=SPD_LMT",
     "parse_sources": "ALIAS1=A1; ALIAS2=A2; ACS_ALIAS=A1"
+  },
+  "davis": {
+    "fips": "49011",
+    "match_fields": "RoadName RoadName",
+    "compare_fields": "PrefixDirection PrefixDirection; RoadName RoadName; RoadNameType RoadNameType; PostDirection PostDirection; RoadAliasName RoadAliasName; LeftFrom LeftFrom; LeftTo LeftTo; RightFrom RightFrom; RightTo RightTo; MPH MPH",
+    "required_fields": [
+      "PrefixDirection",
+      "RoadName",
+      "RoadNameType",
+      "PostDirection",
+      "RoadAliasName",
+      "LeftFrom",
+      "LeftTo",
+      "RightFrom",
+      "RightTo",
+      "MPH"
+    ],
+    "field_mappings": "FROMADDR_L=LeftFrom; TOADDR_L=LeftTo; FROMADDR_R=RightFrom; TOADDR_R=RightTo; PREDIR=PrefixDirection; NAME=RoadName; POSTDIR=PostDirection"
   },
   "duchesne": {
     "fips": "49013",
@@ -41,12 +65,6 @@
     "compare_fields": "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; ALIAS2_TYP ALIAS2_TYP; SUF_DIR SUF_DIR",
     "field_mappings": "FROMADDR_L=L_F_ADD; TOADDR_L=L_T_ADD; FROMADDR_R=R_F_ADD; TOADDR_R=R_T_ADD; PREDIR=PRE_DIR; NAME=S_NAME; POSTDIR=SUF_DIR; LOCAL_UID=CO_UNIQUE; STATUS=STATUS_; POSTTYPE=S_TYPE; DOT_CLASS=CLASS; ONEWAY=ONE_WAY; DOT_SRFTYP=S_SURF2; SPEED_LMT=SPD_LMT; A1_POSTTYPE=ALIAS1_TYP; A2_POSTTYPE=ALIAS2_TYP",
     "exclude_if_any": "S_SURF=400,410,420,430,440"
-  },
-  "carbon": {
-    "fips": "49007",
-    "match_fields": "NAME NAME",
-    "compare_fields": "PREDIR PREDIR; NAME NAME; POSTTYPE POSTTYPE; POSTDIR POSTDIR; FROMADDR_L FROMADDR_L; TOADDR_L TOADDR_L; FROMADDR_R FROMADDR_R; TOADDR_R TOADDR_R",
-    "field_mappings": "FULLNAME=FULLNAME_; FROMADDR_L=FROMADDR_L_; TOADDR_L=TOADDR_L_; FROMADDR_R=FROMADDR_R_; TOADDR_R=TOADDR_R_; PREDIR=PREDIR_; NAME=NAME_; POSTTYPE=POSTTYPE_; POSTDIR=POSTDIR_; LOCAL_UID=LOCAL_UID_"
   },
   "garfield": {
     "fips": "49017",
@@ -180,23 +198,5 @@
     "match_fields": "S_NAME S_NAME",
     "compare_fields": "PREDIR PREDIR; S_NAME S_NAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ALIAS ALIAS; ACS_ALIAS ACS_ALIAS; SUFFIX_911 SUFFIX_911; LEFTFROM LEFTFROM; LEFTTO LEFTTO; RIGHTFROM RIGHTFROM; RIGHTTO RIGHTTO",
     "field_mappings": "FROMADDR_L=LEFTFROM; TOADDR_L=LEFTTO; FROMADDR_R=RIGHTFROM; TOADDR_R=RIGHTTO; PREDIR=PREDIR; NAME=S_NAME; POSTDIR=SUFDIR; LOCAL_UID=S_UNIQUE"
-  },
-  "davis": {
-    "fips": "49011",
-    "match_fields": "RoadName RoadName",
-    "compare_fields": "PrefixDirection PrefixDirection; RoadName RoadName; RoadNameType RoadNameType; PostDirection PostDirection; RoadAliasName RoadAliasName; LeftFrom LeftFrom; LeftTo LeftTo; RightFrom RightFrom; RightTo RightTo; MPH MPH",
-    "required_fields": [
-      "PrefixDirection",
-      "RoadName",
-      "RoadNameType",
-      "PostDirection",
-      "RoadAliasName",
-      "LeftFrom",
-      "LeftTo",
-      "RightFrom",
-      "RightTo",
-      "MPH"
-    ],
-    "field_mappings": "FROMADDR_L=LeftFrom; TOADDR_L=LeftTo; FROMADDR_R=RightFrom; TOADDR_R=RightTo; PREDIR=PrefixDirection; NAME=RoadName; POSTDIR=PostDirection"
   }
 }
