@@ -30,7 +30,9 @@ def test_add_missing_template_fields_reports_failed_field(monkeypatch):
     )
     monkeypatch.setattr(etl_common.arcpy.management, "AddField", add_field)
 
-    with pytest.raises(RuntimeError, match=r"ROAD_NAME.*String.*length=5.*invalid length"):
+    with pytest.raises(
+        RuntimeError, match=r"ROAD_NAME.*String.*length=5.*invalid length"
+    ):
         etl_common.add_missing_template_fields("source", "target")
 
     add_field.assert_called_once_with("source", "ROAD_NAME", "String", field_length=5)
