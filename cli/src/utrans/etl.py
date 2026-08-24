@@ -105,7 +105,7 @@ def run_etl(
 
         log(f"Applying {county} county field mappings")
         apply_mapper(staging_source, profile, utrans_roads)
-        normalize_target_fields(staging_source)
+        normalize_target_fields(staging_source, utrans_roads)
 
         log("Appending transformed roads to the target schema")
         arcpy.management.Append(staging_source, staging_output, "NO_TEST")

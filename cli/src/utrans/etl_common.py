@@ -142,10 +142,19 @@ def add_missing_template_fields(source_features: str, utrans_roads: str) -> None
             ) from exc
 
 
-def normalize_target_fields(feature_class: str) -> None:
+def normalize_target_fields(feature_class: str, utrans_roads: str | None = None) -> None:
     """Normalize target nulls, casing, and legacy name conventions in place."""
     names = field_name_map(feature_class)
     text_fields = [names[name] for name in CORE_TEXT_FIELDS if name in names]
+    field_lengths: dict[str, int | None] = {}
+    if utrans_roads is not None:
+        for field in arcpy.ListFields(utrans_roads):
+            if field.type != "String" or field.name.upper() not in names:
+                continue
+            actual_name = names[field.name.upper()]
+            if actual_name not in text_fields:
+                text_fields.append(actual_name)
+            field_lengths[actual_name.upper()] = field.length
     numeric_fields = [names[name] for name in CORE_NUMERIC_FIELDS if name in names]
     fields = text_fields + numeric_fields
     if not fields:
@@ -161,6 +170,13 @@ def normalize_target_fields(feature_class: str) -> None:
                     row[index] = 0
 
             row = _normalize_names(row, fields)
+            for index, field in enumerate(fields):
+                length = field_lengths.get(field.upper())
+                if length is not None and len(str(row[index])) > length:
+                    raise RuntimeError(
+                        f"Field length exceeded. Field: {field}. "
+                        f"Value: {row[index]!r}"
+                    )
             cursor.updateRow(row)
 
 

@@ -21,8 +21,11 @@ The county's five-digit FIPS code written to `COUNTY_L` and `COUNTY_R` during ET
 A semicolon-delimited list of `UTRANS_FIELD=COUNTY_FIELD` assignments. These map
 county source fields into the target schema after colliding source fields have been
 renamed with an underscore. When the UTRANS destination has a coded-value domain,
-the assignment is validated against that domain from `--utrans-roads`; invalid values
-are appended to `UTRANS_NOTES`.
+valid aliases are converted to coded values. Invalid values are preserved and
+appended to `UTRANS_NOTES` in all cases. An invalid value is also copied to the
+destination field when it fits within that field's length; otherwise the destination
+field is left at its default value. Values that exceed the destination field length
+are reported with the field and value.
 
 ```json
 "field_mappings": "FROMADDR_L=L_F_ADD; TOADDR_L=L_T_ADD; NAME=STREETNAME"
@@ -40,7 +43,8 @@ names. `TARGET` is `PRIMARY`, `A1`, or `A2`.
 **Type:** `boolean` | **Optional** — defaults to `false`
 
 When `true`, legacy vertical values `1`, `2`, and `3` are translated to `0`, `1`,
-and `2` before target-domain validation.
+and `2` before domain-value matching. Invalid values are still preserved when they
+fit within the destination field length and are always appended to `UTRANS_NOTES`.
 
 ### `exclude_if_any`
 
