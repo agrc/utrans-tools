@@ -31,6 +31,69 @@ are reported with the field and value.
 "field_mappings": "FROMADDR_L=L_F_ADD; TOADDR_L=L_T_ADD; NAME=STREETNAME"
 ```
 
+### `value_mappings`
+
+**Type:** `object` | **Optional** — defaults to `{}`
+
+Per-target mappings for source values that do not match a UTRANS coded-value
+domain code or description. Each target field contains an object mapping the
+source value to the desired target value. Field names and source values are
+matched case-insensitively after surrounding whitespace is removed. The mapped
+target value is then resolved against the destination coded-value domain, so it
+can be either a coded value or a domain description.
+
+```json
+"value_mappings": {
+  "ONEWAY": {
+    "ONE DIRECTION": "Y",
+    "TWO WAY": "N"
+  },
+  "DOT_CLASS": {
+    "LOCAL ROAD": "L"
+  }
+}
+```
+
+Mappings run after `field_mappings` selects a source field and before normal
+destination-domain matching. If no configured mapping or valid domain match is
+found, the original source value is handled as an invalid value: it is appended
+to `UTRANS_NOTES` and copied only when it fits the target field length.
+
+### `rules`
+
+**Type:** `string[]` | **Optional** — defaults to `[]`
+
+An ordered list of supported post-mapping transformations. Rules run after field
+and full-address mappings, but before the feature is normalized and appended. Unknown
+or duplicate names are rejected.
+
+```json
+"rules": ["remove_postdir_if_alpha", "remove_posttype_if_numeric"]
+```
+
+Supported rules:
+
+- `remove_postdir_if_alpha`: clears `POSTDIR` when `NAME` begins with a letter.
+- `remove_posttype_if_numeric`: clears `POSTTYPE` when `NAME` begins with a digit.
+
+### `custom_handler`
+
+**Type:** `string` | **Optional**
+
+Selects a built-in, county-specific transformation for behavior that requires
+multiple fields or conditional assignments. Handler names are resolved from the
+CLI's fixed registry; profile files cannot name Python modules or functions.
+Unknown handler names are rejected before ETL updates begin.
+
+```json
+"custom_handler": "utah_road_names"
+```
+
+Currently supported handlers:
+
+- `utah_road_names`: preserves Utah County's legacy handling of numeric primary
+  and alternate road names ending in a cardinal direction.
+
 ### `parse_sources`
 
 **Type:** `string` | **Optional**

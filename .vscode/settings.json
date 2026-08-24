@@ -42,6 +42,18 @@
     "/^dotnet build add-in\\\\UGRC\\.UtransTools\\\\UGRC\\.UtransTools\\.csproj --no-restore$/": {
       "approve": true,
       "matchCommandLine": true
+    },
+    "/^conda activate utrans-tools$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^conda activate utrans-tools; pytest/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^conda activate utrans-tools; ruff/": {
+      "approve": true,
+      "matchCommandLine": true
     }
   },
   "[csharp]": {
