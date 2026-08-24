@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import pytest
 
@@ -12,9 +12,10 @@ def _field(name, field_type="String", length=None):
 
 
 def _update_cursor(rows):
-    cursor = Mock()
-    cursor.__enter__ = Mock(return_value=iter(rows))
-    cursor.__exit__ = Mock(return_value=False)
+    cursor = MagicMock()
+    cursor.__enter__.return_value = cursor
+    cursor.__exit__.return_value = False
+    cursor.__iter__.return_value = iter(rows)
     return cursor
 
 
