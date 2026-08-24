@@ -95,7 +95,9 @@ def _excluded_values(profile: CountyProfile) -> dict[str, set[str]]:
     }
 
 
-def _fits_field_length(value: object, field_lengths: Mapping[str, int | None], field: str) -> bool:
+def _fits_field_length(
+    value: object, field_lengths: Mapping[str, int | None], field: str
+) -> bool:
     length = field_lengths.get(field.upper())
     return length is None or len(str(value)) <= length
 

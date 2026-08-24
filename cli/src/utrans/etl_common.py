@@ -142,7 +142,9 @@ def add_missing_template_fields(source_features: str, utrans_roads: str) -> None
             ) from exc
 
 
-def normalize_target_fields(feature_class: str, utrans_roads: str | None = None) -> None:
+def normalize_target_fields(
+    feature_class: str, utrans_roads: str | None = None
+) -> None:
     """Normalize target nulls, casing, and legacy name conventions in place."""
     names = field_name_map(feature_class)
     text_fields = [names[name] for name in CORE_TEXT_FIELDS if name in names]
@@ -174,8 +176,7 @@ def normalize_target_fields(feature_class: str, utrans_roads: str | None = None)
                 length = field_lengths.get(field.upper())
                 if length is not None and len(str(row[index])) > length:
                     raise RuntimeError(
-                        f"Field length exceeded. Field: {field}. "
-                        f"Value: {row[index]!r}"
+                        f"Field length exceeded. Field: {field}. Value: {row[index]!r}"
                     )
             cursor.updateRow(row)
 
