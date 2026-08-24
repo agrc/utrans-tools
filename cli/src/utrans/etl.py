@@ -30,8 +30,8 @@ def _default_output_name(county: str) -> str:
 
 
 def _county_boundary_name(county: str) -> str:
-    names = {"boxelder": "Box Elder", "saltlake": "Salt Lake", "sanjuan": "San Juan"}
-    return names.get(county, county.title())
+    names = {"boxelder": "BOX ELDER", "saltlake": "SALT LAKE", "sanjuan": "SAN JUAN"}
+    return names.get(county, county.upper())
 
 
 def _unique_name(prefix: str) -> str:

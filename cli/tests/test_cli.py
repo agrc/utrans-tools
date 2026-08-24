@@ -5,6 +5,7 @@ import pytest
 
 import utrans
 from utrans import cli
+from utrans.etl import _county_boundary_name
 from utrans.etl_common import direction, parse_full_address, resolve_domain_value
 from utrans.profiles import load_profiles
 
@@ -59,6 +60,19 @@ def test_etl_help(capsys):
     assert "utrans etl" in captured.out
     assert "--source-features" in captured.out
     assert "--county-boundaries" in captured.out
+
+
+@pytest.mark.parametrize(
+    ("county", "expected"),
+    [
+        ("davis", "DAVIS"),
+        ("boxelder", "BOX ELDER"),
+        ("saltlake", "SALT LAKE"),
+        ("sanjuan", "SAN JUAN"),
+    ],
+)
+def test_county_boundary_name_is_uppercase(county, expected):
+    assert _county_boundary_name(county) == expected
 
 
 def test_saltlake_profile_replaces_vecc():
