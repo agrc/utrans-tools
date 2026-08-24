@@ -131,9 +131,15 @@ def add_missing_template_fields(source_features: str, utrans_roads: str) -> None
         kwargs: dict[str, object] = {}
         if field.type == "String":
             kwargs["field_length"] = field.length
-        if field.domain:
-            kwargs["field_domain"] = field.domain
-        arcpy.management.AddField(source_features, field.name, field.type, **kwargs)
+        try:
+            arcpy.management.AddField(source_features, field.name, field.type, **kwargs)
+        except arcpy.ExecuteError as exc:
+            details = str(exc) or arcpy.GetMessages(2)
+            length = f", length={field.length}" if field.type == "String" else ""
+            raise RuntimeError(
+                f"Failed to add target field '{field.name}' "
+                f"(type={field.type}{length}): {details}"
+            ) from exc
 
 
 def normalize_target_fields(feature_class: str) -> None:
