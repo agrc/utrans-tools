@@ -1,10 +1,10 @@
-# UTrans Tools ArcGIS Pro Add-In
+# UTRANS Tools ArcGIS Pro Add-In
 
 ## Usage
 
 ### Adding New Features
 
-Use **Add New** to copy an unlinked new record or records from `DFC_RESULT` into the UTrans roads layer.
+Use **Add New** to copy an unlinked new record or records from `DFC_RESULT` into the UTRANS roads layer.
 
 1. In the map, select one or more unlinked records in the `DFC_RESULT` layer. A record is eligible when its change type is `N` and its `BASE_FID` is `-1`.
 2. Review or update the road attributes shown in the editor. When multiple records are selected, the values are used for each new road.
@@ -12,7 +12,7 @@ Use **Add New** to copy an unlinked new record or records from `DFC_RESULT` into
 
 When multiple features are selected, the form values override the county-road values for `CARTOCODE`, `ONEWAY`, `VERT_LEVEL`, `SPEED_LMT`, and `STATUS`. Review these values before clicking **Add New** because the same editor values are applied to every new road.
 
-The add-in creates a UTrans road using each selected county-road geometry and attributes, links the `DFC_RESULT` record to the new road, and marks the DFC disposition as `COMPLETED`. The map selections are cleared after the operation finishes.
+The add-in creates a UTRANS road using each selected county-road geometry and attributes, links the `DFC_RESULT` record to the new road, and marks the DFC disposition as `COMPLETED`. The map selections are cleared after the operation finishes.
 
 ## Developer Set Up
 
