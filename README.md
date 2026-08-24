@@ -2,6 +2,29 @@
 
 Tools for working with UTRANS data
 
+## Attribute Rule Scripts
+
+The attribute-rule utilities are in [attribute-rules/new_ar.py](attribute-rules/new_ar.py) and [attribute-rules/deploy_ar.py](attribute-rules/deploy_ar.py).
+
+- [attribute-rules/deploy_ar.py](attribute-rules/deploy_ar.py) is the primary script.
+  - Default mode is idempotent deploy: add if missing, alter if mutable changes, recreate when immutable changes require it.
+  - Use `--mode add` for strict add-only behavior.
+  - Use `--mode alter` to update an existing rule only.
+- [attribute-rules/new_ar.py](attribute-rules/new_ar.py) is a compatibility wrapper that forwards to deploy script add mode.
+
+Examples:
+
+```bash
+# deploy mode (default)
+python attribute-rules/deploy_ar.py fullname_calculation --in-table "Z:/data/County.gdb/Roads" --field FULLNAME
+
+# add-only compatibility behavior
+python attribute-rules/new_ar.py fullname_calculation --in-table "Z:/data/County.gdb/Roads" --field FULLNAME
+
+# alter existing rule only
+python attribute-rules/deploy_ar.py fullname_calculation --in-table "Z:/data/County.gdb/Roads" --mode alter --field FULLNAME
+```
+
 ## `Get_Recent_Edits.py` script run example
 
 `--county` must be an exact, case-sensitive key from the active profiles file.

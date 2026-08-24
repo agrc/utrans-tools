@@ -1,6 +1,7 @@
 /* global $feature, $datastore, $layer, $map, FeatureSetByName, IIf, Buffer */
-var textFields = ['BIKE_L', 'BIKE_R', 'BIKE_PLN_L', 'BIKE_PLN_R', 'DOT_HWYNAM', 'DOT_RTNAME', 'DOT_RTPART'];
-Expects($feature, 'BIKE_L', 'BIKE_R', 'BIKE_PLN_L', 'BIKE_PLN_R', 'DOT_HWYNAM', 'DOT_RTNAME', 'DOT_RTPART');
+// ADDRSYS_L/R are text fields under CVDomain_AddressReferenceSystem, so null is their only valid empty value.
+var textFields = ['ADDRSYS_L', 'ADDRSYS_R', 'BIKE_L', 'BIKE_R', 'BIKE_PLN_L', 'BIKE_PLN_R', 'DOT_HWYNAM', 'DOT_RTNAME', 'DOT_RTPART'];
+Expects($feature, 'ADDRSYS_L', 'ADDRSYS_R', 'BIKE_L', 'BIKE_R', 'BIKE_PLN_L', 'BIKE_PLN_R', 'DOT_HWYNAM', 'DOT_RTNAME', 'DOT_RTPART');
 var updates = {};
 
 for (var i in textFields) {

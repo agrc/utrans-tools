@@ -1,6 +1,6 @@
 {
-  "python-envs.defaultEnvManager": "ms-python.python:conda",
-  "cSpell.words": ["daml", "MVVM", "UGRC", "UTRANS"],
+  "python-envs.defaultEnvManager": "ms-python.python:system",
+  "cSpell.words": ["arcpy", "daml", "MVVM", "UGRC", "UTRANS"],
   "files.associations": {
     "*.arcade": "javascript"
   }

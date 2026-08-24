@@ -1,0 +1,8 @@
+/* global $feature */
+// Trim NAME and collapse accidental internal whitespace.
+var value = Trim(IIf(IsEmpty($feature.NAME), "", Text($feature.NAME)));
+while (Find("  ", value) > -1) {
+	value = Replace(value, "  ", " ");
+}
+
+return value;
