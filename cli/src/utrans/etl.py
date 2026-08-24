@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
@@ -173,6 +174,7 @@ def build_parser(prog: str | None = None) -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None, *, prog: str | None = None) -> int:
+    start_time = time.time()
     args = build_parser(prog).parse_args(argv)
     try:
         profiles = load_profiles(Path(args.profiles) if args.profiles else None)
@@ -190,4 +192,6 @@ def main(argv: list[str] | None = None, *, prog: str | None = None) -> int:
     except (RuntimeError, TypeError, FileNotFoundError, json.JSONDecodeError) as exc:
         log(str(exc))
         return 2
+    elapsed = time.time() - start_time
+    log(f"Time elapsed: {elapsed:.2f}s")
     return 0
