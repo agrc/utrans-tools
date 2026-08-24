@@ -4,13 +4,14 @@ from unittest.mock import Mock
 import pytest
 
 from utrans import etl_common
+from utrans.etl_mappers import _fits_field_length
 
 
 def _field(name, field_type="String", length=None):
     return SimpleNamespace(name=name, type=field_type, length=length, domain=None)
 
 
-def _search_cursor(rows):
+def _update_cursor(rows):
     cursor = Mock()
     cursor.__enter__ = Mock(return_value=iter(rows))
     cursor.__exit__ = Mock(return_value=False)
@@ -32,3 +33,27 @@ def test_add_missing_template_fields_reports_failed_field(monkeypatch):
         etl_common.add_missing_template_fields("source", "target")
 
     add_field.assert_called_once_with("source", "ROAD_NAME", "String", field_length=5)
+
+
+def test_normalize_target_fields_reports_overlong_values(monkeypatch):
+    source_fields = [_field("ONEWAY", length=2)]
+    target_fields = [_field("ONEWAY", length=1)]
+    cursor = _update_cursor([["FT"]])
+    update_cursor = Mock(return_value=cursor)
+    monkeypatch.setattr(
+        etl_common.arcpy,
+        "ListFields",
+        Mock(side_effect=[source_fields, target_fields]),
+    )
+    monkeypatch.setattr(etl_common.arcpy.da, "UpdateCursor", update_cursor)
+
+    with pytest.raises(RuntimeError, match=r"ONEWAY.*'FT'"):
+        etl_common.normalize_target_fields("source", "target")
+
+
+@pytest.mark.parametrize(
+    ("value", "length", "expected"),
+    [("F", 1, True), ("FT", 1, False), ("FT", 2, True)],
+)
+def test_fits_field_length(value, length, expected):
+    assert _fits_field_length(value, {"ONEWAY": length}, "oneway") is expected

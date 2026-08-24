@@ -95,8 +95,18 @@ def _excluded_values(profile: CountyProfile) -> dict[str, set[str]]:
     }
 
 
+def _fits_field_length(value: object, field_lengths: Mapping[str, int | None], field: str) -> bool:
+    length = field_lengths.get(field.upper())
+    return length is None or len(str(value)) <= length
+
+
 def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) -> None:
-    """Apply a county's root-level profile mapping configuration."""
+    """Apply mappings while preserving invalid domain values in the audit notes.
+
+    Valid domain aliases are converted to their coded values. Invalid values are
+    recorded in UTRANS_NOTES and assigned to the target when they fit its field
+    length. Field-length validation runs after all mapping and normalization.
+    """
     mappings = _mapping(profile, "field_mappings")
     if not mappings:
         raise RuntimeError(f"Profile '{profile.key}' requires field_mappings for ETL.")
@@ -136,6 +146,11 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
         )
     )
     indexes = {field.upper(): index for index, field in enumerate(fields)}
+    field_lengths = {
+        field.name.upper(): field.length
+        for field in arcpy.ListFields(feature_class)
+        if field.type == "String"
+    }
     domains = domain_values(utrans_roads)
     posttypes = domains.get("POSTTYPE", {})
     vertical_translation = profile.get("translate_vertical_levels", False)
@@ -164,12 +179,13 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
                 if resolved is not None:
                     row[target_index] = resolved
                 elif has_value(row[source_index]):
-                    row[target_index] = source_value
                     notes_index = indexes.get("UTRANS_NOTES")
                     if notes_index is not None:
                         row[notes_index] = (
                             f"{row[notes_index] or ''}{target}: {source_value}; "
                         )[:200]
+                    if _fits_field_length(source_value, field_lengths, target):
+                        row[target_index] = source_value
             for source, alias in parse_sources:
                 source_index = indexes.get(source.upper())
                 if source_index is None:
