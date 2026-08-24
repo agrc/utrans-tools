@@ -274,7 +274,7 @@
       <GroupBox
         Grid.Row="3"
         Header="{Binding ReviewState.UtransRecordObjectId}"
-        HeaderStringFormat="Target UTrans Road Segment ({0})"
+        HeaderStringFormat="Target UTRANS Road Segment ({0})"
         Margin="3"
       >
         <Grid IsEnabled="{Binding HasReviewState}">
@@ -539,7 +539,7 @@
           VerticalAlignment="Bottom"
           IsEnabled="{Binding CanEditRoadValues}"
         >
-          <TextBlock VerticalAlignment="Bottom" Text="UTrans Database Version:" />
+          <TextBlock VerticalAlignment="Bottom" Text="UTRANS Database Version:" />
           <TextBlock VerticalAlignment="Bottom" Text="{Binding UtransDatabaseVersion}" />
         </StackPanel>
 
