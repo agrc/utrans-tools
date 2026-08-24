@@ -1,0 +1,61 @@
+// Calculates DOT_OWN_L and DOT_OWN_R
+Expects($feature, 'DOT_OWN_L', 'DOT_OWN_R', 'DOT_RTNAME', 'DOT_RTPART');
+
+var dotRtName = Trim(IIf(IsEmpty($feature.DOT_RTNAME), '', Text($feature.DOT_RTNAME)));
+/*
+- If DOT_RTNAME starts with 0, it’s a UDOT street: DOT_OWN is just UDOT
+- Else
+    - If the left muni exists, set it to MU + “ “ + NAME attribute of the left muni
+        - how is left muni found?
+    - Else, if the left county exists, set it to the county’s FIPS_STR
+    - Else, just set it to blank.
+- This is the same for both DOT_OWN_L and DOT_OWN_R
+*/
+var dotOwnL = '';
+var dotOwnR = '';
+if (StartsWith(dotRtName, '0')) {
+    dotOwnL = 'UDOT';
+    dotOwnR = 'UDOT';
+} else {
+    // 1. Get the line geometry and calculate the midpoint (50% along line)
+var lineGeom = Geometry($feature);
+var midPt = PointAt(lineGeom, 0.5); // not a real function
+
+// 2. Create left (-15m) and right (+15m) offset points
+// Note: Offset syntax depends on unit settings, but conceptually:
+var leftPt = Offset(midPt, -15);
+var rightPt = Offset(midPt, 15);
+
+// 3. Query the Municipalities polygon FeatureSet
+var muniFS = FeatureSetByName($datastore, "SGID.BOUNDARIES.Municipalities", ["NAME"], true);
+var leftMuni = First(Intersects(muniFS, leftPt));
+var rightMuni = First(Intersects(muniFS, rightPt));
+
+// 4. Query the Counties polygon FeatureSet
+var countyFS = FeatureSetByName($datastore, "SGID.BOUNDARIES.Counties", ["FIPS_STR"], true);
+var leftCounty = First(Intersects(countyFS, leftPt));
+var rightCounty = First(Intersects(countyFS, rightPt));
+
+    // 5. Determine DOT_OWN_L
+    if (!IsEmpty(leftMuni)) {
+        dotOwnL = 'MU ' + leftMuni.NAME;
+    } else if (!IsEmpty(leftCounty)) {
+        dotOwnL = leftCounty.FIPS_STR;
+    } else {
+        dotOwnL = '';
+    }
+
+    // 6. Determine DOT_OWN_R
+    if (!IsEmpty(rightMuni)) {
+        dotOwnR = 'MU ' + rightMuni.NAME;
+    } else if (!IsEmpty(rightCounty)) {
+        dotOwnR = rightCounty.FIPS_STR;
+    } else {
+        dotOwnR = '';
+    }
+}
+
+return {
+    DOT_OWN_L: dotOwnL,
+    DOT_OWN_R: dotOwnR
+};

@@ -1,6 +1,5 @@
 /* global $feature, $datastore, $layer, $map, FeatureSetByName, Intersects, First, Point, IIf, Buffer, Expects, Geometry, IsEmpty, Trim, Text, Count, Sqrt, Floor, Find, Mid, Replace */
-// Ports the legacy UtransEditor getNewUniqueID logic, reading GRID1MIL/GRID100K from the
-// NationalGrid layer now included in this geodatabase instead of computing them mathematically.
+// Ports the legacy UtransEditor getNewUniqueID logic, reading GRID1MIL/GRID100K from the USNG.
 // Grid-cell zone mismatches at the UTM 11/12 boundary are ignored since this ID is only eyeballed, not parsed.
 Expects($feature, 'NAME', 'POSTDIR', 'POSTTYPE', 'UNIQUE_ID');
 
@@ -81,7 +80,7 @@ function isWholeNumber(value) {
 	return true;
 }
 
-// NAME/POSTDIR/POSTTYPE are read directly because attribute rule execution order is not guaranteed,
+// NAME/POSTDIR/POSTTYPE are computed directly because attribute rule execution order is not guaranteed,
 // so FULLNAME may still hold the pre-edit value.
 function nameSuffix() {
 	var name = Trim(IIf(IsEmpty($feature.NAME), '', Text($feature.NAME)));
@@ -103,25 +102,23 @@ function nameSuffix() {
 
 var geometry = Geometry($feature);
 if (IsEmpty(geometry)) {
-	return $feature.UNIQUE_ID;
+	return "ERR:MISSING_GEOMETRY";
 }
 
-var midpoint = midpointAlongLine(geometry); // look up centroid in arcade 
+var midpoint = midpointAlongLine(geometry);
 if (IsEmpty(midpoint)) {
-	return $feature.UNIQUE_ID;
+	return "ERR:MISSING_MIDPOINT";
 }
 
-// TODO: confirm this matches the NationalGrid layer's actual title in the geodatabase.
 var midpointGeom = Point({ 'x': midpoint.x, 'y': midpoint.y, 'spatialReference': geometry.spatialReference });
-var nationalGrid = FeatureSetByName($datastore, 'NationalGrid', ['GRID1MIL', 'GRID100K'], true);
+var nationalGrid = FeatureSetByName($datastore, 'SGID_INDICES_NationalGrid', ['GRID1MIL', 'GRID100K'], true);
 var gridMatch = First(Intersects(nationalGrid, midpointGeom));
 if (IsEmpty(gridMatch)) {
-	return $feature.UNIQUE_ID; // throwing an error may be better here so that way the user knows that it's not being computed
+	return "ERR:NO_GRID_MATCH";
 }
 
 var grid1mil = gridMatch.GRID1MIL;
 var grid100k = gridMatch.GRID100K;
 
 // Test case: midpoint 12T VK 3756 1234 on "GOLD KEY LN" -> "12TVK37561234_GOLD_KEY_LN"
-// might need to cast? 
 return Trim(grid1mil + grid100k + trimCoordinate(midpoint.x, 1) + trimCoordinate(midpoint.y, 2) + nameSuffix());
