@@ -51,6 +51,13 @@ def test_get_recent_edits_help(capsys):
     assert exit_info.value.code == 0
     assert "utrans get-recent-edits" in captured.out
     assert "--update-features" in captured.out
+    assert "--search-distance" not in captured.out
+    assert "--match-fields" not in captured.out
+    assert "--change-tolerance" not in captured.out
+    assert "--compare-fields" not in captured.out
+    assert "--dfc-output-name" not in captured.out
+    assert "--stats-table-name" not in captured.out
+    assert "--recents-name" not in captured.out
 
 
 def test_etl_help(capsys):
@@ -62,6 +69,7 @@ def test_etl_help(capsys):
     assert "utrans etl" in captured.out
     assert "--source-features" in captured.out
     assert "--county-boundaries" in captured.out
+    assert "--output-workspace" not in captured.out
 
 
 @pytest.mark.parametrize(

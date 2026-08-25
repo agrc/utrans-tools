@@ -45,6 +45,8 @@ pip install --upgrade pathspec hatchling
 utrans get-recent-edits --county Carbon --update-features "Z:\Documents\gdb\Carbon20231019.gdb\Roads" --base-features "Z:\Documents\gdb\Carbon20230208.gdb\CC_Roads"
 ```
 
+The output is written to the geodatabase containing `--update-features`.
+
 Run `utrans get-recent-edits --help` for the complete option reference and supported county profiles.
 
 ### ETL
@@ -52,19 +54,19 @@ Run `utrans get-recent-edits --help` for the complete option reference and suppo
 Convert county roads to the UTRANS schema with explicit inputs:
 
 ```powershell
-utrans etl --county saltlake --source-features "Z:\Documents\gdb\SaltLake.gdb\RoadCenterline_Recents" --utrans-roads "Z:\schemas\UtahRoadsNGSchema.gdb\Roads_Edit" --output-workspace "Z:\Documents\gdb\output.gdb" --county-boundaries "Database Connections\internal.sde\SGID.BOUNDARIES.Counties"
+utrans etl --county saltlake --source-features "Z:\Documents\gdb\SaltLake.gdb\RoadCenterline_Recents" --utrans-roads "Z:\schemas\UtahRoadsNGSchema.gdb\Roads_Edit" --county-boundaries "Database Connections\internal.sde\SGID.BOUNDARIES.Counties"
 ```
 
-The output contains complete road features that intersect the selected county boundary; it does not clip features at the boundary. Run `utrans etl --help` for all options.
+The output is written to the geodatabase containing `--source-features`. It contains complete road features that intersect the selected county boundary; it does not clip features at the boundary. Run `utrans etl --help` for all options.
 
 ### Detect Changes
 
 Process ETL output against a previous UTRANS road feature class:
 
 ```powershell
-utrans detect-changes --county Carbon --update-features "Z:\Documents\gdb\Carbon.gdb\county_etl" --utrans-features "Z:\Documents\gdb\UTRANS.gdb\Roads" --output-workspace "Z:\Documents\gdb\Carbon.gdb"
+utrans detect-changes --county Carbon --update-features "Z:\Documents\gdb\Carbon.gdb\county_etl" --utrans-features "Z:\Documents\gdb\UTRANS.gdb\Roads"
 ```
 
-The command uses the `NAME` matching and comparison fields, adds DFC editor metadata, creates `TEST_DFC_RESULT` with `NC` and `D` changes excluded, and appends the filtered result to the fixed UTRANS DFC feature class on every run.
+The command writes outputs to the geodatabase containing `--update-features`. It uses the `NAME` matching and comparison fields, adds DFC editor metadata, creates `TEST_DFC_RESULT` with `NC` and `D` changes excluded, and appends the filtered result to the fixed UTRANS DFC.
 
 Run `utrans detect-changes --help` for the remaining options.

@@ -1,22 +1,26 @@
 # County Profiles Configuration
 
-`profiles.json` defines flat, per-county settings shared by UTRANS commands. `get-recent-edits` uses its field-mapping settings to run ArcGIS Pro's **Detect Feature Changes** tool between two versions of a county road centerline dataset. `etl` uses the same county key and its `fips` setting to select the matching county transformation.
+`profiles.json` defines flat, per-county settings shared by UTRANS commands. `etl` uses the transformation settings to convert county roads into the UTRANS schema. `get-recent-edits` uses its change-detection settings to run ArcGIS Pro's **Detect Feature Changes** tool between two versions of a county road centerline dataset. `detect-changes` uses only `fips` from the profile; its DFC match and comparison fields are fixed by the command.
 
 Each key in the JSON object is a county identifier (e.g. `"grand"`, `"davis"`). The script resolves the correct profile at runtime using the `--county` argument.
 
 `saltlake` is the Salt Lake County identifier for every command. The former `vecc` identifier is not supported.
 
-## Shared ETL Field
+## Profile Fields
 
 ### `fips`
 
-**Type:** `string` | **Required by `etl`**
+**Type:** `string` | **Required by:** `etl`, `detect-changes`
+
+**Used by:** `etl`, `detect-changes`
 
 The county's five-digit FIPS code plus the name written to `COUNTY_L` and `COUNTY_R` during ETL. For example, `"49035 - Salt Lake"`.
 
 ### `field_mappings`
 
 **Type:** `string` | **Required by `etl`**
+
+**Used by:** `etl`
 
 A semicolon-delimited list of `UTRANS_FIELD=COUNTY_FIELD` assignments. These map
 county source fields into the target schema after colliding source fields have been
@@ -33,14 +37,13 @@ are reported with the field and value.
 
 ### `value_mappings`
 
-**Type:** `object` | **Optional** — defaults to `{}`
+**Type:** `object` | **Optional** - defaults to `{}`
+
+**Used by:** `etl`
 
 Per-target mappings for source values that do not match a UTRANS coded-value
-domain code or description. Each target field contains an object mapping the
-source value to the desired target value. Field names and source values are
-matched case-insensitively after surrounding whitespace is removed. The mapped
-target value is then resolved against the destination coded-value domain, so it
-can be either a coded value or a domain description.
+domain code or description. Field names and source values are matched
+case-insensitively after surrounding whitespace is removed.
 
 ```json
 "value_mappings": {
@@ -54,14 +57,17 @@ can be either a coded value or a domain description.
 }
 ```
 
-Mappings run after `field_mappings` selects a source field and before normal
-destination-domain matching. If no configured mapping or valid domain match is
-found, the original source value is handled as an invalid value: it is appended
-to `UTRANS_NOTES` and copied only when it fits the target field length.
+The mapped value is resolved against the destination coded-value domain. Values
+that remain invalid are recorded in `UTRANS_NOTES` and copied only when they fit
+the target field length.
+
+---
 
 ### `rules`
 
 **Type:** `string[]` | **Optional** — defaults to `[]`
+
+**Used by:** `etl`
 
 An ordered list of supported post-mapping transformations. Rules run after field
 and full-address mappings, but before the feature is normalized and appended. Unknown
@@ -79,6 +85,8 @@ Supported rules:
 ### `custom_handler`
 
 **Type:** `string` | **Optional**
+
+**Used by:** `etl`
 
 Selects a built-in, county-specific transformation for behavior that requires
 multiple fields or conditional assignments. Handler names are resolved from the
@@ -114,6 +122,8 @@ Currently supported handlers:
 
 **Type:** `string` | **Optional**
 
+**Used by:** `etl`
+
 A semicolon-delimited list of `COUNTY_FIELD=TARGET` values used to parse full street
 names. `TARGET` is `PRIMARY`, `A1`, or `A2`.
 
@@ -121,50 +131,33 @@ names. `TARGET` is `PRIMARY`, `A1`, or `A2`.
 
 **Type:** `boolean` | **Optional** — defaults to `false`
 
+**Used by:** `etl`
+
 When `true`, legacy vertical values `1`, `2`, and `3` are translated to `0`, `1`,
 and `2` before domain-value matching. Invalid values are still preserved when they
 fit within the destination field length and are always appended to `UTRANS_NOTES`.
 
 ### `exclude_if_any`
 
-**Type:** `string` | **Optional**
+**Type:** `string` or `object` | **Optional** - defaults to no exclusions
 
-A semicolon-delimited list of `COUNTY_FIELD=VALUE,VALUE` exclusions. A feature is
-removed when any configured field contains a listed value.
+**Used by:** `etl`
 
-County selection is strict:
-
-- `--county` must exactly match a top-level key in the active profiles file
-- By default, the active profiles file is `cli/profiles.json`
-- Use `--profiles <path-to-json>` to supply a custom profiles file
-- Matching is case-sensitive
-- Aliases and spaced variants are not supported
-
----
-
-## Fields Reference
-
-### `match_fields`
-
-**Type:** `string` | **Required**
-
-A space-separated field pair (`update_field base_field`) used to confirm that two spatially proximate road segments are the **same road** across the two datasets. This is passed directly to the `match_field` parameter of `DetectFeatureChanges`.
-
-The tool first finds candidate matches within `--search-distance`, then uses this field to disambiguate — e.g. confirming two nearby segments share the same street name before treating them as the same feature.
+Excludes a staged feature when any configured field contains one of the listed
+case-insensitive values. The string form uses semicolon-delimited `FIELD=VALUE1,VALUE2`
+pairs. The object form maps field names to arrays of values.
 
 ```json
-"match_fields": "STREETNAME STREETNAME"
+"exclude_if_any": "S_SURF=400,410,420,430,440"
 ```
-
-When both datasets use the same schema, the field name is repeated. If the schemas differ, the two names can be different (e.g. `"S_NAME STREETNAME"`).
-
-> **Note:** The specific field chosen per county was determined during original script development and reflects the primary name field in that county's road schema.
 
 ---
 
 ### `compare_fields`
 
-**Type:** `string` | **Optional in profile**
+**Type:** `string` | **Required**
+
+**Used by:** `get-recent-edits`
 
 A semicolon-delimited list of `update_field base_field` pairs passed to the `compare_fields` parameter of `DetectFeatureChanges`. These are the attribute fields checked for changes after two segments are matched.
 
@@ -176,41 +169,26 @@ A segment is included in the output recents layer if any of these fields differ 
 
 Fields that don't exist in one or both datasets are silently dropped before the tool runs, with a warning logged.
 
-If omitted from the profile, it must be provided via `--compare-fields` at runtime.
+Every active county profile must provide this setting.
 
 ---
 
-### `text_fields`
+### `match_fields`
 
-**Type:** `string[]` | **Optional** — defaults to `[]`
+**Type:** `string` | **Required**
 
-Fields that will be text-normalized before change detection runs. Normalization:
+**Used by:** `get-recent-edits`
 
-- Collapses internal whitespace to single spaces
-- Trims leading/trailing whitespace
-- Converts `None`, `NULL`, and blank values to empty string `""`
-
-This prevents false positives caused by whitespace or null inconsistencies between datasets.
-
-```json
-"text_fields": ["PREDIR", "STREETNAME", "STREETTYPE", "SUFDIR"]
-```
-
----
-
-### `numeric_fields`
-
-**Type:** `string[]` | **Optional** — defaults to `[]`
-
-Fields that will be numeric-normalized before change detection runs. Normalization:
-
-- Converts `None`, `NULL`, and blank values to `0`
-
-This prevents false positives caused by null vs. zero inconsistencies in address range fields.
+A space-separated `update_field base_field` pair used to confirm that two
+spatially proximate road segments are the same road across the two datasets.
+When both datasets use the same schema, the field name is repeated. If the
+schemas differ, the two names can be different.
 
 ```json
-"numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
+"match_fields": "STREETNAME STREETNAME"
 ```
+
+The specific field is selected per county because source schemas differ.
 
 ---
 
@@ -218,7 +196,10 @@ This prevents false positives caused by null vs. zero inconsistencies in address
 
 **Type:** `string[]` | **Optional** — defaults to `[]`
 
-A subset of `text_fields` whose values will also be uppercased during normalization. Use this when a county's data may have mixed case values that should compare as equal.
+**Used by:** `get-recent-edits`
+
+A list of string fields whose values will also be uppercased during normalization.
+Use this when a county's data may have mixed case values that should compare as equal.
 
 ```json
 "uppercase_normalize_fields": ["STREETNAME", "STREETTYPE", "ACSALIAS"]
@@ -230,7 +211,10 @@ A subset of `text_fields` whose values will also be uppercased during normalizat
 
 **Type:** `string[]` | **Optional** — defaults to `[]`
 
-Fields that must exist in **both** the update and base feature classes. If any are missing, the script raises an error before doing any work. Useful for counties whose schemas are known to be strict or whose pipelines depend on specific fields being present.
+**Used by:** `get-recent-edits`
+
+Fields that must exist in both the update and base feature classes. If any are
+missing, the script raises an error before doing any work.
 
 ```json
 "required_fields": ["RoadName", "LeftFrom", "LeftTo", "RightFrom", "RightTo"]
@@ -238,49 +222,13 @@ Fields that must exist in **both** the update and base feature classes. If any a
 
 ---
 
-### `dfc_output_name`
-
-**Type:** `string` | **Optional** — defaults to `"DFC_CountyToCounty"`
-
-Name of the output feature class written by `DetectFeatureChanges`. Output is placed in the same workspace as the update feature class.
-
----
-
-### `stats_table_name`
-
-**Type:** `string` | **Optional** — defaults to `"stats_county_to_county"`
-
-Name of the statistics table written by `DetectFeatureChanges`.
-
----
-
-### `recents_name`
-
-**Type:** `string` | **Optional** — defaults to `"RoadCenterline_Recents"`
-
-Name of the final output feature class containing only roads that changed (i.e. those where `CHANGE_TYPE <> 'NC'`). This is the primary deliverable of the script.
-
----
-
 ## Minimal Profile Example
 
 ```json
 "example": {
+  "fips": "49000 - Example",
+  "field_mappings": "NAME=STREETNAME",
   "match_fields": "STREETNAME STREETNAME",
-  "compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
-  "text_fields": ["PREDIR", "STREETNAME", "STREETTYPE"],
-  "numeric_fields": ["L_F_ADD", "L_T_ADD", "R_F_ADD", "R_T_ADD"]
+  "compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD"
 }
 ```
-
-## CLI Overrides
-
-Most profile values can be overridden at runtime without editing `profiles.json`:
-
-| Profile field      | CLI argument         |
-| ------------------ | -------------------- |
-| `match_fields`     | `--match-fields`     |
-| `compare_fields`   | `--compare-fields`   |
-| `dfc_output_name`  | `--dfc-output-name`  |
-| `stats_table_name` | `--stats-table-name` |
-| `recents_name`     | `--recents-name`     |

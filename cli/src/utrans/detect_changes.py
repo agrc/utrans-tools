@@ -14,9 +14,8 @@ import arcpy
 from utrans.profiles import format_county_help, load_profiles, resolve_county_profile
 from utrans.recent_edits import (
     ensure_detect_feature_changes_license,
-    get_output_workspace,
 )
-from utrans.utilities import log
+from utrans.utilities import get_output_workspace, log
 
 MATCH_FIELDS = "NAME NAME"
 COMPARE_FIELDS = (
@@ -103,9 +102,9 @@ def run_detect_changes(
     update_features: str,
     base_features: str,
     fips: str,
-    output_workspace: str,
 ) -> tuple[str, str]:
     arcpy.env.overwriteOutput = True
+    output_workspace = get_output_workspace(update_features)
     dfc_output = os.path.join(output_workspace, DFC_OUTPUT_NAME)
     stats_table = os.path.join(output_workspace, STATS_TABLE_NAME)
     test_output = os.path.join(output_workspace, TEST_OUTPUT_NAME)
@@ -162,7 +161,6 @@ def build_parser(prog: str | None = None):
     parser.add_argument(
         "--utrans-features", required=True, help="UTRANS baseline road feature class."
     )
-    parser.add_argument("--output-workspace")
     parser.add_argument(
         "--profiles", type=Path, help="Path to a custom profiles JSON file."
     )
@@ -177,14 +175,10 @@ def main(argv=None, *, prog: str | None = None):
         profile = resolve_county_profile(args.county, profiles)
         fips = extract_fips(profile.require("fips"))
         ensure_detect_feature_changes_license()
-        output_workspace = args.output_workspace or get_output_workspace(
-            args.update_features
-        )
         run_detect_changes(
             args.update_features,
             args.utrans_features,
             fips,
-            output_workspace,
         )
     except RuntimeError as exc:
         log(str(exc))

@@ -23,16 +23,22 @@ from utrans.profiles import (
     load_profiles,
     resolve_county_profile,
 )
-from utrans.utilities import log
+from utrans.utilities import get_output_workspace, log
+
+ETL_OUTPUT_DATE_FORMAT = "%Y%m%d"
+COUNTY_BOUNDARY_NAMES = {
+    "boxelder": "BOX ELDER",
+    "saltlake": "SALT LAKE",
+    "sanjuan": "SAN JUAN",
+}
 
 
 def _default_output_name(county: str) -> str:
-    return f"{county}_etl_{datetime.now(UTC):%Y%m%d}"
+    return f"{county}_etl_{datetime.now(UTC):{ETL_OUTPUT_DATE_FORMAT}}"
 
 
 def _county_boundary_name(county: str) -> str:
-    names = {"boxelder": "BOX ELDER", "saltlake": "SALT LAKE", "sanjuan": "SAN JUAN"}
-    return names.get(county, county.upper())
+    return COUNTY_BOUNDARY_NAMES.get(county, county.upper())
 
 
 def _unique_name(prefix: str) -> str:
@@ -63,22 +69,19 @@ def _rename_colliding_fields(source_features: str, utrans_roads: str) -> None:
 
 def _validate_output(output_features: str) -> None:
     if arcpy.Exists(output_features):
-        raise RuntimeError(
-            f"Output already exists: {output_features}. Choose --output-name with a new name."
-        )
+        raise RuntimeError(f"Output already exists: {output_features}.")
 
 
 def run_etl(
     source_features: str,
     utrans_roads: str,
-    output_workspace: str,
     county_boundaries: str,
     county: str,
     profile: CountyProfile,
-    output_name: str,
-    county_boundary_name: str | None = None,
 ) -> str:
     """Run the county transformation and export whole roads intersecting its boundary."""
+    output_workspace = get_output_workspace(source_features)
+    output_name = _default_output_name(county)
     if not arcpy.Exists(source_features):
         raise RuntimeError(f"Source features do not exist: {source_features}")
     if not arcpy.Exists(utrans_roads):
@@ -113,7 +116,7 @@ def run_etl(
         arcpy.edit.Densify(staging_output, "ANGLE")
         arcpy.edit.Generalize(staging_output, "2 Meters")
 
-        boundary_name = county_boundary_name or _county_boundary_name(county)
+        boundary_name = _county_boundary_name(county)
         boundary_field = field_name_map(county_boundaries).get("NAME")
         if boundary_field is None:
             raise RuntimeError("County boundaries must include a NAME field.")
@@ -154,18 +157,7 @@ def build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         help="UTRANS roads feature class used as the target schema.",
     )
     parser.add_argument(
-        "--output-workspace", required=True, help="Geodatabase for the ETL output."
-    )
-    parser.add_argument(
         "--county-boundaries", required=True, help="County boundary feature class."
-    )
-    parser.add_argument(
-        "--output-name",
-        help="Output feature class name. Defaults to county_etl_YYYYMMDD.",
-    )
-    parser.add_argument(
-        "--county-boundary-name",
-        help="Override the NAME value used to select the county boundary.",
     )
     parser.add_argument(
         "--profiles", metavar="PATH", help="Custom flat profiles JSON file."
@@ -182,12 +174,9 @@ def main(argv: list[str] | None = None, *, prog: str | None = None) -> int:
         run_etl(
             args.source_features,
             args.utrans_roads,
-            args.output_workspace,
             args.county_boundaries,
             profile.key,
             profile,
-            args.output_name or _default_output_name(profile.key),
-            args.county_boundary_name,
         )
     except (RuntimeError, TypeError, FileNotFoundError, json.JSONDecodeError) as exc:
         log(str(exc))
