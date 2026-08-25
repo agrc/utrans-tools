@@ -7,6 +7,7 @@ import utrans
 from utrans import cli
 from utrans.etl import _county_boundary_name
 from utrans.etl_common import direction, parse_full_address, resolve_domain_value
+from utrans.etl_handlers import HANDLERS
 from utrans.profiles import load_profiles
 
 
@@ -84,6 +85,16 @@ def test_saltlake_profile_replaces_vecc():
 
 def test_every_profile_has_field_mappings():
     assert all(profile.get("field_mappings") for profile in load_profiles().values())
+
+
+def test_profile_handlers_are_registered():
+    handlers = {
+        profile.get("custom_handler")
+        for profile in load_profiles().values()
+        if profile.get("custom_handler")
+    }
+
+    assert handlers <= HANDLERS.keys()
 
 
 def test_legacy_address_helpers():

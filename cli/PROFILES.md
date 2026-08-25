@@ -93,6 +93,22 @@ Currently supported handlers:
 
 - `utah_road_names`: preserves Utah County's legacy handling of numeric primary
   and alternate road names ending in a cardinal direction.
+- `davis_alias`: parses Davis County's `RoadAliasName` into alpha or numeric
+  aliases while ignoring compound names.
+- `washington_postdir_and_aliases`: selects Washington County's primary or
+  suffix direction and removes aliases duplicated by the numeric alias.
+- `weber_alias`: parses Weber County's alpha and numeric alias conventions.
+- `summit_names`: prefixes Summit County highway names and conditionally parses
+  its alternate road name.
+- `tooele_numeric_name`: parses numeric Tooele County primary names.
+- `emery_compact_aliases`: recognizes Emery County compact numeric aliases such
+  as `100N`.
+- `grand_numeric_acs_name`: retains Grand County's ACS name only when numeric.
+- `kane_alias_cleanup`: removes Kane County's invalid `K`-prefixed aliases.
+- `sevier_postdir_fallback`: uses Sevier County's suffix direction when address
+  parsing did not produce one.
+- `uintah_exclusion_note`: records Uintah County's excluded features in notes.
+- `wayne_acs_alias`: parses Wayne County's ACS alias.
 
 ### `parse_sources`
 
