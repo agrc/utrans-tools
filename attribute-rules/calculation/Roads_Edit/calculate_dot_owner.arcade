@@ -1,4 +1,6 @@
 // Calculates DOT_OWN_L and DOT_OWN_R
+// FIELD: DOT_OWN_L (or DOT_OWN_R)
+// EVENTS: INSERT, UPDATE
 Expects($feature, 'DOT_OWN_L', 'DOT_OWN_R', 'DOT_RTNAME');
 
 function distance2d(from, to) {

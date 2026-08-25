@@ -1,4 +1,6 @@
 /* global $feature, $datastore, $layer, $map, FeatureSetByName, IIf, Buffer */
+// FIELD: NAME
+// EVENTS: INSERT, UPDATE
 // Remove apostrophes from NAME field on CREATE and UPDATE events
 var name = $feature.NAME;
 var name_no_apostrophes = Replace(name, "'", "");

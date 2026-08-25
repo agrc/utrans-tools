@@ -1,6 +1,8 @@
 /* global $feature, $datastore, $layer, $map, FeatureSetByName, Intersects, First, Point, IIf, Buffer, Expects, Geometry, IsEmpty, Trim, Text, Count, Sqrt, Floor, Find, Mid, Replace */
 // Ports the legacy UtransEditor getNewUniqueID logic, reading GRID1MIL/GRID100K from the USNG.
 // Grid-cell zone mismatches at the UTM 11/12 boundary are ignored since this ID is only eyeballed, not parsed.
+// FIELD: UNIQUE_ID
+// EVENTS: INSERT, UPDATE
 Expects($feature, 'NAME', 'POSTDIR', 'POSTTYPE', 'UNIQUE_ID');
 
 var DIGITS = '0123456789';
