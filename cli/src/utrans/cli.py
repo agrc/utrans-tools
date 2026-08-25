@@ -6,6 +6,7 @@ import argparse
 import sys
 
 from utrans import __version__
+from utrans.detect_changes import main as detect_changes_main
 from utrans.etl import main as etl_main
 from utrans.recent_edits import main as recent_edits_main
 
@@ -25,6 +26,10 @@ def build_parser() -> argparse.ArgumentParser:
         "etl",
         help="Transform county roads into the UTRANS schema.",
     )
+    subparsers.add_parser(
+        "detect-changes",
+        help="Detect and optionally publish changes from ETL-produced roads.",
+    )
     return parser
 
 
@@ -42,6 +47,9 @@ def main(argv: list[str] | None = None) -> int:
     if arguments[0] == "etl":
         print(f"utrans {__version__}")
         return etl_main(arguments[1:], prog="utrans etl")
+    if arguments[0] == "detect-changes":
+        print(f"utrans {__version__}")
+        return detect_changes_main(arguments[1:], prog="utrans detect-changes")
 
     try:
         parser.parse_args(arguments)

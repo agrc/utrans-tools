@@ -56,3 +56,15 @@ utrans etl --county saltlake --source-features "Z:\Documents\gdb\SaltLake.gdb\Ro
 ```
 
 The output contains complete road features that intersect the selected county boundary; it does not clip features at the boundary. Run `utrans etl --help` for all options.
+
+### Detect Changes
+
+Process ETL output against a previous UTRANS road feature class:
+
+```powershell
+utrans detect-changes --county Carbon --update-features "Z:\Documents\gdb\Carbon.gdb\county_etl" --utrans-features "Z:\Documents\gdb\UTRANS.gdb\Roads" --output-workspace "Z:\Documents\gdb\Carbon.gdb"
+```
+
+The command uses the `NAME` matching and comparison fields, adds DFC editor metadata, creates `TEST_DFC_RESULT` with `NC` and `D` changes excluded, and appends the filtered result to the fixed UTRANS DFC feature class on every run.
+
+Run `utrans detect-changes --help` for the remaining options.
