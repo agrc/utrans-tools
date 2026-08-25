@@ -9,11 +9,7 @@ from utrans.profiles import CountyProfile
 def test_value_mappings_normalizes_fields_and_source_values():
     profile = CountyProfile(
         key="example",
-        values={
-            "value_mappings": {
-                "oneway": {" One Direction ": "Y"},
-            }
-        },
+        values={"value_mappings": {"oneway": {" One Direction ": "Y"}}},
     )
 
     assert _value_mappings(profile) == {"ONEWAY": {"ONE DIRECTION": "Y"}}

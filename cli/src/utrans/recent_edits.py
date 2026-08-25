@@ -15,9 +15,14 @@ from pathlib import Path
 import arcpy
 
 from utrans.profiles import load_profiles as load_shared_profiles
-from utrans.utilities import log
+from utrans.utilities import get_output_workspace, log
 
 NUMERIC_TYPES = {"SmallInteger", "Integer", "Single", "Double", "BigInteger"}
+DEFAULT_SEARCH_DISTANCE = "200 Feet"
+DEFAULT_CHANGE_TOLERANCE = "40"
+DEFAULT_DFC_OUTPUT_NAME = "DFC_CountyToCounty"
+DEFAULT_STATS_TABLE_NAME = "stats_county_to_county"
+DEFAULT_RECENTS_NAME = "RoadCenterline_Recents"
 
 
 def _detect_field_groups(feature_class: str) -> tuple[list[str], list[str]]:
@@ -43,9 +48,6 @@ class CountyProfile:
     match_fields: str = ""
     compare_fields: str | None = None
     uppercase_normalize_fields: set[str] = field(default_factory=set)
-    dfc_output_name: str = "DFC_CountyToCounty"
-    stats_table_name: str = "stats_county_to_county"
-    recents_name: str = "RoadCenterline_Recents"
     required_fields: list[str] = field(default_factory=list)
 
 
@@ -57,9 +59,6 @@ def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
             match_fields=data["match_fields"],
             compare_fields=data.get("compare_fields"),
             uppercase_normalize_fields=set(data.get("uppercase_normalize_fields", [])),
-            dfc_output_name=data.get("dfc_output_name", "DFC_CountyToCounty"),
-            stats_table_name=data.get("stats_table_name", "stats_county_to_county"),
-            recents_name=data.get("recents_name", "RoadCenterline_Recents"),
             required_fields=data.get("required_fields", []),
         )
 
@@ -120,14 +119,6 @@ def resolve_field_pairs(update_features, base_features, field_mapping):
         )
 
     return resolved_pairs
-
-
-def get_output_workspace(update_features):
-    dirname = os.path.dirname(arcpy.Describe(update_features).catalogPath)
-    desc = arcpy.Describe(dirname)
-    if hasattr(desc, "datasetType") and desc.datasetType == "FeatureDataset":
-        dirname = os.path.dirname(dirname)
-    return dirname
 
 
 def _blank_like(value):
@@ -234,19 +225,14 @@ def run_change_detection(
     profile,
     update_features,
     base_features,
-    search_distance,
     match_fields,
-    change_tolerance,
     compare_fields,
-    dfc_output_name,
-    stats_table_name,
-    recents_name,
 ):
     arcpy.env.overwriteOutput = True
     output_workspace = get_output_workspace(update_features)
-    dfc_output = os.path.join(output_workspace, dfc_output_name)
-    stats_table = os.path.join(output_workspace, stats_table_name)
-    out_feature = os.path.join(output_workspace, recents_name)
+    dfc_output = os.path.join(output_workspace, DEFAULT_DFC_OUTPUT_NAME)
+    stats_table = os.path.join(output_workspace, DEFAULT_STATS_TABLE_NAME)
+    out_feature = os.path.join(output_workspace, DEFAULT_RECENTS_NAME)
 
     if profile.required_fields:
         ensure_required_fields(
@@ -265,7 +251,7 @@ def run_change_detection(
     if not resolved_match_pairs:
         raise RuntimeError(
             "No valid match field pairs found between update and base feature classes. "
-            "Pass --match-fields with fields that exist in both datasets."
+            "Update the county profile with fields that exist in both datasets."
         )
     resolved_match_fields = "; ".join(
         [
@@ -280,7 +266,7 @@ def run_change_detection(
     if not resolved_compare_pairs:
         raise RuntimeError(
             "No valid compare field pairs found between update and base feature classes. "
-            "Pass --compare-fields with fields that exist in both datasets."
+            "Update the county profile with fields that exist in both datasets."
         )
     resolved_compare_fields = "; ".join(
         [
@@ -316,15 +302,15 @@ def run_change_detection(
         update_features,
         base_features,
         dfc_output,
-        search_distance,
+        DEFAULT_SEARCH_DISTANCE,
         resolved_match_fields,
         stats_table,
-        change_tolerance,
+        DEFAULT_CHANGE_TOLERANCE,
         resolved_compare_fields,
     )
     log("DetectFeatureChanges finished")
 
-    log(f"Creating changed-road output feature class: {recents_name}")
+    log(f"Creating changed-road output feature class: {DEFAULT_RECENTS_NAME}")
     arcpy.env.qualifiedFieldNames = False
 
     roads_layer = "roads_lyr"
@@ -383,38 +369,6 @@ def build_parser(prog: str | None = None):
     )
 
     parser.add_argument(
-        "--search-distance",
-        default="200 Feet",
-        help="Search distance for candidate matches in Detect Feature Changes.",
-    )
-    parser.add_argument(
-        "--match-fields",
-        help="Semicolon-delimited field mapping string used for matching.",
-    )
-    parser.add_argument(
-        "--change-tolerance",
-        default="40",
-        help="Change tolerance used by Detect Feature Changes.",
-    )
-    parser.add_argument(
-        "--compare-fields",
-        help=(
-            "Optional semicolon-delimited field mapping string for compare attributes. "
-            "When omitted, county defaults are used."
-        ),
-    )
-    parser.add_argument(
-        "--dfc-output-name",
-        help="Output feature class name for Detect Feature Changes result.",
-    )
-    parser.add_argument(
-        "--stats-table-name",
-        help="Output table name for Detect Feature Changes statistics.",
-    )
-    parser.add_argument(
-        "--recents-name", help="Output feature class name for selected changed roads."
-    )
-    parser.add_argument(
         "--profiles",
         default=None,
         metavar="PATH",
@@ -435,28 +389,13 @@ def main(argv=None, *, prog: str | None = None):
 
         ensure_detect_feature_changes_license()
 
-        match_fields = args.match_fields or profile.match_fields
-        compare_fields = (
-            args.compare_fields
-            if args.compare_fields is not None
-            else profile.compare_fields
-        )
-        dfc_output_name = args.dfc_output_name or profile.dfc_output_name
-        stats_table_name = args.stats_table_name or profile.stats_table_name
-        recents_name = args.recents_name or profile.recents_name
-
         run_change_detection(
             profile_key=profile_key,
             profile=profile,
             update_features=update_features,
             base_features=base_features,
-            search_distance=args.search_distance,
-            match_fields=match_fields,
-            change_tolerance=args.change_tolerance,
-            compare_fields=compare_fields,
-            dfc_output_name=dfc_output_name,
-            stats_table_name=stats_table_name,
-            recents_name=recents_name,
+            match_fields=profile.match_fields,
+            compare_fields=profile.compare_fields,
         )
     except RuntimeError as exc:
         log(str(exc))

@@ -1,7 +1,11 @@
 import os
+from types import SimpleNamespace
 from unittest.mock import MagicMock, Mock
 
+import pytest
+
 from utrans import detect_changes
+from utrans.utilities import get_output_workspace
 
 
 def _cursor(rows):
@@ -33,6 +37,38 @@ def test_parser_does_not_require_county_field_configuration():
     assert "test_output_name" not in actions
     assert "append_target" not in actions
     assert "utrans_features" in actions
+    assert "output_workspace" not in actions
+
+
+@pytest.mark.parametrize(
+    ("feature_class", "descriptions", "expected"),
+    [
+        (
+            r"C:\data\roads.gdb\roads",
+            [
+                SimpleNamespace(catalogPath=r"C:\data\roads.gdb\roads"),
+                SimpleNamespace(),
+            ],
+            r"C:\data\roads.gdb",
+        ),
+        (
+            r"C:\data\roads.gdb\transportation\roads",
+            [
+                SimpleNamespace(catalogPath=r"C:\data\roads.gdb\transportation\roads"),
+                SimpleNamespace(datasetType="FeatureDataset"),
+            ],
+            r"C:\data\roads.gdb",
+        ),
+    ],
+)
+def test_get_output_workspace_returns_containing_geodatabase(
+    monkeypatch, feature_class, descriptions, expected
+):
+    monkeypatch.setattr(
+        detect_changes.arcpy, "Describe", Mock(side_effect=descriptions)
+    )
+
+    assert get_output_workspace(feature_class) == expected
 
 
 def test_add_dfc_fields_creates_legacy_fields_and_populates_metadata(monkeypatch):
@@ -78,7 +114,12 @@ def test_run_detect_changes_uses_shared_filter_and_appends_to_utrans(monkeypatch
     monkeypatch.setattr(detect_changes.arcpy, "AlterAliasName", Mock())
     monkeypatch.setattr(detect_changes.arcpy, "Exists", Mock(return_value=False))
 
-    detect_changes.run_detect_changes("update", "base", "49035", "workspace")
+    monkeypatch.setattr(
+        detect_changes,
+        "get_output_workspace",
+        Mock(return_value="workspace"),
+    )
+    detect_changes.run_detect_changes("update", "base", "49035")
 
     make_feature_layer.assert_any_call(
         "base", "detect_changes_base", "COUNTY_L = '49035' OR COUNTY_R = '49035'"
