@@ -12,7 +12,7 @@ Each key in the JSON object is a county identifier (e.g. `"grand"`, `"davis"`). 
 
 **Type:** `string` | **Required by `etl`**
 
-The county's five-digit FIPS code written to `COUNTY_L` and `COUNTY_R` during ETL.
+The county's five-digit FIPS code plus the name written to `COUNTY_L` and `COUNTY_R` during ETL. For example, `"49035 - Salt Lake"`.
 
 ### `field_mappings`
 
