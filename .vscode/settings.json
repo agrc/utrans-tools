@@ -55,10 +55,10 @@
       "approve": true,
       "matchCommandLine": true
     },
-    "/^conda activate utrans-tools; pytest/": {
+    "/^conda activate utrans-tools; pytest[^;]*$/": {
       "approve": true,
       "matchCommandLine": true
-    },
+    }
     "/^conda activate utrans-tools; ruff/": {
       "approve": true,
       "matchCommandLine": true
