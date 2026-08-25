@@ -18,11 +18,17 @@ The following diagram shows the flow of data from the county into UTRANS.
 flowchart TD
   subgraph CLI
     direction TB
-    updateFeatureClass@{ shape: lean-r , label: "Update Feature Class (County Data)"} --> get-recent-edits
-    baseFeatureClass@{ shape: lean-r , label: "Base Feature Class (Previously Obtained Data)"} --> get-recent-edits
-    get-recent-edits --> RoadCenterline_Recents@{ shape: lean-r}
-    RoadCenterline_Recents --> etl
-    countyBoundaries@{ shape: lean-r, label: "County Boundaries" } --> etl
+    updateFeatureClass@{ shape: lean-r , label: "Update Feature Class (--update-features)"} --> getRecentEdits["get-recent-edits"]
+    countyBaseFeatureClass@{ shape: lean-r , label: "County Base Feature Class (--base-features)"} --> getRecentEdits
+    getRecentEdits --> RoadCenterline_Recents@{ shape: lean-r , label: "RoadCenterline_Recents (--source-features)"}
+
+    RoadCenterline_Recents --> etl["etl"]
+    utransRoads@{ shape: lean-r , label: "UTRANS Roads Schema (--utrans-roads)"} --> etl
+    countyBoundaries@{ shape: lean-r , label: "County Boundaries (--county-boundaries)"} --> etl
     etl --> etlOutput@{ shape: lean-r , label: "county_etl_YYYYMMDD"}
+
+    etlOutput --> detectChanges["detect-changes"]
+    utransBaseFeatureClass@{ shape: lean-r , label: "UTRANS Feature Class (--utrans-features)"} --> detectChanges
+    detectChanges --> productionDfc@{ shape: lean-r , label: "UTRANS/DFC_RESULT"}
   end
 ```

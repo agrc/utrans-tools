@@ -25,6 +25,7 @@ def test_version(capsys):
 @pytest.mark.parametrize(
     ("command", "main_name"),
     [
+        ("detect-changes", "detect_changes_main"),
         ("get-recent-edits", "recent_edits_main"),
         ("etl", "etl_main"),
     ],
