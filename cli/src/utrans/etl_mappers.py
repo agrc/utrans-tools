@@ -191,6 +191,8 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
         "AN_NAME",
         "AN_POSTDIR",
     ]
+    if handler is not None:
+        target_fields.extend(handler.target_fields)
     for _, alias in parse_sources:
         prefix = "" if alias == "PRIMARY" else f"{alias}_"
         target_fields.extend(
