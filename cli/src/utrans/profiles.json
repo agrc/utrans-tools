@@ -4,14 +4,26 @@
     "field_mappings": "FROMADDR_L=L_F_ADD; TOADDR_L=L_T_ADD; FROMADDR_R=R_F_ADD; TOADDR_R=R_T_ADD; NAME=STREETNAME; POSTDIR=SUFDIR; AN_NAME=ACSNAME; A1_NAME=ALIAS1; A2_NAME=ALIAS2; LOCAL_UID=CO_UNIQUE; STATUS=STATUS_; POSTTYPE=STREETTYPE; DOT_SRFTYP=SURFTYPE; DOT_CLASS=CLASS; VERT_LEVEL=VERTLEVEL",
     "fips": "49001 - Beaver",
     "match_fields": "STREETNAME STREETNAME",
-    "translate_vertical_levels": true
+    "value_mappings": {
+      "VERT_LEVEL": {
+        "1": "0",
+        "2": "1",
+        "3": "2"
+      }
+    }
   },
   "boxelder": {
     "compare_fields": "L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; SUF_DIR SUF_DIR; ACS_ALIAS ACS_ALIAS; ACS_NAME ACS_NAME; ACS_SUF ACS_SUF; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; ALIAS2_TYP ALIAS2_TYP",
     "field_mappings": "FROMADDR_L=L_F_ADD; TOADDR_L=L_T_ADD; FROMADDR_R=R_F_ADD; TOADDR_R=R_T_ADD; PREDIR=PRE_DIR; NAME=S_NAME; POSTDIR=SUF_DIR; AN_NAME=ACS_NAME; A1_NAME=ALIAS1; A2_NAME=ALIAS2; LOCAL_UID=CO_UNIQUE; POSTTYPE=S_TYPE; DOT_CLASS=CLASS; VERT_LEVEL=VERTLEVEL",
     "fips": "49003 - Box Elder",
     "match_fields": "S_NAME S_NAME",
-    "translate_vertical_levels": true
+    "value_mappings": {
+      "VERT_LEVEL": {
+        "1": "0",
+        "2": "1",
+        "3": "2"
+      }
+    }
   },
   "cache": {
     "compare_fields": "PRE_DIR PRE_DIR; GEOCODEST GEOCODEST; TYPE TYPE; FAL FAL; TAL TAL; FAR FAR; TAR TAR; AliasPreDir AliasPreDir; AliasStreet AliasStreet; AliasType AliasType; AliasSufDir AliasSufDir; SUFFDIR SUFFDIR",
@@ -58,7 +70,13 @@
     "fips": "49013 - Duchesne",
     "match_fields": "STREETNAME STREETNAME",
     "parse_sources": "ALIAS1=A1; ALIAS2=A2",
-    "translate_vertical_levels": true
+    "value_mappings": {
+      "VERT_LEVEL": {
+        "1": "0",
+        "2": "1",
+        "3": "2"
+      }
+    }
   },
   "emery": {
     "compare_fields": "PRE_DIR PRE_DIR; S_NAME S_NAME; S_TYPE S_TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1_TYP ALIAS1_TYP; ALIAS2 ALIAS2; ALIAS2_TYP ALIAS2_TYP; SUF_DIR SUF_DIR",
@@ -93,7 +111,13 @@
     "field_mappings": "FROMADDR_L=L_F_ADD; TOADDR_L=L_T_ADD; FROMADDR_R=R_F_ADD; TOADDR_R=R_T_ADD; PREDIR=PREDIR_; NAME=STREETNAME; POSTDIR=SUFDIR; AN_NAME=ACSNAME; A1_NAME=ALIAS1; A2_NAME=ALIAS2; LOCAL_UID=COUNIQUE; POSTTYPE=STREETTYPE; ONEWAY=ONEWAY_; DOT_SRFTYP=SURFTYPE; STATUS=STATUS_; DOT_CLASS=CLASS; VERT_LEVEL=VERTLEVEL",
     "fips": "49021 - Iron",
     "match_fields": "STREETNAME STREETNAME",
-    "translate_vertical_levels": true
+    "value_mappings": {
+      "VERT_LEVEL": {
+        "1": "0",
+        "2": "1",
+        "3": "2"
+      }
+    }
   },
   "kane": {
     "compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ACSALIAS ACSALIAS; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD",
@@ -209,7 +233,14 @@
     "field_mappings": "FROMADDR_L=L_F_ADD; TOADDR_L=L_T_ADD; FROMADDR_R=R_F_ADD; TOADDR_R=R_T_ADD; PREDIR=PRE_DIR; NAME=S_NAME; LOCAL_UID=CO_UNIQUE; DOT_CLASS=CLASS; ONEWAY=ONE_WAY; DOT_SRFTYP=S_SURF2; VERT_LEVEL=VERTLEVEL",
     "fips": "49055 - Wayne",
     "match_fields": "S_NAME S_NAME",
-    "parse_sources": "S_NAME=PRIMARY; ALIAS1=A1"
+    "parse_sources": "S_NAME=PRIMARY; ALIAS1=A1",
+    "value_mappings": {
+      "DOT_SRFTYP": {
+        "IMPROVED": "I",
+        "NATIVE": "N",
+        "PAVED": "P"
+      }
+    }
   },
   "weber": {
     "compare_fields": "PREDIR PREDIR; S_NAME S_NAME; STREETTYPE STREETTYPE; SUFDIR SUFDIR; ALIAS ALIAS; ACS_ALIAS ACS_ALIAS; SUFFIX_911 SUFFIX_911; LEFTFROM LEFTFROM; LEFTTO LEFTTO; RIGHTFROM RIGHTFROM; RIGHTTO RIGHTTO",
