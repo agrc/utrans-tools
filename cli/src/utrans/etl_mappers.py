@@ -219,12 +219,6 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
     domains = domain_values(utrans_roads)
     _validate_value_mappings(profile, value_mappings, names, domains)
     posttypes = domains.get("POSTTYPE", {})
-    vertical_translation = profile.get("translate_vertical_levels", False)
-    if not isinstance(vertical_translation, bool):
-        raise TypeError(
-            f"Profile '{profile.key}' setting 'translate_vertical_levels' must be true or false."
-        )
-
     with arcpy.da.UpdateCursor(feature_class, fields) as cursor:
         for row in cursor:
             for target, source in mappings.items():
@@ -237,10 +231,6 @@ def apply_mapper(feature_class: str, profile: CountyProfile, utrans_roads: str) 
                     row[target_index] = row[source_index]
                     continue
                 source_value = row[source_index]
-                if vertical_translation and target.upper() == "VERT_LEVEL":
-                    source_value = {"1": "0", "2": "1", "3": "2"}.get(
-                        str(source_value).strip(), source_value
-                    )
                 source_value = value_mappings.get(target.upper(), {}).get(
                     str(source_value).strip().upper(), source_value
                 )

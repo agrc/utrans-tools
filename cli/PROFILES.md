@@ -127,16 +127,6 @@ Currently supported handlers:
 A semicolon-delimited list of `COUNTY_FIELD=TARGET` values used to parse full street
 names. `TARGET` is `PRIMARY`, `A1`, or `A2`.
 
-### `translate_vertical_levels`
-
-**Type:** `boolean` | **Optional** — defaults to `false`
-
-**Used by:** `etl`
-
-When `true`, legacy vertical values `1`, `2`, and `3` are translated to `0`, `1`,
-and `2` before domain-value matching. Invalid values are still preserved when they
-fit within the destination field length and are always appended to `UTRANS_NOTES`.
-
 ### `exclude_if_any`
 
 **Type:** `string` or `object` | **Optional** - defaults to no exclusions
