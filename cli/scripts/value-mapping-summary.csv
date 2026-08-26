@@ -1,0 +1,99 @@
+county,profile,source_features,status,detail
+Beaver,beaver,C:\Mac\Home\Documents\working\utrans\county_obtained\Beaver\BeaverCo_20260604.gdb\Beaver_Roads2025,missing_source_field,STATUS_ maps to STATUS.
+Beaver,beaver,C:\Mac\Home\Documents\working\utrans\county_obtained\Beaver\BeaverCo_20260604.gdb\Beaver_Roads2025,discovered,49 observed values.
+BoxElder,boxelder,C:\Mac\Home\Documents\working\utrans\county_obtained\BoxElder\BoxElder_20260624.gdb\BECO_RDS,discovered,28 observed values.
+Cache,cache,C:\Mac\Home\Documents\working\utrans\county_obtained\Cache\CacheCo_20260824.gdb\CacheCountyRoads,no_domain_mappings,No mapped target fields have coded-value domains.
+Carbon,carbon,C:\Mac\Home\Documents\working\utrans\county_obtained\Carbon\Carbon20241031.gdb\Roads,missing_source_field,POSTDIR_ maps to POSTDIR.
+Carbon,carbon,C:\Mac\Home\Documents\working\utrans\county_obtained\Carbon\Carbon20241031.gdb\Roads,missing_source_field,POSTTYPE_ maps to POSTTYPE.
+Carbon,carbon,C:\Mac\Home\Documents\working\utrans\county_obtained\Carbon\Carbon20241031.gdb\Roads,missing_source_field,PREDIR_ maps to PREDIR.
+Carbon,carbon,C:\Mac\Home\Documents\working\utrans\county_obtained\Carbon\Carbon20241031.gdb\Roads,discovered,0 observed values.
+Daggett,daggett,C:\Mac\Home\Documents\working\utrans\county_obtained\Daggett\DaggettCo_20210515.gdb\Centerlines,discovered,43 observed values.
+Davis,davis,C:\Mac\Home\Documents\working\utrans\county_obtained\Davis\DavisCounty_20260722.gdb\DavisRoads,discovered,49 observed values.
+Duchesne,duchesne,C:\Mac\Home\Documents\working\utrans\county_obtained\Duchesne\DuchesneCo_20191009.gdb\Centerlines,no_observations,ALIAS2TYPE maps to A2_POSTTYPE.
+Duchesne,duchesne,C:\Mac\Home\Documents\working\utrans\county_obtained\Duchesne\DuchesneCo_20191009.gdb\Centerlines,missing_source_field,ONEWAY_ maps to ONEWAY.
+Duchesne,duchesne,C:\Mac\Home\Documents\working\utrans\county_obtained\Duchesne\DuchesneCo_20191009.gdb\Centerlines,missing_source_field,PREDIR_ maps to PREDIR.
+Duchesne,duchesne,C:\Mac\Home\Documents\working\utrans\county_obtained\Duchesne\DuchesneCo_20191009.gdb\Centerlines,missing_source_field,STATUS_ maps to STATUS.
+Duchesne,duchesne,C:\Mac\Home\Documents\working\utrans\county_obtained\Duchesne\DuchesneCo_20191009.gdb\Centerlines,no_observations,VERTLEVEL maps to VERT_LEVEL.
+Duchesne,duchesne,C:\Mac\Home\Documents\working\utrans\county_obtained\Duchesne\DuchesneCo_20191009.gdb\Centerlines,discovered,32 observed values.
+Emery,emery,C:\Mac\Home\Documents\working\utrans\county_obtained\Emery\EmeryCo_20260611.gdb\Roads,no_observations,ALIAS2_TYP maps to A2_POSTTYPE.
+Emery,emery,C:\Mac\Home\Documents\working\utrans\county_obtained\Emery\EmeryCo_20260611.gdb\Roads,missing_source_field,STATUS_ maps to STATUS.
+Emery,emery,C:\Mac\Home\Documents\working\utrans\county_obtained\Emery\EmeryCo_20260611.gdb\Roads,discovered,46 observed values.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,missing_source_field,A1_POSTTYPE_ maps to A1_POSTTYPE.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,missing_source_field,A2_POSTTYPE_ maps to A2_POSTTYPE.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,missing_source_field,CARTOCODE_ maps to CARTOCODE.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,missing_source_field,DOT_CLASS_ maps to DOT_CLASS.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,missing_source_field,DOT_SRFTYP_ maps to DOT_SRFTYP.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,missing_source_field,ONEWAY_ maps to ONEWAY.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,missing_source_field,POSTDIR_ maps to POSTDIR.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,missing_source_field,POSTTYPE_ maps to POSTTYPE.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,missing_source_field,PREDIR_ maps to PREDIR.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,missing_source_field,SPEED_LMT_ maps to SPEED_LMT.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,missing_source_field,STATUS_ maps to STATUS.
+Garfield,garfield,C:\Mac\Home\Documents\working\utrans\county_obtained\Garfield\Garfield20260427.gdb\Garfield_Streets_Roads,discovered,0 observed values.
+Grand,grand,C:\Mac\Home\Documents\working\utrans\county_obtained\Grand\GrandCo_20260722.gdb\GC_ROADS_07_09_26,missing_source_field,CARTOCODE_ maps to CARTOCODE.
+Grand,grand,C:\Mac\Home\Documents\working\utrans\county_obtained\Grand\GrandCo_20260722.gdb\GC_ROADS_07_09_26,missing_source_field,ONEWAY_ maps to ONEWAY.
+Grand,grand,C:\Mac\Home\Documents\working\utrans\county_obtained\Grand\GrandCo_20260722.gdb\GC_ROADS_07_09_26,missing_source_field,PREDIR_ maps to PREDIR.
+Grand,grand,C:\Mac\Home\Documents\working\utrans\county_obtained\Grand\GrandCo_20260722.gdb\GC_ROADS_07_09_26,missing_source_field,STATUS_ maps to STATUS.
+Grand,grand,C:\Mac\Home\Documents\working\utrans\county_obtained\Grand\GrandCo_20260722.gdb\GC_ROADS_07_09_26,discovered,71 observed values.
+Iron,iron,C:\Mac\Home\Documents\working\utrans\county_obtained\Iron\Iron_20260625.gdb\Iron_Roads06_25_2026,missing_source_field,ONEWAY_ maps to ONEWAY.
+Iron,iron,C:\Mac\Home\Documents\working\utrans\county_obtained\Iron\Iron_20260625.gdb\Iron_Roads06_25_2026,missing_source_field,PREDIR_ maps to PREDIR.
+Iron,iron,C:\Mac\Home\Documents\working\utrans\county_obtained\Iron\Iron_20260625.gdb\Iron_Roads06_25_2026,missing_source_field,STATUS_ maps to STATUS.
+Iron,iron,C:\Mac\Home\Documents\working\utrans\county_obtained\Iron\Iron_20260625.gdb\Iron_Roads06_25_2026,discovered,46 observed values.
+Kane,kane,C:\Mac\Home\Documents\working\utrans\county_obtained\Kane\KaneCo_20250915.gdb\Kane_Street_Centerlines,no_observations,ALIAS2TYPE maps to A2_POSTTYPE.
+Kane,kane,C:\Mac\Home\Documents\working\utrans\county_obtained\Kane\KaneCo_20250915.gdb\Kane_Street_Centerlines,missing_source_field,CARTOCODE_ maps to CARTOCODE.
+Kane,kane,C:\Mac\Home\Documents\working\utrans\county_obtained\Kane\KaneCo_20250915.gdb\Kane_Street_Centerlines,no_observations,CLASS maps to DOT_CLASS.
+Kane,kane,C:\Mac\Home\Documents\working\utrans\county_obtained\Kane\KaneCo_20250915.gdb\Kane_Street_Centerlines,missing_source_field,ONEWAY_ maps to ONEWAY.
+Kane,kane,C:\Mac\Home\Documents\working\utrans\county_obtained\Kane\KaneCo_20250915.gdb\Kane_Street_Centerlines,missing_source_field,PREDIR_ maps to PREDIR.
+Kane,kane,C:\Mac\Home\Documents\working\utrans\county_obtained\Kane\KaneCo_20250915.gdb\Kane_Street_Centerlines,missing_source_field,STATUS_ maps to STATUS.
+Kane,kane,C:\Mac\Home\Documents\working\utrans\county_obtained\Kane\KaneCo_20250915.gdb\Kane_Street_Centerlines,discovered,46 observed values.
+Millard,millard,C:\Mac\Home\Documents\working\utrans\county_obtained\Millard\Millard_20251217.gdb\Millard_Roads_Dec_2025,missing_source_field,CARTOCODE_ maps to CARTOCODE.
+Millard,millard,C:\Mac\Home\Documents\working\utrans\county_obtained\Millard\Millard_20251217.gdb\Millard_Roads_Dec_2025,missing_source_field,PREDIR_ maps to PREDIR.
+Millard,millard,C:\Mac\Home\Documents\working\utrans\county_obtained\Millard\Millard_20251217.gdb\Millard_Roads_Dec_2025,discovered,24 observed values.
+Morgan,morgan,C:\Mac\Home\Documents\working\utrans\county_obtained\Morgan\MorganCo_20260519.gdb\Centerlines_May26,no_observations,onewaydir maps to ONEWAY.
+Morgan,morgan,C:\Mac\Home\Documents\working\utrans\county_obtained\Morgan\MorganCo_20260519.gdb\Centerlines_May26,discovered,7 observed values.
+Piute,piute,C:\Mac\Home\Documents\working\utrans\county_obtained\Piute\PiuteCo_20260414.gdb\Roads_2026_April,missing_source_field,POSTDIR_ maps to POSTDIR.
+Piute,piute,C:\Mac\Home\Documents\working\utrans\county_obtained\Piute\PiuteCo_20260414.gdb\Roads_2026_April,missing_source_field,POSTTYPE_ maps to POSTTYPE.
+Piute,piute,C:\Mac\Home\Documents\working\utrans\county_obtained\Piute\PiuteCo_20260414.gdb\Roads_2026_April,missing_source_field,PREDIR_ maps to PREDIR.
+Piute,piute,C:\Mac\Home\Documents\working\utrans\county_obtained\Piute\PiuteCo_20260414.gdb\Roads_2026_April,discovered,0 observed values.
+Rich,rich,C:\Mac\Home\Documents\working\utrans\county_obtained\Rich\RichCo_20211115.gdb\E911_RichRoads11_3_21,discovered,42 observed values.
+SaltLake,saltlake,C:\Mac\Home\Documents\working\utrans\county_obtained\VECC\SaltLakeVECC_20260728.gdb\Centerlines,missing_source_field,DOT_SRFTYP_ maps to DOT_SRFTYP.
+SaltLake,saltlake,C:\Mac\Home\Documents\working\utrans\county_obtained\VECC\SaltLakeVECC_20260728.gdb\Centerlines,missing_source_field,ONEWAY_ maps to ONEWAY.
+SaltLake,saltlake,C:\Mac\Home\Documents\working\utrans\county_obtained\VECC\SaltLakeVECC_20260728.gdb\Centerlines,missing_source_field,POSTDIR_ maps to POSTDIR.
+SaltLake,saltlake,C:\Mac\Home\Documents\working\utrans\county_obtained\VECC\SaltLakeVECC_20260728.gdb\Centerlines,missing_source_field,POSTTYPE_ maps to POSTTYPE.
+SaltLake,saltlake,C:\Mac\Home\Documents\working\utrans\county_obtained\VECC\SaltLakeVECC_20260728.gdb\Centerlines,missing_source_field,PREDIR_ maps to PREDIR.
+SaltLake,saltlake,C:\Mac\Home\Documents\working\utrans\county_obtained\VECC\SaltLakeVECC_20260728.gdb\Centerlines,missing_source_field,STATUS_ maps to STATUS.
+SaltLake,saltlake,C:\Mac\Home\Documents\working\utrans\county_obtained\VECC\SaltLakeVECC_20260728.gdb\Centerlines,discovered,0 observed values.
+SanJuan,sanjuan,C:\Mac\Home\Documents\working\utrans\county_obtained\SanJuan\SanJuanRoads_20250808.gdb\T2025SanJuanRoads,discovered,14 observed values.
+Sevier,sevier,C:\Mac\Home\Documents\working\utrans\county_obtained\Sevier\SevierCo_20260514.gdb\SC911DataUpdate_260511,discovered,24 observed values.
+Summit,summit,C:\Mac\Home\Documents\working\utrans\county_obtained\Summit\Summit_20260722.gdb\SummitRoads,missing_source_field,ONEWAY_ maps to ONEWAY.
+Summit,summit,C:\Mac\Home\Documents\working\utrans\county_obtained\Summit\Summit_20260722.gdb\SummitRoads,missing_source_field,POST_DIR maps to POSTDIR.
+Summit,summit,C:\Mac\Home\Documents\working\utrans\county_obtained\Summit\Summit_20260722.gdb\SummitRoads,missing_source_field,SUFF_TYPE maps to POSTTYPE.
+Summit,summit,C:\Mac\Home\Documents\working\utrans\county_obtained\Summit\Summit_20260722.gdb\SummitRoads,missing_source_field,PREFIX_DIR maps to PREDIR.
+Summit,summit,C:\Mac\Home\Documents\working\utrans\county_obtained\Summit\Summit_20260722.gdb\SummitRoads,missing_source_field,STATUS_ maps to STATUS.
+Summit,summit,C:\Mac\Home\Documents\working\utrans\county_obtained\Summit\Summit_20260722.gdb\SummitRoads,discovered,0 observed values.
+Tooele,tooele,C:\Mac\Home\Documents\working\utrans\county_obtained\Tooele\TooeleCo_20260514.gdb\TCRoads,missing_source_field,POSTDIR_ maps to POSTDIR.
+Tooele,tooele,C:\Mac\Home\Documents\working\utrans\county_obtained\Tooele\TooeleCo_20260514.gdb\TCRoads,missing_source_field,POSTTYPE_ maps to POSTTYPE.
+Tooele,tooele,C:\Mac\Home\Documents\working\utrans\county_obtained\Tooele\TooeleCo_20260514.gdb\TCRoads,missing_source_field,PREDIR_ maps to PREDIR.
+Tooele,tooele,C:\Mac\Home\Documents\working\utrans\county_obtained\Tooele\TooeleCo_20260514.gdb\TCRoads,discovered,0 observed values.
+Uintah,uintah,C:\Mac\Home\Documents\working\utrans\county_obtained\Uintah\UintahCo20260423.gdb\Roads,missing_source_field,SUF_DIR maps to POSTDIR.
+Uintah,uintah,C:\Mac\Home\Documents\working\utrans\county_obtained\Uintah\UintahCo20260423.gdb\Roads,missing_source_field,S_TYPE maps to POSTTYPE.
+Uintah,uintah,C:\Mac\Home\Documents\working\utrans\county_obtained\Uintah\UintahCo20260423.gdb\Roads,missing_source_field,PRE_DIR maps to PREDIR.
+Uintah,uintah,C:\Mac\Home\Documents\working\utrans\county_obtained\Uintah\UintahCo20260423.gdb\Roads,discovered,2 observed values.
+Utah,utah,C:\Mac\Home\Documents\working\utrans\county_obtained\Utah\UtahCo_20260824.gdb\RoadCenterline,discovered,50 observed values.
+Wasatch,wasatch,C:\Mac\Home\Documents\working\utrans\county_obtained\Wasatch\WasatchCounty20260604.gdb\WC_ROAD,missing_source_field,POSTDIR_ maps to POSTDIR.
+Wasatch,wasatch,C:\Mac\Home\Documents\working\utrans\county_obtained\Wasatch\WasatchCounty20260604.gdb\WC_ROAD,missing_source_field,POSTTYPE_ maps to POSTTYPE.
+Wasatch,wasatch,C:\Mac\Home\Documents\working\utrans\county_obtained\Wasatch\WasatchCounty20260604.gdb\WC_ROAD,missing_source_field,PREDIR_ maps to PREDIR.
+Wasatch,wasatch,C:\Mac\Home\Documents\working\utrans\county_obtained\Wasatch\WasatchCounty20260604.gdb\WC_ROAD,discovered,0 observed values.
+Washington,washington,C:\Mac\Home\Documents\working\utrans\county_obtained\Washington\Washington20260722.gdb\WashCo_RoadCenterlines,missing_source_field,A1_POSTDIR_ maps to A1_POSTDIR.
+Washington,washington,C:\Mac\Home\Documents\working\utrans\county_obtained\Washington\Washington20260722.gdb\WashCo_RoadCenterlines,missing_source_field,A1_POSTTYPE_ maps to A1_POSTTYPE.
+Washington,washington,C:\Mac\Home\Documents\working\utrans\county_obtained\Washington\Washington20260722.gdb\WashCo_RoadCenterlines,missing_source_field,A2_POSTDIR_ maps to A2_POSTDIR.
+Washington,washington,C:\Mac\Home\Documents\working\utrans\county_obtained\Washington\Washington20260722.gdb\WashCo_RoadCenterlines,missing_source_field,A2_POSTTYPE_ maps to A2_POSTTYPE.
+Washington,washington,C:\Mac\Home\Documents\working\utrans\county_obtained\Washington\Washington20260722.gdb\WashCo_RoadCenterlines,missing_source_field,AN_POSTDIR_ maps to AN_POSTDIR.
+Washington,washington,C:\Mac\Home\Documents\working\utrans\county_obtained\Washington\Washington20260722.gdb\WashCo_RoadCenterlines,missing_source_field,ONEWAY_ maps to ONEWAY.
+Washington,washington,C:\Mac\Home\Documents\working\utrans\county_obtained\Washington\Washington20260722.gdb\WashCo_RoadCenterlines,missing_source_field,POSTDIR_ maps to POSTDIR.
+Washington,washington,C:\Mac\Home\Documents\working\utrans\county_obtained\Washington\Washington20260722.gdb\WashCo_RoadCenterlines,missing_source_field,POSTTYPE_ maps to POSTTYPE.
+Washington,washington,C:\Mac\Home\Documents\working\utrans\county_obtained\Washington\Washington20260722.gdb\WashCo_RoadCenterlines,missing_source_field,PREDIR_ maps to PREDIR.
+Washington,washington,C:\Mac\Home\Documents\working\utrans\county_obtained\Washington\Washington20260722.gdb\WashCo_RoadCenterlines,missing_source_field,STATUS_ maps to STATUS.
+Washington,washington,C:\Mac\Home\Documents\working\utrans\county_obtained\Washington\Washington20260722.gdb\WashCo_RoadCenterlines,discovered,0 observed values.
+Wayne,wayne,C:\Mac\Home\Documents\working\utrans\county_obtained\Wayne\WayneCo_20260414.gdb\WayneCoRds_20260409,discovered,32 observed values.
+Weber,weber,C:\Mac\Home\Documents\working\utrans\county_obtained\Weber\WeberCounty_20260729.gdb\weber_centerline,discovered,48 observed values.
