@@ -1,3 +1,6 @@
+// EVENTS: INSERT, UPDATE
+// ERROR_NUMBER: 1
+// ERROR_MESSAGE: A field value does not match its coded-value domain.
 // Pre-declare fields to the Pro Arcade parser
 Expects($feature, 
     'PREDIR', 'POSTTYPE', 'POSTDIR', 'AN_POSTDIR',

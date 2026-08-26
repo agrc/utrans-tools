@@ -4,13 +4,16 @@ Tools for working with UTRANS data
 
 ## Attribute Rule Scripts
 
-The attribute-rule utilities are in [attribute-rules/new_ar.py](attribute-rules/new_ar.py) and [attribute-rules/deploy_ar.py](attribute-rules/deploy_ar.py).
+The attribute-rule utilities are in [attribute-rules/new_ar.py](attribute-rules/new_ar.py), [attribute-rules/deploy_ar.py](attribute-rules/deploy_ar.py), and [attribute-rules/deploy_all_ar.py](attribute-rules/deploy_all_ar.py).
 
 - [attribute-rules/deploy_ar.py](attribute-rules/deploy_ar.py) is the primary script.
   - Default mode is idempotent deploy: add if missing, alter if mutable changes, recreate when immutable changes require it.
   - Use `--mode add` for strict add-only behavior.
   - Use `--mode alter` to update an existing rule only.
 - [attribute-rules/new_ar.py](attribute-rules/new_ar.py) is a compatibility wrapper that forwards to deploy script add mode.
+- [attribute-rules/deploy_all_ar.py](attribute-rules/deploy_all_ar.py) recursively deploys every `.arcade` file using idempotent deploy mode. It infers the rule type from the top-level folder (`calculation`, `constraint`, or `validation`) and reads optional `// KEY: value` metadata from each script.
+
+Supported per-script metadata keys are `RULE_NAME`, `FIELD`, `EVENTS`, `IS_EDITABLE`, `ERROR_NUMBER`, `ERROR_MESSAGE`, `DESCRIPTION`, and `SUBTYPE`. Use `FIELD:` with no value for calculation rules that return an `attributes` dictionary for multiple fields.
 
 Examples:
 
@@ -23,6 +26,12 @@ python attribute-rules/new_ar.py fullname_calculation --in-table "Z:/data/County
 
 # alter existing rule only
 python attribute-rules/deploy_ar.py fullname_calculation --in-table "Z:/data/County.gdb/Roads" --mode alter --field FULLNAME
+
+# recursively deploy every rule using its script metadata
+python attribute-rules/deploy_all_ar.py --in-table "Z:/data/County.gdb/Roads"
+
+# preview all actions without changing the geodatabase
+python attribute-rules/deploy_all_ar.py --in-table "Z:/data/County.gdb/Roads" --dry-run
 ```
 
 ## `Get_Recent_Edits.py` script run example
