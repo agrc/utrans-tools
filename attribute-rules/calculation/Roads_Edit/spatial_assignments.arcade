@@ -2,10 +2,10 @@
 // FIELD:
 // EVENTS: INSERT, UPDATE
 
-var addressSystemQuadrantsLayer = FeatureSetByName($datastore, "SGID_Location_AddressSystemQuadrants", ["QUADRANT", "GRID_NAME"]);
-var countyLayer = FeatureSetByName($datastore, "SGID_BOUNDARIES_Counties", ["FIPS_STR"]);
-var zipCodeLayer = FeatureSetByName($datastore, "SGID_BOUNDARIES_ZipCodes", ["ZIP5", "NAME"]);
-var municipalityLayer = FeatureSetByName($datastore, "SGID_BOUNDARIES_Municipalities", ["NAME"]);
+var addressSystemQuadrantsLayer = FeatureSetByName($datastore, "AddressSystemQuadrants", ["QUADRANT", "GRID_NAME"]);
+var countyLayer = FeatureSetByName($datastore, "Counties", ["FIPS_STR"]);
+var zipCodeLayer = FeatureSetByName($datastore, "ZipCodes", ["ZIP5", "NAME"]);
+var municipalityLayer = FeatureSetByName($datastore, "Municipalities", ["NAME"]);
 
 var roadLeft = Centroid(Offset($feature, -15, 'meters', 'square'));
 var roadRight = Centroid(Offset($feature, 15, 'meters', 'square'));

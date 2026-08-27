@@ -113,7 +113,7 @@ if (IsEmpty(midpoint)) {
 }
 
 var midpointGeom = Point({ 'x': midpoint.x, 'y': midpoint.y, 'spatialReference': geometry.spatialReference });
-var nationalGrid = FeatureSetByName($datastore, 'SGID_INDICES_NationalGrid', ['GRID1MIL', 'GRID100K'], true);
+var nationalGrid = FeatureSetByName($datastore, 'NationalGrid', ['GRID1MIL', 'GRID100K'], true);
 var gridMatch = First(Intersects(nationalGrid, midpointGeom));
 if (IsEmpty(gridMatch)) {
 	return "ERR:NO_GRID_MATCH";

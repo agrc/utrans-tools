@@ -83,12 +83,12 @@ if (Left(dotRtName, 1) == '0') {
     var rightPt = Point({ 'x': midPt.x + 15, 'y': midPt.y, 'spatialReference': lineGeom.spatialReference });
 
     // 3. Query the Municipalities polygon FeatureSet
-    var muniFS = FeatureSetByName($datastore, "SGID_BOUNDARIES_Municipalities", ["NAME"], true);
+    var muniFS = FeatureSetByName($datastore, "Municipalities", ["NAME"], true);
     var leftMuni = First(Intersects(muniFS, leftPt));
     var rightMuni = First(Intersects(muniFS, rightPt));
 
     // 4. Query the Counties polygon FeatureSet
-    var countyFS = FeatureSetByName($datastore, "SGID_BOUNDARIES_Counties", ["NAME"], true);
+    var countyFS = FeatureSetByName($datastore, "Counties", ["NAME"], true);
     var leftCounty = First(Intersects(countyFS, leftPt));
     var rightCounty = First(Intersects(countyFS, rightPt));
 

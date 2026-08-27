@@ -40,7 +40,8 @@ class RuleState:
 
 
 def _log(message: str) -> None:
-	print(message)
+	# Flush so progress is visible during slow enterprise deploys and when output is piped.
+	print(message, flush=True)
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -299,8 +300,18 @@ def _rule_state_from_existing(rule: object) -> RuleState:
 	)
 
 
+# Describe round trips cost seconds against an enterprise geodatabase, so cache static lookups.
+_DESCRIBE_CACHE: dict[str, object] = {}
+
+
+def _describe_cached(path: str) -> object:
+	if path not in _DESCRIBE_CACHE:
+		_DESCRIBE_CACHE[path] = arcpy.Describe(path)
+	return _DESCRIBE_CACHE[path]
+
+
 def _validate_in_table(in_table: str) -> None:
-	data_type = _as_text(getattr(arcpy.Describe(in_table), "dataType", ""))
+	data_type = _as_text(getattr(_describe_cached(in_table), "dataType", ""))
 	if data_type in {"FeatureClass", "Table", "FeatureLayer", "TableView"}:
 		return
 
@@ -315,12 +326,12 @@ def _validate_in_table(in_table: str) -> None:
 
 
 def _describe_workspace(in_table: str) -> object | None:
-	path = _as_text(getattr(arcpy.Describe(in_table), "path", ""))
+	path = _as_text(getattr(_describe_cached(in_table), "path", ""))
 	# Walk up past any feature dataset until the workspace itself is described.
 	for _ in range(3):
 		if not path:
 			return None
-		desc = arcpy.Describe(path)
+		desc = _describe_cached(path)
 		if hasattr(desc, "connectionProperties"):
 			return desc
 		path = _as_text(getattr(desc, "path", ""))
@@ -332,7 +343,7 @@ def _warn_enterprise_preconditions(in_table: str, rule_type: str) -> None:
 	if workspace is None:
 		return
 
-	desc = arcpy.Describe(in_table)
+	desc = _describe_cached(in_table)
 	connection = getattr(workspace, "connectionProperties", None)
 
 	if (

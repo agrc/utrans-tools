@@ -148,9 +148,9 @@ def main(argv: list[str] | None = None) -> None:
 
 	# Build every command before changing the target so invalid metadata fails cleanly.
 	deployments = [(rule, _deployment_argv(rule, args)) for rule in rules]
-	print(f"Deploying {len(deployments)} attribute rule(s) to: {args.in_table}")
+	print(f"Deploying {len(deployments)} attribute rule(s) to: {args.in_table}", flush=True)
 	for deployment, deploy_argv in deployments:
-		print(f"\n=== {deployment.arcade_path.relative_to(ATTRIBUTE_RULES_ROOT)} ===")
+		print(f"\n=== {deployment.arcade_path.relative_to(ATTRIBUTE_RULES_ROOT)} ===", flush=True)
 		deploy_rule(deploy_argv)
 
 
