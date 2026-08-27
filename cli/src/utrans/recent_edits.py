@@ -48,7 +48,6 @@ class CountyProfile:
     match_fields: str = ""
     compare_fields: str | None = None
     uppercase_normalize_fields: set[str] = field(default_factory=set)
-    required_fields: list[str] = field(default_factory=list)
 
 
 def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
@@ -59,7 +58,6 @@ def _load_profiles(path: Path | None = None) -> dict[str, CountyProfile]:
             match_fields=data["match_fields"],
             compare_fields=data.get("compare_fields"),
             uppercase_normalize_fields=set(data.get("uppercase_normalize_fields", [])),
-            required_fields=data.get("required_fields", []),
         )
 
     return profiles
@@ -204,14 +202,37 @@ def resolve_required_inputs(args):
     return args.county, args.update_features, args.base_features
 
 
-def ensure_required_fields(feature_class, required_fields, dataset_label):
-    lookup = get_field_name_map(feature_class)
-    missing = [
-        field_name for field_name in required_fields if field_name.lower() not in lookup
-    ]
-    if missing:
+def ensure_configured_fields(update_features, base_features, field_mappings):
+    update_map = get_field_name_map(update_features)
+    base_map = get_field_name_map(base_features)
+    missing_update = []
+    missing_base = []
+    missing_update_lookup = set()
+    missing_base_lookup = set()
+
+    for field_mapping in field_mappings:
+        for update_field, base_field in parse_field_pairs(field_mapping or ""):
+            if (
+                update_field.lower() not in update_map
+                and update_field.lower() not in missing_update_lookup
+            ):
+                missing_update.append(update_field)
+                missing_update_lookup.add(update_field.lower())
+            if (
+                base_field.lower() not in base_map
+                and base_field.lower() not in missing_base_lookup
+            ):
+                missing_base.append(base_field)
+                missing_base_lookup.add(base_field.lower())
+
+    if missing_update:
         raise RuntimeError(
-            f"{dataset_label} is missing required fields: {', '.join(missing)}"
+            "Update features are missing configured fields: "
+            f"{', '.join(missing_update)}"
+        )
+    if missing_base:
+        raise RuntimeError(
+            f"Base features are missing configured fields: {', '.join(missing_base)}"
         )
 
 
@@ -234,16 +255,14 @@ def run_change_detection(
     stats_table = os.path.join(output_workspace, DEFAULT_STATS_TABLE_NAME)
     out_feature = os.path.join(output_workspace, DEFAULT_RECENTS_NAME)
 
-    if profile.required_fields:
-        ensure_required_fields(
-            update_features, profile.required_fields, "Update features"
-        )
-        ensure_required_fields(base_features, profile.required_fields, "Base features")
-
     if not compare_fields:
         raise RuntimeError(
             "Compare fields were not provided and county profile has no default compare mapping."
         )
+
+    ensure_configured_fields(
+        update_features, base_features, (match_fields, compare_fields)
+    )
 
     resolved_match_pairs = resolve_field_pairs(
         update_features, base_features, match_fields

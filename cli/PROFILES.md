@@ -197,21 +197,6 @@ Use this when a county's data may have mixed case values that should compare as 
 
 ---
 
-### `required_fields`
-
-**Type:** `string[]` | **Optional** — defaults to `[]`
-
-**Used by:** `get-recent-edits`
-
-Fields that must exist in both the update and base feature classes. If any are
-missing, the script raises an error before doing any work.
-
-```json
-"required_fields": ["RoadName", "LeftFrom", "LeftTo", "RightFrom", "RightTo"]
-```
-
----
-
 ## Minimal Profile Example
 
 ```json

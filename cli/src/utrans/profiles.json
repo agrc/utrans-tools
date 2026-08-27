@@ -51,18 +51,7 @@
     "field_mappings": "FROMADDR_L=LeftFrom; TOADDR_L=LeftTo; FROMADDR_R=RightFrom; TOADDR_R=RightTo; PREDIR=PrefixDirection; NAME=RoadName; POSTTYPE=RoadNameType; POSTDIR=PostDirection; DOT_SRFTYP=RoadSurfaceType",
     "fips": "49011 - Davis",
     "match_fields": "RoadName RoadName",
-    "required_fields": [
-      "PrefixDirection",
-      "RoadName",
-      "RoadNameType",
-      "PostDirection",
-      "RoadAliasName",
-      "LeftFrom",
-      "LeftTo",
-      "RightFrom",
-      "RightTo",
-      "MPH"
-    ]
+    "value_mappings": {
   },
   "duchesne": {
     "compare_fields": "PREDIR PREDIR; STREETNAME STREETNAME; STREETTYPE STREETTYPE; L_F_ADD L_F_ADD; L_T_ADD L_T_ADD; R_F_ADD R_F_ADD; R_T_ADD R_T_ADD; ALIAS1 ALIAS1; ALIAS1TYPE ALIAS1TYPE; ALIAS2 ALIAS2; ALIAS2TYPE ALIAS2TYPE; ACSNAME ACSNAME; ACSSUF ACSSUF; SUFDIR SUFDIR",
