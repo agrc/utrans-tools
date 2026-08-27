@@ -30,6 +30,8 @@ import argparse
 import csv
 import json
 from collections import Counter
+from decimal import InvalidOperation
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -95,6 +97,18 @@ def field_names(feature_class: str) -> dict[str, str]:
     return {field.name.upper(): field.name for field in arcpy.ListFields(feature_class)}
 
 
+def normalize_value(value: object) -> str:
+    normalized = str(value).strip().upper()
+    try:
+        number = Decimal(normalized)
+    except InvalidOperation:
+        return normalized
+    canonical = format(number, "f")
+    if "." in canonical:
+        canonical = canonical.rstrip("0").rstrip(".")
+    return canonical
+
+
 def observed_values(
     feature_class: str, source_field: str
 ) -> dict[str, tuple[str, int]]:
@@ -105,7 +119,7 @@ def observed_values(
             if value is None or not str(value).strip():
                 continue
             raw_value = str(value).strip()
-            normalized_value = raw_value.upper()
+            normalized_value = normalize_value(raw_value)
             representatives.setdefault(normalized_value, raw_value)
             counts[normalized_value] += 1
     return {
@@ -294,13 +308,14 @@ def apply_mappings(
 ) -> None:
     profiles = load_profiles(profiles_path)
     domains = target_domains(target_features)
+    removed = clean_redundant_mappings(profiles, domains)
     inventory_rows: dict[tuple[str, str, str], dict[str, str]] = {}
     with inventory_path.open(newline="", encoding="utf-8-sig") as inventory_file:
         for row in csv.DictReader(inventory_file):
             key = (
                 row["profile"],
                 row["target_field"].strip().upper(),
-                row["normalized_value"].strip().upper(),
+                normalize_value(row["normalized_value"]),
             )
             inventory_rows[key] = row
 
@@ -312,7 +327,7 @@ def apply_mappings(
                 continue
             profile = row["profile"]
             target = row["target_field"].strip().upper()
-            source = row["normalized_value"].strip().upper()
+            source = normalize_value(row["normalized_value"])
             inventory_row = inventory_rows.get((profile, target, source))
             if profile not in profiles or inventory_row is None:
                 raise ValueError(
@@ -361,7 +376,40 @@ def apply_mappings(
                 target_mappings[source] = destination
 
     profiles_path.write_text(json.dumps(profiles, indent=2) + "\n", encoding="utf-8")
-    print(f"Applied inventory mappings to {profiles_path}")
+    print(
+        f"Applied inventory mappings to {profiles_path}; removed {removed} redundant mappings"
+    )
+
+
+def clean_redundant_mappings(
+    profiles: dict[str, dict[str, Any]], domains: dict[str, dict[str, str]]
+) -> int:
+    removed = 0
+    for profile in profiles.values():
+        value_mappings = profile.get("value_mappings", {})
+        if not isinstance(value_mappings, dict):
+            continue
+        for target, mappings in list(value_mappings.items()):
+            if not isinstance(mappings, dict):
+                continue
+            domain = domains.get(target.upper())
+            for source, destination in list(mappings.items()):
+                source_key = str(source).strip().upper()
+                destination_key = str(destination).strip().upper()
+                source_code = domain.get(source_key) if domain else None
+                destination_code = domain.get(destination_key) if domain else None
+                if source_key == destination_key or (
+                    source_code is not None
+                    and destination_code is not None
+                    and source_code == destination_code
+                ):
+                    del mappings[source]
+                    removed += 1
+            if not mappings:
+                del value_mappings[target]
+        if not value_mappings:
+            profile.pop("value_mappings", None)
+    return removed
 
 
 def build_parser() -> argparse.ArgumentParser:
