@@ -329,7 +329,7 @@ def run_change_detection(
     )
     log("DetectFeatureChanges finished")
 
-    log(f"Creating changed-road output feature class: {DEFAULT_RECENTS_NAME}")
+    log(f"Creating changed-road output feature class: {out_feature}")
     arcpy.env.qualifiedFieldNames = False
 
     roads_layer = "roads_lyr"

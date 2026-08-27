@@ -135,6 +135,7 @@ def run_detect_changes(
 
         changed_layer = "detect_changes_output"
         arcpy.management.MakeFeatureLayer(dfc_output, changed_layer, CHANGE_FILTER)
+        log(f"Creating detect-changes output test feature class: {test_output}")
         arcpy.management.CopyFeatures(changed_layer, test_output)
         arcpy.management.Append(changed_layer, APPEND_TARGET, "NO_TEST")
         log(f"Appended changed features to {APPEND_TARGET}")
