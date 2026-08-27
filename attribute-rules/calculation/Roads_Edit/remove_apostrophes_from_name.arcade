@@ -2,6 +2,7 @@
 // FIELD: NAME
 // EVENTS: INSERT, UPDATE
 // Remove apostrophes from NAME field on CREATE and UPDATE events
+// Test case: NAME="O'CONNELL" -> "OCONNELL"
 var name = $feature.NAME;
 var name_no_apostrophes = Replace(name, "'", "");
 return name_no_apostrophes;

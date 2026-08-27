@@ -299,6 +299,61 @@ def _rule_state_from_existing(rule: object) -> RuleState:
 	)
 
 
+def _validate_in_table(in_table: str) -> None:
+	data_type = _as_text(getattr(arcpy.Describe(in_table), "dataType", ""))
+	if data_type in {"FeatureClass", "Table", "FeatureLayer", "TableView"}:
+		return
+
+	if data_type in {"Workspace", "FeatureDataset"}:
+		raise RuntimeError(
+			f"--in-table must name a feature class or table, but {in_table} is a "
+			f"{data_type}. Append the dataset name, for example "
+			f"{in_table}\\TRANSADMIN.Roads_Edit"
+		)
+
+	raise RuntimeError(f"--in-table must be a feature class or table, but found {data_type}: {in_table}")
+
+
+def _describe_workspace(in_table: str) -> object | None:
+	path = _as_text(getattr(arcpy.Describe(in_table), "path", ""))
+	# Walk up past any feature dataset until the workspace itself is described.
+	for _ in range(3):
+		if not path:
+			return None
+		desc = arcpy.Describe(path)
+		if hasattr(desc, "connectionProperties"):
+			return desc
+		path = _as_text(getattr(desc, "path", ""))
+	return None
+
+
+def _warn_enterprise_preconditions(in_table: str, rule_type: str) -> None:
+	workspace = _describe_workspace(in_table)
+	if workspace is None:
+		return
+
+	desc = arcpy.Describe(in_table)
+	connection = getattr(workspace, "connectionProperties", None)
+
+	if (
+		rule_type == "VALIDATION"
+		and getattr(desc, "isVersioned", False)
+		and not getattr(connection, "branch", None)
+	):
+		_log(
+			"WARNING: validation rules require branch versioning on an enterprise "
+			"geodatabase, but this dataset is not branch versioned."
+		)
+
+	owner = _as_text(getattr(desc, "name", "")).split(".")[0]
+	user = _as_text(getattr(connection, "user", ""))
+	if owner and user and owner.casefold() != user.casefold():
+		_log(
+			f"WARNING: connected as {user!r} but the dataset owner is {owner!r}. "
+			"Attribute rule changes must be made by the data owner."
+		)
+
+
 def _get_rule_states(in_table: str) -> dict[str, RuleState]:
 	desc = arcpy.Describe(in_table)
 	rules = getattr(desc, "attributeRules", None) or []
@@ -517,6 +572,9 @@ def main(argv: list[str] | None = None) -> None:
 
 	if not arcpy.Exists(args.in_table):
 		raise RuntimeError(f"Target dataset does not exist: {args.in_table}")
+
+	_validate_in_table(args.in_table)
+	_warn_enterprise_preconditions(args.in_table, _normalize_type(args.type))
 
 	arcade_path = _resolve_arcade_path(args.script_name, args.folder)
 	rule_name = args.rule_name or _default_rule_name_from_stem(arcade_path.stem)
