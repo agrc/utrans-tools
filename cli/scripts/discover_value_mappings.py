@@ -30,8 +30,7 @@ import argparse
 import csv
 import json
 from collections import Counter
-from decimal import InvalidOperation
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
