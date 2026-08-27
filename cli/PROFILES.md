@@ -41,15 +41,26 @@ are reported with the field and value.
 
 **Used by:** `etl`
 
-Per-target mappings for source values that do not match a UTRANS coded-value
-domain code or description. Field names and source values are matched
-case-insensitively after surrounding whitespace is removed.
+Per-destination-field mappings for county source values that do not match a
+UTRANS coded-value domain code or description. The outer field name is the
+destination field name in the UTRANS output data. Each inner mapping uses this form:
+
+```text
+"county source value": "value written to the UTRANS output field"
+```
+
+The inner key on the left is the value read from the county source field. The
+inner value on the right is the value written to the destination UTRANS field
+after it is resolved against that field's coded-value domain. Field names,
+source keys, and source values are matched case-insensitively after surrounding
+whitespace is removed. The mapping value should be a valid destination domain
+code or description, and mapping entries should represent translations rather
+than identity mappings.
 
 ```json
 "value_mappings": {
-  "ONEWAY": {
-    "ONE DIRECTION": "Y",
-    "TWO WAY": "N"
+  "DOT_SRFTYP": {
+    "PAVED ASPHALT": "P-ASP"
   },
   "DOT_CLASS": {
     "LOCAL ROAD": "L"
@@ -57,9 +68,12 @@ case-insensitively after surrounding whitespace is removed.
 }
 ```
 
+In this example, `DOT_SRFTYP` and `DOT_CLASS` are UTRANS destination fields. A
+county value of `PAVED ASPHALT` is written as `P-ASP` to the output
+`DOT_SRFTYP` field, and a county value of `LOCAL ROAD` is written as `L` to the
+output `DOT_CLASS` field.
 The mapped value is resolved against the destination coded-value domain. Values
-that remain invalid are recorded in `UTRANS_NOTES` and copied only when they fit
-the target field length.
+that remain invalid are recorded in `UTRANS_NOTES`.
 
 ---
 
