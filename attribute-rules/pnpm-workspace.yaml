@@ -1,0 +1,8 @@
+minimumReleaseAge: 10080
+minimumReleaseAgeStrict: true
+minimumReleaseAgeExclude:
+  - '@ugrc/*'
+
+allowBuilds:
+  '@vaadin/vaadin-usage-statistics': true
+  esbuild: true

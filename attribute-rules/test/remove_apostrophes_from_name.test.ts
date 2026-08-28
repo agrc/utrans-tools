@@ -1,0 +1,15 @@
+import { expect, test } from "vitest";
+import { feature, loadExecutor } from "./_helpers.js";
+
+const executor = await loadExecutor(
+  "calculation/Roads_Edit/remove_apostrophes_from_name.arcade",
+  [{ name: "$feature", type: "feature" }]
+);
+
+test("removes apostrophes from NAME", () => {
+  expect(executor.execute({ "$feature": feature({ NAME: "O'CONNELL" }) })).toBe("OCONNELL");
+});
+
+test("leaves names without apostrophes unchanged", () => {
+  expect(executor.execute({ "$feature": feature({ NAME: "WASHINGTON" }) })).toBe("WASHINGTON");
+});

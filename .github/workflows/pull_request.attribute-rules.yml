@@ -1,0 +1,39 @@
+name: Pull Request Events (Attribute Rules)
+
+on:
+  pull_request:
+    paths:
+      - "attribute-rules/**/*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Test Arcade Expressions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v7
+
+      - name: 📦 Setup PNPM
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11
+
+      - name: ⎔ Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+          cache: pnpm
+          cache-dependency-path: attribute-rules/pnpm-lock.yaml
+
+      - name: 📥 Download dependencies
+        working-directory: attribute-rules
+        run: pnpm install --frozen-lockfile
+
+      - name: 🧪 Run tests
+        working-directory: attribute-rules
+        run: pnpm test

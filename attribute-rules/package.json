@@ -1,0 +1,17 @@
+{
+  "name": "utrans-tools-attribute-rules-testing-framework",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@arcgis/core": "^5.1.17"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@ugrc/tsconfigs": "1.0.4",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.4"
+  }
+}
