@@ -32,11 +32,6 @@ TEST_OUTPUT_NAME = "TEST_DFC_RESULT"
 CHANGE_FILTER = "CHANGE_TYPE NOT IN ('NC', 'D')"
 SEARCH_DISTANCE = "50"
 CHANGE_TOLERANCE = "50"
-APPEND_TARGET = (
-    r"Database Connections\DC_TRANSADMIN@UTRANS@utrans.agrc.utah.gov.sde"
-    "\\"
-    r"UTRANS.TRANSADMIN.Centerlines_Edit\UTRANS.TRANSADMIN.DFC_RESULT"
-)
 
 
 def extract_fips(fips_setting: str) -> str:
@@ -102,6 +97,7 @@ def run_detect_changes(
     update_features: str,
     base_features: str,
     fips: str,
+    append_target: str,
 ) -> tuple[str, str]:
     arcpy.env.overwriteOutput = True
     output_workspace = get_output_workspace(update_features)
@@ -137,8 +133,8 @@ def run_detect_changes(
         arcpy.management.MakeFeatureLayer(dfc_output, changed_layer, CHANGE_FILTER)
         log(f"Creating detect-changes output test feature class: {test_output}")
         arcpy.management.CopyFeatures(changed_layer, test_output)
-        arcpy.management.Append(changed_layer, APPEND_TARGET, "NO_TEST")
-        log(f"Appended changed features to {APPEND_TARGET}")
+        arcpy.management.Append(changed_layer, append_target, "NO_TEST")
+        log(f"Appended changed features to {append_target}")
         return dfc_output, test_output
     finally:
         if arcpy.Exists(base_layer):
@@ -163,6 +159,11 @@ def build_parser(prog: str | None = None):
         "--utrans-features", required=True, help="UTRANS baseline road feature class."
     )
     parser.add_argument(
+        "--append-target",
+        required=True,
+        help="Feature class to receive the filtered change features.",
+    )
+    parser.add_argument(
         "--profiles", type=Path, help="Path to a custom profiles JSON file."
     )
     return parser
@@ -180,6 +181,7 @@ def main(argv=None, *, prog: str | None = None):
             args.update_features,
             args.utrans_features,
             fips,
+            args.append_target,
         )
     except RuntimeError as exc:
         log(str(exc))

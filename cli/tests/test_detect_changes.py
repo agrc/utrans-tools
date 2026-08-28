@@ -35,7 +35,7 @@ def test_parser_does_not_require_county_field_configuration():
     assert "dfc_output_name" not in actions
     assert "stats_table_name" not in actions
     assert "test_output_name" not in actions
-    assert "append_target" not in actions
+    assert "append_target" in actions
     assert "utrans_features" in actions
     assert "output_workspace" not in actions
 
@@ -119,7 +119,7 @@ def test_run_detect_changes_uses_shared_filter_and_appends_to_utrans(monkeypatch
         "get_output_workspace",
         Mock(return_value="workspace"),
     )
-    detect_changes.run_detect_changes("update", "base", "49035")
+    detect_changes.run_detect_changes("update", "base", "49035", "append-target")
 
     make_feature_layer.assert_any_call(
         "base", "detect_changes_base", "COUNTY_L = '49035' OR COUNTY_R = '49035'"
@@ -132,9 +132,7 @@ def test_run_detect_changes_uses_shared_filter_and_appends_to_utrans(monkeypatch
     copy_features.assert_called_once_with(
         "detect_changes_output", os.path.join("workspace", "TEST_DFC_RESULT")
     )
-    append.assert_called_once_with(
-        "detect_changes_output", detect_changes.APPEND_TARGET, "NO_TEST"
-    )
+    append.assert_called_once_with("detect_changes_output", "append-target", "NO_TEST")
 
 
 def test_extract_fips_rejects_invalid_profile_value():
