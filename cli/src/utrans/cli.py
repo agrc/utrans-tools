@@ -28,7 +28,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers.add_parser(
         "detect-changes",
-        help="Detect and optionally publish changes from ETL-produced roads.",
+        help="Detect and publish changes from ETL-produced roads.",
     )
     return parser
 
