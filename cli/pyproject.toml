@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ugrc-utrans-tools"
-version = "1.0.1"
+version = "1.1.0"
 description = "Command-line tools for working with UTRANS data."
 readme = "README.md"
 requires-python = ">=3.13"
