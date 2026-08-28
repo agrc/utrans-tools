@@ -1,9 +1,14 @@
 {
   "python-envs.defaultEnvManager": "ms-python.python:conda",
+  "files.associations": {
+    "*.arcade": "javascript"
+  },
+  "vitest.rootConfig": "${workspaceFolder}/attribute-rules/vitest.config.ts",
   "cSpell.words": [
     "ACCESSCODE",
     "ALTROADNAME",
     "ALTROADTYPE",
+    "arcgis",
     "arcgispro",
     "arcpy",
     "boxelder",
@@ -59,7 +64,7 @@
     "/^conda activate utrans-tools; pytest[^;]*$/": {
       "approve": true,
       "matchCommandLine": true
-    }
+    },
     "/^conda activate utrans-tools; ruff/": {
       "approve": true,
       "matchCommandLine": true

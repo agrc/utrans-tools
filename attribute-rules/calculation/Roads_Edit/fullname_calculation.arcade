@@ -1,0 +1,28 @@
+/* global $feature, $datastore, $layer, $map, FeatureSetByName, IIf, Buffer */
+// FIELD: FULLNAME
+// EVENTS: INSERT, UPDATE
+function normalizePart(value) {
+	var part = Trim(IIf(IsEmpty(value), "", Text(value)));
+	while (Find("  ", part) > -1) {
+		part = Replace(part, "  ", " ");
+	}
+	return part;
+}
+
+var name = normalizePart(Replace(IIf(IsEmpty($feature.NAME), "", $feature.NAME), "'", ""));
+var postdir = normalizePart($feature.POSTDIR);
+var posttype = normalizePart($feature.POSTTYPE);
+
+var parts = [];
+if (!IsEmpty(name)) {
+	Push(parts, name);
+}
+if (!IsEmpty(postdir)) {
+	Push(parts, postdir);
+}
+if (!IsEmpty(posttype)) {
+	Push(parts, posttype);
+}
+
+// Test case: NAME="  MAIN  ", POSTDIR=null, POSTTYPE="  RD  " -> "MAIN RD"
+return Concatenate(parts, " ");

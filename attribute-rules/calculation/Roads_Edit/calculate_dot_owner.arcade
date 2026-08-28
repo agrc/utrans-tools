@@ -1,0 +1,122 @@
+// Calculates DOT_OWN_L and DOT_OWN_R
+// FIELD:
+// EVENTS: INSERT, UPDATE
+Expects($feature, 'DOT_OWN_L', 'DOT_OWN_R', 'DOT_RTNAME');
+
+function distance2d(from, to) {
+	var dx = to.x - from.x;
+	var dy = to.y - from.y;
+
+	return Sqrt(dx * dx + dy * dy);
+}
+
+// Arcade has no linear referencing, so walk the vertices to find the point halfway along the line.
+function midpointAlongLine(geo) {
+	var paths = geo.paths;
+	if (IsEmpty(paths) || Count(paths) == 0) {
+		return null;
+	}
+
+	var total = 0;
+	for (var p in paths) {
+		var path = paths[p];
+		for (var v = 1; v < Count(path); v++) {
+			total += distance2d(path[v - 1], path[v]);
+		}
+	}
+
+	var firstInPaths = paths[0][0];
+	if (total == 0) {
+		return { 'x': firstInPaths.x, 'y': firstInPaths.y };
+	}
+
+	var target = total / 2;
+	var traveled = 0;
+	for (var i in paths) {
+		var current = paths[i];
+		for (var j = 1; j < Count(current); j++) {
+			var start = current[j - 1];
+			var end = current[j];
+			var len = distance2d(start, end);
+
+			if (len > 0) {
+				if (traveled + len >= target) {
+					var ratio = (target - traveled) / len;
+
+					return {
+						'x': start.x + (end.x - start.x) * ratio,
+						'y': start.y + (end.y - start.y) * ratio
+					};
+				}
+
+				traveled += len;
+			}
+		}
+	}
+
+	return { 'x': firstInPaths.x, 'y': firstInPaths.y };
+}
+
+var dotRtName = Trim(IIf(IsEmpty($feature.DOT_RTNAME), '', Text($feature.DOT_RTNAME)));
+/*
+- If DOT_RTNAME starts with 0, it’s a UDOT street: DOT_OWN is just UDOT
+- Else
+    - If the left muni exists, set it to MU + “ “ + NAME attribute of the left muni
+        - how is left muni found?
+    - Else, if the left county exists, set it to the county’s FIPS_STR
+    - Else, just set it to blank.
+- This is the same for both DOT_OWN_L and DOT_OWN_R
+*/
+var dotOwnL = '';
+var dotOwnR = '';
+if (Left(dotRtName, 1) == '0') {
+    dotOwnL = 'UDOT';
+    dotOwnR = 'UDOT';
+} else {
+    // 1. Get the line geometry and calculate the midpoint (50% along line)
+    var lineGeom = Geometry($feature);
+    var midPt = midpointAlongLine(lineGeom); // use the custom midpoint function
+
+    // 2. Create left (-15m) and right (+15m) offset points
+    // Note: Offset syntax depends on unit settings, but conceptually:
+    var leftPt = Point({ 'x': midPt.x - 15, 'y': midPt.y, 'spatialReference': lineGeom.spatialReference });
+    var rightPt = Point({ 'x': midPt.x + 15, 'y': midPt.y, 'spatialReference': lineGeom.spatialReference });
+
+    // 3. Query the Municipalities polygon FeatureSet
+    var muniFS = FeatureSetByName($datastore, "Municipalities", ["NAME"], true);
+    var leftMuni = First(Intersects(muniFS, leftPt));
+    var rightMuni = First(Intersects(muniFS, rightPt));
+
+    // 4. Query the Counties polygon FeatureSet
+    var countyFS = FeatureSetByName($datastore, "Counties", ["NAME"], true);
+    var leftCounty = First(Intersects(countyFS, leftPt));
+    var rightCounty = First(Intersects(countyFS, rightPt));
+
+    // 5. Determine DOT_OWN_L
+    if (!IsEmpty(leftMuni)) {
+        dotOwnL = 'MU ' + leftMuni.NAME;
+    } else if (!IsEmpty(leftCounty)) {
+        // Convert NAME as such: KANE -> Kane
+        dotOwnL = 'CO ' + Proper(leftCounty.NAME);
+    } else {
+        dotOwnL = '';
+    }
+
+    // 6. Determine DOT_OWN_R
+    if (!IsEmpty(rightMuni)) {
+        dotOwnR = 'MU ' + rightMuni.NAME;
+    } else if (!IsEmpty(rightCounty)) {
+        dotOwnR = 'CO ' + Proper(rightCounty.NAME);
+    } else {
+        dotOwnR = '';
+    }
+}
+
+return {
+    "result": {
+        "attributes": {
+            "DOT_OWN_L": dotOwnL,
+            "DOT_OWN_R": dotOwnR
+        }
+    }
+};

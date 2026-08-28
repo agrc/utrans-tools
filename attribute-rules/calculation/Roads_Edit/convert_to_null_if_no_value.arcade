@@ -1,0 +1,26 @@
+/* global $feature, $datastore, $layer, $map, FeatureSetByName, IIf, Buffer */
+// ADDRSYS_L/R are text fields under CVDomain_AddressReferenceSystem, so null is their only valid empty value.
+// FIELD:
+// EVENTS: INSERT, UPDATE
+var textFields = ['ADDRSYS_L', 'ADDRSYS_R', 'BIKE_L', 'BIKE_R', 'BIKE_PLN_L', 'BIKE_PLN_R', 'DOT_HWYNAM', 'DOT_RTNAME', 'DOT_RTPART'];
+Expects($feature, 'ADDRSYS_L', 'ADDRSYS_R', 'BIKE_L', 'BIKE_R', 'BIKE_PLN_L', 'BIKE_PLN_R', 'DOT_HWYNAM', 'DOT_RTNAME', 'DOT_RTPART');
+var updates = {};
+
+for (var i in textFields) {
+    var f = textFields[i];
+    var val = $feature[f];
+    
+    // Convert empty/whitespace strings to null, leave valid values alone
+    if (IsEmpty(Trim(val))) {
+        updates[f] = null;
+    } else {
+        updates[f] = val;
+    }
+}
+
+// For calculation rules, "attributes" must be nested under "result".
+return {
+    "result": {
+        "attributes": updates
+    }
+};
