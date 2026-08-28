@@ -64,9 +64,9 @@ The output is written to the geodatabase containing `--source-features`. It cont
 Process ETL output against a previous UTRANS road feature class:
 
 ```powershell
-utrans detect-changes --county Carbon --update-features "Z:\Documents\gdb\Carbon.gdb\county_etl" --utrans-features "Z:\Documents\gdb\UTRANS.gdb\Roads"
+utrans detect-changes --county Carbon --update-features "Z:\Documents\gdb\Carbon.gdb\county_etl" --utrans-features "Z:\Documents\gdb\UTRANS.gdb\Roads" --append-target "Database Connections\internal.sde\UTRANS.DFC_RESULT"
 ```
 
-The command writes outputs to the geodatabase containing `--update-features`. It uses the `NAME` matching and comparison fields, adds DFC editor metadata, creates `TEST_DFC_RESULT` with `NC` and `D` changes excluded, and appends the filtered result to the fixed UTRANS DFC.
+The command writes outputs to the geodatabase containing `--update-features`. It uses the `NAME` matching and comparison fields, adds DFC editor metadata, creates `TEST_DFC_RESULT` with `NC` and `D` changes excluded, and appends the filtered result to `--append-target`.
 
 Run `utrans detect-changes --help` for the remaining options.
