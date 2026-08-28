@@ -78,9 +78,12 @@ def _resolve_field_mapping(feature_classes: tuple[str, ...], mapping: str) -> st
         {field.name.upper() for field in arcpy.ListFields(feature_class)}
         for feature_class in feature_classes
     ]
-    pairs = []
+    pairs: list[str] = []
     for token in mapping.split(";"):
-        update_field, base_field = token.strip().split()
+        parts = token.strip().split()
+        if len(parts) < 2:
+            continue
+        update_field, base_field = parts[0], parts[1]
         if all(
             update_field.upper() in fields and base_field.upper() in fields
             for fields in available_fields
@@ -91,7 +94,6 @@ def _resolve_field_mapping(feature_classes: tuple[str, ...], mapping: str) -> st
             "No fields from the fixed mapping were found in both datasets."
         )
     return "; ".join(pairs)
-
 
 def run_detect_changes(
     update_features: str,
