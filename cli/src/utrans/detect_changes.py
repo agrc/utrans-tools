@@ -95,6 +95,7 @@ def _resolve_field_mapping(feature_classes: tuple[str, ...], mapping: str) -> st
         )
     return "; ".join(pairs)
 
+
 def run_detect_changes(
     update_features: str,
     base_features: str,
