@@ -8,115 +8,115 @@ Expects($feature, 'NAME', 'POSTDIR', 'POSTTYPE', 'UNIQUE_ID');
 var DIGITS = '0123456789';
 
 function distance2d(from, to) {
-	var dx = to.x - from.x;
-	var dy = to.y - from.y;
+  var dx = to.x - from.x;
+  var dy = to.y - from.y;
 
-	return Sqrt(dx * dx + dy * dy);
+  return Sqrt(dx * dx + dy * dy);
 }
 
 // Arcade has no linear referencing, so walk the vertices to find the point halfway along the line.
 function midpointAlongLine(geometry) {
-	var paths = geometry.paths;
-	if (IsEmpty(paths) || Count(paths) == 0) {
-		return null;
-	}
+  var paths = geometry.paths;
+  if (IsEmpty(paths) || Count(paths) == 0) {
+    return null;
+  }
 
-	var total = 0;
-	for (var p in paths) {
-		var path = paths[p];
-		for (var v = 1; v < Count(path); v++) {
-			total += distance2d(path[v - 1], path[v]);
-		}
-	}
+  var total = 0;
+  for (var p in paths) {
+    var path = paths[p];
+    for (var v = 1; v < Count(path); v++) {
+      total += distance2d(path[v - 1], path[v]);
+    }
+  }
 
-	var first = paths[0][0];
-	if (total == 0) {
-		return { 'x': first.x, 'y': first.y };
-	}
+  var first = paths[0][0];
+  if (total == 0) {
+    return { 'x': first.x, 'y': first.y };
+  }
 
-	var target = total / 2;
-	var traveled = 0;
-	for (var i in paths) {
-		var current = paths[i];
-		for (var j = 1; j < Count(current); j++) {
-			var start = current[j - 1];
-			var end = current[j];
-			var length = distance2d(start, end);
+  var target = total / 2;
+  var traveled = 0;
+  for (var i in paths) {
+    var current = paths[i];
+    for (var j = 1; j < Count(current); j++) {
+      var start = current[j - 1];
+      var end = current[j];
+      var length = distance2d(start, end);
 
-			if (length > 0) {
-				if (traveled + length >= target) {
-					var ratio = (target - traveled) / length;
+      if (length > 0) {
+        if (traveled + length >= target) {
+          var ratio = (target - traveled) / length;
 
-					return {
-						'x': start.x + (end.x - start.x) * ratio,
-						'y': start.y + (end.y - start.y) * ratio
-					};
-				}
+          return {
+            'x': start.x + (end.x - start.x) * ratio,
+            'y': start.y + (end.y - start.y) * ratio
+          };
+        }
 
-				traveled += length;
-			}
-		}
-	}
+        traveled += length;
+      }
+    }
+  }
 
-	return { 'x': first.x, 'y': first.y };
+  return { 'x': first.x, 'y': first.y };
 }
 
 // Rounds half up to match the legacy "+ .5 then cast to long" behavior.
 function trimCoordinate(value, leading) {
-	var digits = Text(Floor(value + 0.5));
+  var digits = Text(Floor(value + 0.5));
 
-	return Mid(digits, leading, Count(digits) - leading - 1);
+  return Mid(digits, leading, Count(digits) - leading - 1);
 }
 
 function isWholeNumber(value) {
-	if (value == '') {
-		return false;
-	}
+  if (value == '') {
+    return false;
+  }
 
-	for (var i = 0; i < Count(value); i++) {
-		if (Find(Mid(value, i, 1), DIGITS) == -1) {
-			return false;
-		}
-	}
+  for (var i = 0; i < Count(value); i++) {
+    if (Find(Mid(value, i, 1), DIGITS) == -1) {
+      return false;
+    }
+  }
 
-	return true;
+  return true;
 }
 
 // NAME/POSTDIR/POSTTYPE are computed directly because attribute rule execution order is not guaranteed,
 // so FULLNAME may still hold the pre-edit value.
 function nameSuffix() {
-	var name = Trim(IIf(IsEmpty($feature.NAME), '', Text($feature.NAME)));
-	if (name == '') {
-		return '';
-	}
+  var name = Trim(IIf(IsEmpty($feature.NAME), '', Text($feature.NAME)));
+  if (name == '') {
+    return '';
+  }
 
-	var postdir = Trim(IIf(IsEmpty($feature.POSTDIR), '', Text($feature.POSTDIR)));
-	var posttype = Trim(IIf(IsEmpty($feature.POSTTYPE), '', Text($feature.POSTTYPE)));
-	var suffix = IIf(isWholeNumber(name), postdir, posttype);
+  var postdir = Trim(IIf(IsEmpty($feature.POSTDIR), '', Text($feature.POSTDIR)));
+  var posttype = Trim(IIf(IsEmpty($feature.POSTTYPE), '', Text($feature.POSTTYPE)));
+  var suffix = IIf(isWholeNumber(name), postdir, posttype);
 
-	var value = '_' + name;
-	if (suffix != '') {
-		value += '_' + suffix;
-	}
+  var value = '_' + name;
+  if (suffix != '') {
+    value += '_' + suffix;
+  }
 
-	return Replace(value, ' ', '_');
+  return Replace(value, ' ', '_');
 }
 
 var geometry = Geometry($feature);
 if (IsEmpty(geometry)) {
-	return "ERR:MISSING_GEOMETRY";
+  return "ERR:MISSING_GEOMETRY";
 }
 
 var midpoint = midpointAlongLine(geometry);
 if (IsEmpty(midpoint)) {
-	return "ERR:MISSING_MIDPOINT";
+  return "ERR:MISSING_MIDPOINT";
 }
 
 var midpointGeom = Point({ 'x': midpoint.x, 'y': midpoint.y, 'spatialReference': geometry.spatialReference });
 var nationalGrid = FeatureSetByName($datastore, 'NationalGrid', ['GRID1MIL', 'GRID100K'], true);
 var gridMatch = First(Intersects(nationalGrid, midpointGeom));
 if (IsEmpty(gridMatch)) {
-	return "ERR:NO_GRID_MATCH";
+  return "ERR:NO_GRID_MATCH";
 }
 
 var grid1mil = gridMatch.GRID1MIL;

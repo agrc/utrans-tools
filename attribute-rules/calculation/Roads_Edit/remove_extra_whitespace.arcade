@@ -6,7 +6,7 @@
 
 var value = Trim(IIf(IsEmpty($feature.NAME), "", Text($feature.NAME)));
 while (Find("  ", value) > -1) {
-	value = Replace(value, "  ", " ");
+  value = Replace(value, "  ", " ");
 }
 
 return value;
