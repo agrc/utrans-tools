@@ -58,15 +58,6 @@ function midpointAlongLine(geo) {
 }
 
 var dotRtName = Trim(IIf(IsEmpty($feature.DOT_RTNAME), '', Text($feature.DOT_RTNAME)));
-/*
-- If DOT_RTNAME starts with 0, it’s a UDOT street: DOT_OWN is just UDOT
-- Else
-    - If the left muni exists, set it to MU + “ “ + NAME attribute of the left muni
-        - how is left muni found?
-    - Else, if the left county exists, set it to the county’s FIPS_STR
-    - Else, just set it to blank.
-- This is the same for both DOT_OWN_L and DOT_OWN_R
-*/
 var dotOwnL = '';
 var dotOwnR = '';
 if (Left(dotRtName, 1) == '0') {
