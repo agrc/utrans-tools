@@ -80,26 +80,30 @@ if (Left(dotRtName, 1) == '0') {
 
     // 4. Query the Counties polygon FeatureSet
     var countyFS = FeatureSetByName($datastore, "Counties", ["NAME"], true);
-    var leftCounty = First(Intersects(countyFS, leftPt));
-    var rightCounty = First(Intersects(countyFS, rightPt));
 
     // 5. Determine DOT_OWN_L
     if (!IsEmpty(leftMuni)) {
         dotOwnL = 'MU ' + leftMuni.NAME;
-    } else if (!IsEmpty(leftCounty)) {
-        // Convert NAME as such: KANE -> Kane
-        dotOwnL = 'CO ' + Proper(leftCounty.NAME);
     } else {
-        dotOwnL = '';
+        var leftCounty = First(Intersects(countyFS, leftPt));
+        if (!IsEmpty(leftCounty)) {
+            // Convert NAME as such: KANE -> Kane
+            dotOwnL = 'CO ' + Proper(leftCounty.NAME);
+        } else {
+            dotOwnL = '';
+        }
     }
 
     // 6. Determine DOT_OWN_R
     if (!IsEmpty(rightMuni)) {
         dotOwnR = 'MU ' + rightMuni.NAME;
-    } else if (!IsEmpty(rightCounty)) {
-        dotOwnR = 'CO ' + Proper(rightCounty.NAME);
     } else {
-        dotOwnR = '';
+        var rightCounty = First(Intersects(countyFS, rightPt));
+        if (!IsEmpty(rightCounty)) {
+            dotOwnR = 'CO ' + Proper(rightCounty.NAME);
+        } else {
+            dotOwnR = '';
+        }
     }
 }
 
