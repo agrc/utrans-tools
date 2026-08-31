@@ -7,8 +7,8 @@ var countyLayer = FeatureSetByName($datastore, "Counties", ["FIPS_STR"]);
 var zipCodeLayer = FeatureSetByName($datastore, "ZipCodes", ["ZIP5", "NAME"]);
 var municipalityLayer = FeatureSetByName($datastore, "Municipalities", ["NAME"]);
 
-var roadLeft = Centroid(Offset($feature, -15, 'meters', 'square'));
-var roadRight = Centroid(Offset($feature, 15, 'meters', 'square'));
+var roadLeft = Centroid(Offset($feature, -15, 'meters', 'square'), 'labelPoint');
+var roadRight = Centroid(Offset($feature, 15, 'meters', 'square'), 'labelPoint');
 
 function fieldOrNull(feature, fieldName) {
     if (IsEmpty(feature)) {
