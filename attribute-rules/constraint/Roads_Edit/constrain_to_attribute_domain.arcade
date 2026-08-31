@@ -3,48 +3,48 @@
 // ERROR_MESSAGE: A field value does not match its coded-value domain.
 // Pre-declare fields to the Pro Arcade parser
 Expects($feature, 
-    'PREDIR', 'POSTTYPE', 'POSTDIR', 'AN_POSTDIR',
-    'A1_PREDIR', 'A1_POSTTYPE', 'A1_POSTDIR',
-    'A2_PREDIR', 'A2_POSTTYPE', 'A2_POSTDIR',
-    'VERT_LEVEL', 'ONEWAY', 'SPEED_LMT'
+  'PREDIR', 'POSTTYPE', 'POSTDIR', 'AN_POSTDIR',
+  'A1_PREDIR', 'A1_POSTTYPE', 'A1_POSTDIR',
+  'A2_PREDIR', 'A2_POSTTYPE', 'A2_POSTDIR',
+  'VERT_LEVEL', 'ONEWAY', 'SPEED_LMT'
 );
 // Array of all fields to validate against their assigned domains
 var fieldsToCheck = [
-    'PREDIR', 'POSTTYPE', 'POSTDIR', 'AN_POSTDIR',
-    'A1_PREDIR', 'A1_POSTTYPE', 'A1_POSTDIR',
-    'A2_PREDIR', 'A2_POSTTYPE', 'A2_POSTDIR',
-    'VERT_LEVEL', 'ONEWAY', 'SPEED_LMT'
+  'PREDIR', 'POSTTYPE', 'POSTDIR', 'AN_POSTDIR',
+  'A1_PREDIR', 'A1_POSTTYPE', 'A1_POSTDIR',
+  'A2_PREDIR', 'A2_POSTTYPE', 'A2_POSTDIR',
+  'VERT_LEVEL', 'ONEWAY', 'SPEED_LMT'
 ];
 
 for (var i in fieldsToCheck) {
-    var fieldName = fieldsToCheck[i];
-    var val = $feature[fieldName];
-    
-    // Skip empty/null values (let mandatory field settings handle null checks)
-    if (IsEmpty(val)) { continue; }
-    
-    // Retrieve the domain assigned to this specific field
-    var dom = Domain($feature, fieldName);
-    
-    // If a domain is attached, validate the code
-    if (!IsEmpty(dom) && HasKey(dom, 'codedValues')) {
-        var isValid = false;
-        var validCodes = dom.codedValues;
-        
-        for (var j in validCodes) {
-            if (validCodes[j].code == val) {
-                isValid = true;
-                break;
-            }
-        }
-        
-        // If the value wasn't found in the domain, trigger the failure immediately
-        if (!isValid) {
-            return {
-                'errorMessage': 'Invalid value [' + Text(val) + '] entered for field: ' + fieldName
-            };
-        }
+  var fieldName = fieldsToCheck[i];
+  var val = $feature[fieldName];
+  
+  // Skip empty/null values (let mandatory field settings handle null checks)
+  if (IsEmpty(val)) { continue; }
+  
+  // Retrieve the domain assigned to this specific field
+  var dom = Domain($feature, fieldName);
+  
+  // If a domain is attached, validate the code
+  if (!IsEmpty(dom) && HasKey(dom, 'codedValues')) {
+  var isValid = false;
+  var validCodes = dom.codedValues;
+  
+  for (var j in validCodes) {
+    if (validCodes[j].code == val) {
+    isValid = true;
+    break;
     }
+  }
+  
+  // If the value wasn't found in the domain, trigger the failure immediately
+  if (!isValid) {
+    return {
+    'errorMessage': 'Invalid value [' + Text(val) + '] entered for field: ' + fieldName
+    };
+  }
+  }
 }
 
 return true; // All fields passed validation

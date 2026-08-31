@@ -84,5 +84,10 @@
     "editor.tabSize": 4,
     "editor.detectIndentation": false
   },
+  "[javascript]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.detectIndentation": false
+  },
   "editor.formatOnSave": true
 }

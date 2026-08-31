@@ -11,11 +11,11 @@ var roadLeft = Centroid(Offset($feature, -15, 'meters', 'square'), 'labelPoint')
 var roadRight = Centroid(Offset($feature, 15, 'meters', 'square'), 'labelPoint');
 
 function fieldOrNull(feature, fieldName) {
-    if (IsEmpty(feature)) {
-        return null;
-    }
+  if (IsEmpty(feature)) {
+  return null;
+  }
 
-    return feature[fieldName];
+  return feature[fieldName];
 }
 
 var quadrantLeftFeature = First(Intersects(addressSystemQuadrantsLayer, roadLeft));
@@ -28,20 +28,20 @@ var municipalityLeftFeature = First(Intersects(municipalityLayer, roadLeft));
 var municipalityRightFeature = First(Intersects(municipalityLayer, roadRight));
 
 return {
-    "result": {
-        "attributes": {
-            "QUADRANT_L": fieldOrNull(quadrantLeftFeature, "QUADRANT"),
-            "QUADRANT_R": fieldOrNull(quadrantRightFeature, "QUADRANT"),
-            "COUNTY_L": fieldOrNull(countyLeftFeature, "FIPS_STR"),
-            "COUNTY_R": fieldOrNull(countyRightFeature, "FIPS_STR"),
-            "ADDRSYS_L": fieldOrNull(quadrantLeftFeature, "GRID_NAME"),
-            "ADDRSYS_R": fieldOrNull(quadrantRightFeature, "GRID_NAME"),
-            "POSTCOMM_L": fieldOrNull(zipCodeLeftFeature, "NAME"),
-            "POSTCOMM_R": fieldOrNull(zipCodeRightFeature, "NAME"),
-            "ZIPCODE_L": fieldOrNull(zipCodeLeftFeature, "ZIP5"),
-            "ZIPCODE_R": fieldOrNull(zipCodeRightFeature, "ZIP5"),
-            "INCMUNI_L": fieldOrNull(municipalityLeftFeature, "NAME"),
-            "INCMUNI_R": fieldOrNull(municipalityRightFeature, "NAME")
-        }
-    }
+  "result": {
+  "attributes": {
+    "QUADRANT_L": fieldOrNull(quadrantLeftFeature, "QUADRANT"),
+    "QUADRANT_R": fieldOrNull(quadrantRightFeature, "QUADRANT"),
+    "COUNTY_L": fieldOrNull(countyLeftFeature, "FIPS_STR"),
+    "COUNTY_R": fieldOrNull(countyRightFeature, "FIPS_STR"),
+    "ADDRSYS_L": fieldOrNull(quadrantLeftFeature, "GRID_NAME"),
+    "ADDRSYS_R": fieldOrNull(quadrantRightFeature, "GRID_NAME"),
+    "POSTCOMM_L": fieldOrNull(zipCodeLeftFeature, "NAME"),
+    "POSTCOMM_R": fieldOrNull(zipCodeRightFeature, "NAME"),
+    "ZIPCODE_L": fieldOrNull(zipCodeLeftFeature, "ZIP5"),
+    "ZIPCODE_R": fieldOrNull(zipCodeRightFeature, "ZIP5"),
+    "INCMUNI_L": fieldOrNull(municipalityLeftFeature, "NAME"),
+    "INCMUNI_R": fieldOrNull(municipalityRightFeature, "NAME")
+  }
+  }
 }
