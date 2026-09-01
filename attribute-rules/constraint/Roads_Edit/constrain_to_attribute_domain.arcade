@@ -33,8 +33,8 @@ for (var i in fieldsToCheck) {
   
   for (var j in validCodes) {
     if (validCodes[j].code == val) {
-    isValid = true;
-    break;
+      isValid = true;
+      break;
     }
   }
   
