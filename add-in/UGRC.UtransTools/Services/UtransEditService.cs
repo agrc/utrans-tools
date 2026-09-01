@@ -7,6 +7,7 @@ using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using UGRC.UtransTools.Configuration;
+using UGRC.UtransTools.Core;
 using UGRC.UtransTools.Models;
 
 namespace UGRC.UtransTools.Services;
@@ -22,8 +23,7 @@ internal sealed class UtransEditService
         return QueuedTask.Run(async () =>
         {
             if (
-                selections.Count == 0
-                || selections.Any(selection => !selection.IsNotYetCopiedNewRecord)
+                !ReviewRules.CanCreateNewUtransRoads(selections.Select(ToDfcResultReview).ToArray())
             )
             {
                 throw new InvalidOperationException(
@@ -132,49 +132,40 @@ internal sealed class UtransEditService
     {
         return QueuedTask.Run(async () =>
         {
-            var values = GetEditedValues(state);
+            var values = GetRoadPayload(state);
             var operation = new EditOperation
             {
                 Name = "Save UTRANS editor changes",
                 SelectModifiedFeatures = false,
             };
 
-            var shouldWriteRoad = string.Equals(
-                state.ChangeStatus,
-                "COMPLETED",
-                System.StringComparison.OrdinalIgnoreCase
+            var plan = ReviewRules.CreateSavePlan(
+                ParseChangeStatus(state.ChangeStatus),
+                state.Selection.UtransRoad is not null,
+                values
             );
 
-            if (shouldWriteRoad && state.Selection.UtransRoad is null)
-            {
-                throw new InvalidOperationException(
-                    "Click Add New to create the target UTRANS road before saving."
-                );
-            }
-
-            if (shouldWriteRoad)
-            {
-                operation.Modify(layers.UtransRoads, state.Selection.BaseFeatureId, values);
-                operation.Modify(
-                    layers.DfcResults,
-                    state.Selection.ObjectId,
-                    new Dictionary<string, object?>
-                    {
-                        [UtransEditorConfiguration.DfcChangeStatusField] = state.ChangeStatus,
-                    }
-                );
-            }
-            else
+            if (plan.WritesUtransRoad)
             {
                 operation.Modify(
-                    layers.DfcResults,
-                    state.Selection.ObjectId,
-                    new Dictionary<string, object?>
-                    {
-                        [UtransEditorConfiguration.DfcChangeStatusField] = state.ChangeStatus,
-                    }
+                    layers.UtransRoads,
+                    state.Selection.BaseFeatureId,
+                    new Dictionary<string, object?>(
+                        plan.UtransRoadValues,
+                        StringComparer.OrdinalIgnoreCase
+                    )
                 );
             }
+            operation.Modify(
+                layers.DfcResults,
+                state.Selection.ObjectId,
+                new Dictionary<string, object?>
+                {
+                    [UtransEditorConfiguration.DfcChangeStatusField] = plan
+                        .ChangeStatus.ToString()
+                        .ToUpperInvariant(),
+                }
+            );
 
             if (!await operation.ExecuteAsync())
             {
@@ -185,28 +176,8 @@ internal sealed class UtransEditService
         });
     }
 
-    private static Dictionary<string, object?> GetEditedValues(EditorReviewState state)
-    {
-        var values = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var pair in state.GetEditedValues())
-        {
-            values[pair.Key] = pair.Value;
-        }
-
-        values = new Dictionary<string, object?>(values, StringComparer.OrdinalIgnoreCase)
-        {
-            ["CARTOCODE"] = state.Cartocode,
-            ["ONEWAY"] = state.Oneway,
-            ["VERT_LEVEL"] = state.VerticalLevel,
-            ["SPEED_LMT"] = state.SpeedLimit,
-            ["FULLNAME"] = BuildFullName(values),
-        };
-
-        values["STATUS"] = state.Status;
-
-        return values;
-    }
+    private static IReadOnlyDictionary<string, object?> GetRoadPayload(EditorReviewState state) =>
+        ReviewRules.BuildRoadPayload(state.GetEditedValues(), ToRoadReviewValues(state));
 
     private static Dictionary<string, object?> GetCountyRoadValues(
         RoadSnapshot countyRoad,
@@ -215,39 +186,30 @@ internal sealed class UtransEditService
         bool applyRoadValueOverrides
     )
     {
-        var values = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
-        foreach (var field in utransFeatureClass.GetDefinition().GetFields())
-        {
-            if (field.IsEditable && countyRoad.Attributes.TryGetValue(field.Name, out var value))
-            {
-                values[field.Name] = value;
-            }
-        }
-
-        if (applyRoadValueOverrides)
-        {
-            values["CARTOCODE"] = roadValues.Cartocode;
-            values["ONEWAY"] = roadValues.Oneway;
-            values["VERT_LEVEL"] = roadValues.VerticalLevel;
-            values["SPEED_LMT"] = roadValues.SpeedLimit;
-            values["STATUS"] = roadValues.Status;
-        }
-
-        return values;
+        var editableFieldNames = utransFeatureClass
+            .GetDefinition()
+            .GetFields()
+            .Where(field => field.IsEditable)
+            .Select(field => field.Name);
+        return new Dictionary<string, object?>(
+            ReviewRules.BuildNewRoadPayload(
+                countyRoad.Attributes,
+                editableFieldNames,
+                ToRoadReviewValues(roadValues),
+                applyRoadValueOverrides
+            ),
+            StringComparer.OrdinalIgnoreCase
+        );
     }
 
-    private static string BuildFullName(IReadOnlyDictionary<string, object?> values)
-    {
-        var name = GetText(values, "NAME");
-        var suffix = name.All(char.IsDigit)
-            ? GetText(values, "POSTDIR")
-            : GetText(values, "POSTTYPE");
-        return string.IsNullOrWhiteSpace(suffix) ? name : $"{name} {suffix}".Trim();
-    }
+    private static DfcResultReview ToDfcResultReview(DfcSelectionSnapshot selection) =>
+        new(selection.ChangeType, selection.BaseFeatureId);
 
-    private static string GetText(IReadOnlyDictionary<string, object?> values, string fieldName) =>
-        values.TryGetValue(fieldName, out var value)
-            ? value?.ToString()?.Replace("'", string.Empty, System.StringComparison.Ordinal)
-                ?? string.Empty
-            : string.Empty;
+    private static RoadReviewValues ToRoadReviewValues(EditorReviewState state) =>
+        new(state.Cartocode, state.Oneway, state.VerticalLevel, state.SpeedLimit, state.Status);
+
+    private static ChangeStatus ParseChangeStatus(string changeStatus) =>
+        Enum.TryParse<ChangeStatus>(changeStatus, ignoreCase: true, out var parsedStatus)
+            ? parsedStatus
+            : throw new InvalidOperationException($"Unsupported change status: {changeStatus}");
 }

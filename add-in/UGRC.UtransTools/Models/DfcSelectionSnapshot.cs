@@ -1,3 +1,5 @@
+using UGRC.UtransTools.Core;
+
 namespace UGRC.UtransTools.Models;
 
 internal sealed record DfcSelectionSnapshot(
@@ -11,5 +13,6 @@ internal sealed record DfcSelectionSnapshot(
     RoadSnapshot? UtransRoad
 )
 {
-    internal bool IsNotYetCopiedNewRecord => ChangeType == "N" && BaseFeatureId == -1;
+    internal bool IsNotYetCopiedNewRecord =>
+        new DfcResultReview(ChangeType, BaseFeatureId).IsUnlinkedNewRecord;
 }
