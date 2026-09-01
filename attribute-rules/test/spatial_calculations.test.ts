@@ -22,9 +22,6 @@ function emptyDatastore() {
 const spatialExecutor = await loadExecutor("calculation/Roads_Edit/spatial_assignments.arcade", [
   { name: "$feature", type: "feature" }, { name: "$datastore", type: "featureSetCollection" }
 ]);
-const ownerExecutor = await loadExecutor("calculation/Roads_Edit/calculate_dot_owner.arcade", [
-  { name: "$feature", type: "feature" }, { name: "$datastore", type: "featureSetCollection" }
-]);
 const uniqueIdExecutor = await loadExecutor("calculation/Roads_Edit/unique_id.arcade", [
   { name: "$feature", type: "feature" }, { name: "$datastore", type: "featureSetCollection" }
 ]);
@@ -33,11 +30,11 @@ test("spatial_assignments compiles with its datastore contract", () => {
   expect(spatialExecutor).toBeDefined();
 });
 
-test("calculate_dot_owner assigns UDOT to both sides for zero-prefixed routes", async () => {
-  const result = await ownerExecutor.executeAsync({
+test("spatial_assignments assigns UDOT to both sides for zero-prefixed routes", async () => {
+  const result = await spatialExecutor.executeAsync({
     "$feature": feature({ DOT_RTNAME: "0123" }, lineGeometry), "$datastore": emptyDatastore()
   });
-  expect(result).toEqual({ result: { attributes: { DOT_OWN_L: "UDOT", DOT_OWN_R: "UDOT" } } });
+  expect(result.result.attributes).toMatchObject({ DOT_OWN_L: "UDOT", DOT_OWN_R: "UDOT" });
 });
 
 test("unique_id reports missing geometry", async () => {
