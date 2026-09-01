@@ -97,13 +97,26 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
                 return;
             }
 
+            if (_reviewState is not null)
+            {
+                _reviewState.PropertyChanged -= OnReviewStatePropertyChanged;
+            }
+
             _reviewState = value;
+
+            if (_reviewState is not null)
+            {
+                _reviewState.PropertyChanged += OnReviewStatePropertyChanged;
+            }
+
             OnPropertyChanged();
             OnPropertyChanged(nameof(HasReviewState));
             OnPropertyChanged(nameof(HasDfcSelection));
+            OnPropertyChanged(nameof(CanEditDfcDisposition));
             OnPropertyChanged(nameof(CanRepairDfcIdentifier));
             OnPropertyChanged(nameof(AvailableReviewState));
             OnPropertyChanged(nameof(CanAddNew));
+            OnPropertyChanged(nameof(CanSaveReview));
             OnPropertyChanged(nameof(CanEditRoadValues));
             OnPropertyChanged(nameof(RoadValueState));
             OnPropertyChanged(nameof(DisplayDfcStatus));
@@ -114,10 +127,15 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
 
     public bool HasDfcSelection => ReviewState?.Selection is not null;
 
+    public bool CanEditDfcDisposition => HasDfcSelection;
+
     public bool CanRepairDfcIdentifier => HasDfcSelection && _hasExactlyOneUtransRoadSelected;
 
     public bool CanAddNew =>
-        _selectedNewRecords.Count > 0 || ReviewState?.Selection?.IsNotYetCopiedNewRecord == true;
+        _selectedNewRecords.Count > 0
+        || (ReviewState?.Selection?.IsNotYetCopiedNewRecord == true && IsDfcDispositionCompleted);
+
+    public bool CanSaveReview => HasReviewState || (HasDfcSelection && !IsDfcDispositionCompleted);
 
     public bool CanEditRoadValues => HasReviewState || CanAddNew;
 
@@ -129,6 +147,9 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     public EditorReviewState AvailableReviewState => ReviewState ?? EmptyReviewState;
     public EditorReviewState RoadValueState =>
         _newRoadValueState ?? ReviewState ?? EmptyReviewState;
+
+    private bool IsDfcDispositionCompleted =>
+        string.Equals(ReviewState?.DfcStatus, "COMPLETED", StringComparison.OrdinalIgnoreCase);
 
     public string ChangeTypeMessage
     {
@@ -289,6 +310,18 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
         {
             StatusMessage = exception.Message;
         }
+    }
+
+    private void OnReviewStatePropertyChanged(object? sender, PropertyChangedEventArgs eventArgs)
+    {
+        if (eventArgs.PropertyName != nameof(EditorReviewState.DfcStatus))
+        {
+            return;
+        }
+
+        OnPropertyChanged(nameof(CanAddNew));
+        OnPropertyChanged(nameof(CanSaveReview));
+        OnPropertyChanged(nameof(DisplayDfcStatus));
     }
 
     private async Task SelectNextDfcAsync()

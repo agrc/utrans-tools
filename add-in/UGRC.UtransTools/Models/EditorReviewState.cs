@@ -19,6 +19,7 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
     private string _verticalLevel = string.Empty;
     private string _speedLimit = string.Empty;
     private string _status = string.Empty;
+    private string _dfcStatus = string.Empty;
 
     internal EditorReviewState()
     {
@@ -175,7 +176,20 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
         !string.Equals(VerticalLevel, _initialVerticalLevel, StringComparison.Ordinal);
     public bool IsSpeedLimitChanged =>
         !string.Equals(SpeedLimit, _initialSpeedLimit, StringComparison.Ordinal);
-    public string DfcStatus { get; set; } = string.Empty;
+    public string DfcStatus
+    {
+        get => _dfcStatus;
+        set
+        {
+            if (_dfcStatus == value)
+            {
+                return;
+            }
+
+            _dfcStatus = value;
+            OnPropertyChanged();
+        }
+    }
     public bool IsUdotRoad { get; }
     public bool IsAgrcAdjusted { get; }
 
