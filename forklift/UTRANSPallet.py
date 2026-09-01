@@ -1,4 +1,4 @@
-from forklift import Pallet
+from forklift.models import Pallet
 from pathlib import Path
 
 
