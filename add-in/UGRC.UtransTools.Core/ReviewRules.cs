@@ -30,6 +30,29 @@ public sealed record DfcResultReview(string ChangeType, long BaseFeatureId)
 
 public static class ReviewRules
 {
+    public static bool IsValidAddressRange(string value) =>
+        value.All(character => char.IsDigit(character) || character == '.');
+
+    public static IReadOnlyDictionary<string, object?> NormalizeEditedRoadValues(
+        IReadOnlyDictionary<string, string> editedValues,
+        IEnumerable<string> addressRangeFieldNames
+    )
+    {
+        var addressRanges = new HashSet<string>(
+            addressRangeFieldNames,
+            StringComparer.OrdinalIgnoreCase
+        );
+        var values = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (fieldName, value) in editedValues)
+        {
+            values[fieldName] = addressRanges.Contains(fieldName) && string.IsNullOrWhiteSpace(value)
+                ? 0d
+                : value.Trim().Replace("'", string.Empty, StringComparison.Ordinal);
+        }
+
+        return new ReadOnlyDictionary<string, object?>(values);
+    }
+
     public static bool CanCreateNewUtransRoads(
         IReadOnlyCollection<DfcResultReview> selections
     ) => selections.Count > 0 && selections.All(selection => selection.IsUnlinkedNewRecord);

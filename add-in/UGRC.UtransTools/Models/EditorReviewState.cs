@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using UGRC.UtransTools.Configuration;
+using UGRC.UtransTools.Core;
 
 namespace UGRC.UtransTools.Models;
 
@@ -195,18 +196,10 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
 
     internal IReadOnlyDictionary<string, object?> GetEditedValues()
     {
-        var values = new Dictionary<string, object?>();
-        foreach (var field in Fields)
-        {
-            values[field.FieldName] =
-                field.IsAddressRange && string.IsNullOrWhiteSpace(field.UtransValue)
-                    ? 0d
-                    : field
-                        .UtransValue.Trim()
-                        .Replace("'", string.Empty, System.StringComparison.Ordinal);
-        }
-
-        return values;
+        return ReviewRules.NormalizeEditedRoadValues(
+            Fields.ToDictionary(field => field.FieldName, field => field.UtransValue),
+            Fields.Where(field => field.IsAddressRange).Select(field => field.FieldName)
+        );
     }
 
     private void SetTrackedValue(
