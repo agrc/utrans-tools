@@ -15,8 +15,9 @@ export function feature(attributes: Record<string, any>, geometry?: any) {
   return new Graphic({ attributes, geometry });
 }
 
+// NAD83 UTM 12N to match Roads_Edit; Offset() uses linear units and rejects a geographic SR
 export const lineGeometry = {
   type: "polyline",
-  paths: [[[-111.9, 40.7], [-111.8, 40.7]]],
-  spatialReference: { wkid: 4326 }
+  paths: [[[424100, 4505000], [432500, 4505000]]],
+  spatialReference: { wkid: 26912 }
 };
