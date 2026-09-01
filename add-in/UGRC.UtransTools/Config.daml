@@ -5,7 +5,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
 
-  <AddInInfo id="{f893be2f-ad95-46be-9d60-fd6dba457152}" version="1.16" desktopVersion="3.6.59527" product="ArcGISPro">
+  <AddInInfo id="{f893be2f-ad95-46be-9d60-fd6dba457152}" version="1.17" desktopVersion="3.6.59527" product="ArcGISPro">
     <Name>UGRC_UtransTools</Name>
     <Description>UGRC_UtransTools description</Description>
     <Image>Images\AddinDesktop32.png</Image>

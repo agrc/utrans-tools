@@ -36,6 +36,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     private EditorReviewState? _newRoadValueState;
     private string _selectedDfcObjectIds = string.Empty;
     private bool _codedValueOptionsLoaded;
+    private bool _hasExactlyOneUtransRoadSelected;
 
     internal UtransEditorDockpaneViewModel()
     {
@@ -99,6 +100,8 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
             _reviewState = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(HasReviewState));
+            OnPropertyChanged(nameof(HasDfcSelection));
+            OnPropertyChanged(nameof(CanRepairDfcIdentifier));
             OnPropertyChanged(nameof(AvailableReviewState));
             OnPropertyChanged(nameof(CanAddNew));
             OnPropertyChanged(nameof(CanEditRoadValues));
@@ -108,6 +111,10 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     }
 
     public bool HasReviewState => ReviewState?.Selection?.UtransRoad is not null;
+
+    public bool HasDfcSelection => ReviewState?.Selection is not null;
+
+    public bool CanRepairDfcIdentifier => HasDfcSelection && _hasExactlyOneUtransRoadSelected;
 
     public bool CanAddNew =>
         _selectedNewRecords.Count > 0 || ReviewState?.Selection?.IsNotYetCopiedNewRecord == true;
@@ -345,6 +352,9 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
                 layers,
                 DefaultVersionMessage
             );
+            SetHasExactlyOneUtransRoadSelected(
+                await _dfcSelectionService.HasExactlyOneUtransRoadSelectedAsync(layers)
+            );
             await LoadCodedValueOptionsAsync(layers);
             RemainingDfcRecords = await _dfcSelectionService.GetRemainingCountAsync(layers);
             UtransDatabaseVersion = await versionTask;
@@ -403,6 +413,17 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
         OnPropertyChanged(nameof(HasMultipleNewRecords));
         OnPropertyChanged(nameof(DisplayDfcStatus));
         OnPropertyChanged(nameof(RoadValueState));
+    }
+
+    private void SetHasExactlyOneUtransRoadSelected(bool value)
+    {
+        if (_hasExactlyOneUtransRoadSelected == value)
+        {
+            return;
+        }
+
+        _hasExactlyOneUtransRoadSelected = value;
+        OnPropertyChanged(nameof(CanRepairDfcIdentifier));
     }
 
     private async Task LoadCodedValueOptionsAsync(EditorLayerContext layers)

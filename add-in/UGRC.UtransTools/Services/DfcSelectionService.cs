@@ -11,6 +11,11 @@ namespace UGRC.UtransTools.Services;
 
 internal sealed class DfcSelectionService
 {
+    internal Task<bool> HasExactlyOneUtransRoadSelectedAsync(EditorLayerContext layers)
+    {
+        return QueuedTask.Run(() => layers.UtransRoads.GetSelection().GetObjectIDs().Count == 1);
+    }
+
     internal Task<DfcSelectionSnapshot?> LoadSelectedAsync(EditorLayerContext layers)
     {
         return QueuedTask.Run(() =>

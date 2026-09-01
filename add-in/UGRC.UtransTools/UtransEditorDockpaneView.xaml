@@ -457,10 +457,13 @@
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <GroupBox Header="Split a line OR wrong segment ID?" IsEnabled="{Binding HasReviewState}">
+        <GroupBox
+          Header="Split a line OR wrong segment ID?"
+          IsEnabled="{Binding CanRepairDfcIdentifier}"
+        >
           <StackPanel>
             <Button
-              Content="Update DFC ObjectID"
+              Content="Update DFC BASE__FID"
               Command="{Binding UpdateDfcObjectIdCommand}"
               Margin="3"
             />
