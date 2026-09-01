@@ -45,17 +45,17 @@ public static class ReviewRules
         var values = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
         foreach (var (fieldName, value) in editedValues)
         {
-            values[fieldName] = addressRanges.Contains(fieldName) && string.IsNullOrWhiteSpace(value)
-                ? 0d
-                : value.Trim().Replace("'", string.Empty, StringComparison.Ordinal);
+            values[fieldName] =
+                addressRanges.Contains(fieldName) && string.IsNullOrWhiteSpace(value)
+                    ? 0d
+                    : value.Trim().Replace("'", string.Empty, StringComparison.Ordinal);
         }
 
         return new ReadOnlyDictionary<string, object?>(values);
     }
 
-    public static bool CanCreateNewUtransRoads(
-        IReadOnlyCollection<DfcResultReview> selections
-    ) => selections.Count > 0 && selections.All(selection => selection.IsUnlinkedNewRecord);
+    public static bool CanCreateNewUtransRoads(IReadOnlyCollection<DfcResultReview> selections) =>
+        selections.Count > 0 && selections.All(selection => selection.IsUnlinkedNewRecord);
 
     public static IReadOnlyDictionary<string, object?> BuildNewRoadPayload(
         IReadOnlyDictionary<string, object?> countyRoadValues,
@@ -122,7 +122,10 @@ public static class ReviewRules
             writesUtransRoad,
             writesUtransRoad
                 ? new ReadOnlyDictionary<string, object?>(
-                    new Dictionary<string, object?>(editedRoadValues, StringComparer.OrdinalIgnoreCase)
+                    new Dictionary<string, object?>(
+                        editedRoadValues,
+                        StringComparer.OrdinalIgnoreCase
+                    )
                 )
                 : new ReadOnlyDictionary<string, object?>(new Dictionary<string, object?>())
         );
@@ -139,6 +142,7 @@ public static class ReviewRules
 
     private static string GetText(IReadOnlyDictionary<string, object?> values, string fieldName) =>
         values.TryGetValue(fieldName, out var value)
-            ? value?.ToString()?.Replace("'", string.Empty, StringComparison.Ordinal) ?? string.Empty
+            ? value?.ToString()?.Replace("'", string.Empty, StringComparison.Ordinal)
+                ?? string.Empty
             : string.Empty;
 }

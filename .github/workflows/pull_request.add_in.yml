@@ -29,4 +29,23 @@ jobs:
 
       - name: 🔪 Check CSharpier formatting
         working-directory: add-in/UGRC.UtransTools
-        run: dotnet csharpier check .
+        run: dotnet csharpier check ..
+
+  test-review-core:
+    name: Test review core
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v7
+
+      - name: 🥅 Setup .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: "8.0"
+
+      - name: 🧪 Test review core with coverage
+        run: >
+          dotnet test
+          add-in/UGRC.UtransTools.Core.Tests/UGRC.UtransTools.Core.Tests.csproj
+          --collect:"XPlat Code Coverage"
