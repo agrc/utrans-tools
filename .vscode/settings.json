@@ -72,6 +72,14 @@
     "/^dotnet build \\.\\\\add-in\\\\UGRC\\.UtransTools\\\\UGRC\\.UtransTools\\.csproj --configuration Debug$/": {
       "approve": true,
       "matchCommandLine": true
+    },
+    "/^Set-Location 'C:\\\\projects\\\\utrans-tools'; dotnet test 'add-in\\\\UGRC\\.UtransTools\\.Core\\.Tests\\\\UGRC\\.UtransTools\\.Core\\.Tests\\.csproj'$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^dotnet test add-in\\\\UGRC\\.UtransTools\\.Core\\.Tests\\\\UGRC\\.UtransTools\\.Core\\.Tests\\.csproj$/": {
+      "approve": true,
+      "matchCommandLine": true
     }
   },
   "[csharp]": {
