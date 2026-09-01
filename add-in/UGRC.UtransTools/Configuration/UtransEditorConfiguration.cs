@@ -11,7 +11,7 @@ internal static class UtransEditorConfiguration
     internal const string ZipCodesAlias = "SGID.BOUNDARIES.ZipCodes";
     internal const string CountiesAlias = "SGID.BOUNDARIES.Counties";
     internal const string MunicipalitiesAlias = "SGID.BOUNDARIES.Municipalities";
-    internal const string DfcDispositionField = "CURRENT_NOTES";
+    internal const string DfcChangeStatusField = "CURRENT_NOTES";
     internal const string AttributeReferenceUrl =
         "https://docs.google.com/document/d/1h7FTFUEXWobA8fvctgxKLaxr6LslnwVPnGVgPlrHnz0/edit";
     internal const string DfcDefinitionQueryUrl =

@@ -70,7 +70,7 @@ internal sealed class UtransEditService
                 var values = new Dictionary<string, object?>
                 {
                     ["BASE_FID"] = newRoad.NewRoad.ObjectID,
-                    [UtransEditorConfiguration.DfcDispositionField] = "COMPLETED",
+                    [UtransEditorConfiguration.DfcChangeStatusField] = "COMPLETED",
                 };
 
                 linkOperation.Modify(layers.DfcResults, newRoad.Selection.ObjectId, values);
@@ -140,7 +140,7 @@ internal sealed class UtransEditService
             };
 
             var shouldWriteRoad = string.Equals(
-                state.DfcStatus,
+                state.ChangeStatus,
                 "COMPLETED",
                 System.StringComparison.OrdinalIgnoreCase
             );
@@ -160,7 +160,7 @@ internal sealed class UtransEditService
                     state.Selection.ObjectId,
                     new Dictionary<string, object?>
                     {
-                        [UtransEditorConfiguration.DfcDispositionField] = state.DfcStatus,
+                        [UtransEditorConfiguration.DfcChangeStatusField] = state.ChangeStatus,
                     }
                 );
             }
@@ -171,7 +171,7 @@ internal sealed class UtransEditService
                     state.Selection.ObjectId,
                     new Dictionary<string, object?>
                     {
-                        [UtransEditorConfiguration.DfcDispositionField] = state.DfcStatus,
+                        [UtransEditorConfiguration.DfcChangeStatusField] = state.ChangeStatus,
                     }
                 );
             }

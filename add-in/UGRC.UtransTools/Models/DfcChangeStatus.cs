@@ -1,6 +1,6 @@
 namespace UGRC.UtransTools.Models;
 
-internal enum DfcDisposition
+internal enum DfcChangeStatus
 {
     Completed,
     Ignore,
