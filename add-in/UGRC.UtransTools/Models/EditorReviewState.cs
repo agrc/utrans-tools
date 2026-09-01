@@ -19,7 +19,7 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
     private string _verticalLevel = string.Empty;
     private string _speedLimit = string.Empty;
     private string _status = string.Empty;
-    private string _dfcStatus = string.Empty;
+    private string _changeStatus = string.Empty;
 
     internal EditorReviewState()
     {
@@ -37,7 +37,7 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
         VerticalLevel = "0";
         SpeedLimit = "25";
         Status = "Active";
-        DfcStatus = "COMPLETED";
+        ChangeStatus = "COMPLETED";
         _initialCartocode = Cartocode;
         _initialOneway = Oneway;
         _initialVerticalLevel = VerticalLevel;
@@ -81,11 +81,11 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
         _initialOneway = Oneway;
         _initialVerticalLevel = VerticalLevel;
         _initialSpeedLimit = SpeedLimit;
-        DfcStatus = string.IsNullOrWhiteSpace(
-            selection.DfcResult.GetText(UtransEditorConfiguration.DfcDispositionField)
+        ChangeStatus = string.IsNullOrWhiteSpace(
+            selection.DfcResult.GetText(UtransEditorConfiguration.DfcChangeStatusField)
         )
             ? "COMPLETED"
-            : selection.DfcResult.GetText(UtransEditorConfiguration.DfcDispositionField);
+            : selection.DfcResult.GetText(UtransEditorConfiguration.DfcChangeStatusField);
         IsUdotRoad = !string.IsNullOrWhiteSpace(utransRoad?.GetText("DOT_RTNAME"));
         IsAgrcAdjusted =
             utransRoad
@@ -176,17 +176,17 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
         !string.Equals(VerticalLevel, _initialVerticalLevel, StringComparison.Ordinal);
     public bool IsSpeedLimitChanged =>
         !string.Equals(SpeedLimit, _initialSpeedLimit, StringComparison.Ordinal);
-    public string DfcStatus
+    public string ChangeStatus
     {
-        get => _dfcStatus;
+        get => _changeStatus;
         set
         {
-            if (_dfcStatus == value)
+            if (_changeStatus == value)
             {
                 return;
             }
 
-            _dfcStatus = value;
+            _changeStatus = value;
             OnPropertyChanged();
         }
     }

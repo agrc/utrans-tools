@@ -12,11 +12,11 @@ Use **Add New** to copy an unlinked new record or records from `DFC_RESULT` into
 
 When multiple features are selected, the form values override the county-road values for `CARTOCODE`, `ONEWAY`, `VERT_LEVEL`, `SPEED_LMT`, and `STATUS`. Review these values before clicking **Add New** because the same editor values are applied to every new road.
 
-The add-in creates a UTRANS road using each selected county-road geometry and attributes, links the `DFC_RESULT` record to the new road, and marks the DFC disposition as `COMPLETED`. The map selections are cleared after the operation finishes.
+The add-in creates a UTRANS road using each selected county-road geometry and attributes, links the `DFC_RESULT` record to the new road, and marks the change status as `COMPLETED`. The map selections are cleared after the operation finishes.
 
 ### Reviewing Detected Changes
 
-Select a `DFC_RESULT` feature to choose its Change Status. Use **IGNORE** for a change that should not update UTRANS, such as a driveway, or **REVISIT** to defer review. Click **Save** to store that disposition on the selected DFC result.
+Select a `DFC_RESULT` feature to choose its Change Status. Use **IGNORE** for a change that should not update UTRANS, such as a driveway, or **REVISIT** to defer review. Click **Save** to store that change status on the selected DFC result.
 
 For an unlinked new record, **Add New** remains available while Change Status is **COMPLETED**. Choosing **IGNORE** or **REVISIT** replaces it with **Save** so the record can be reviewed without creating a UTRANS road.
 
