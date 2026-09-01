@@ -5,7 +5,7 @@ import { feature, lineGeometry, loadExecutor } from "./_helpers.js";
 
 function emptyPolygonLayer(title: string, fields: any[]) {
   return new FeatureLayer({
-    title, geometryType: "polygon", spatialReference: { wkid: 4326 },
+    title, geometryType: "polygon", spatialReference: { wkid: 26912 },
     objectIdField: "OBJECTID", fields: [{ name: "OBJECTID", type: "oid" }, ...fields], source: []
   });
 }
