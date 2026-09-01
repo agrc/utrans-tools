@@ -1,5 +1,5 @@
-using Xunit;
 using UGRC.UtransTools.Core;
+using Xunit;
 
 namespace UGRC.UtransTools.Core.Tests;
 
@@ -19,11 +19,7 @@ public sealed class ReviewRulesTests
     public void Normalizes_edited_road_values_for_saving()
     {
         var values = ReviewRules.NormalizeEditedRoadValues(
-            new Dictionary<string, string>
-            {
-                ["NAME"] = " O'Brien ",
-                ["L_F_ADD"] = " ",
-            },
+            new Dictionary<string, string> { ["NAME"] = " O'Brien ", ["L_F_ADD"] = " " },
             new[] { "L_F_ADD" }
         );
 
@@ -112,7 +108,10 @@ public sealed class ReviewRulesTests
             )
         );
 
-        Assert.Equal("Click Add New to create the target UTRANS road before saving.", exception.Message);
+        Assert.Equal(
+            "Click Add New to create the target UTRANS road before saving.",
+            exception.Message
+        );
     }
 
     [Fact]
@@ -155,23 +154,11 @@ public sealed class ReviewRulesTests
     [Fact]
     public void Allows_new_road_creation_only_for_unlinked_new_records()
     {
-        var selections = new[]
-        {
-            new DfcResultReview("N", -1),
-            new DfcResultReview("N", -1),
-        };
+        var selections = new[] { new DfcResultReview("N", -1), new DfcResultReview("N", -1) };
 
         Assert.True(ReviewRules.CanCreateNewUtransRoads(selections));
-        Assert.False(
-            ReviewRules.CanCreateNewUtransRoads(
-                new[] { new DfcResultReview("M", -1) }
-            )
-        );
-        Assert.False(
-            ReviewRules.CanCreateNewUtransRoads(
-                new[] { new DfcResultReview("N", 42) }
-            )
-        );
+        Assert.False(ReviewRules.CanCreateNewUtransRoads(new[] { new DfcResultReview("M", -1) }));
+        Assert.False(ReviewRules.CanCreateNewUtransRoads(new[] { new DfcResultReview("N", 42) }));
         Assert.False(ReviewRules.CanCreateNewUtransRoads([]));
     }
 
