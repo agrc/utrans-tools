@@ -54,6 +54,8 @@ updates:
     groups:
       ci-dependencies:
         dependency-type: production
+    commit-message:
+      prefix: deps
     cooldown:
       default-days: 10
       exclude:
