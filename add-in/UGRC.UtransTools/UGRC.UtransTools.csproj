@@ -21,6 +21,9 @@
     <None Include="Properties\launchSettings.json" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\UGRC.UtransTools.Core\UGRC.UtransTools.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="obj\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
