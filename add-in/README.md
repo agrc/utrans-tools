@@ -14,6 +14,12 @@ When multiple features are selected, the form values override the county-road va
 
 The add-in creates a UTRANS road using each selected county-road geometry and attributes, links the `DFC_RESULT` record to the new road, and marks the DFC disposition as `COMPLETED`. The map selections are cleared after the operation finishes.
 
+### Reviewing Detected Changes
+
+Select a `DFC_RESULT` feature to choose its Change Status. Use **IGNORE** for a change that should not update UTRANS, such as a driveway, or **REVISIT** to defer review. Click **Save** to store that disposition on the selected DFC result.
+
+For an unlinked new record, **Add New** remains available while Change Status is **COMPLETED**. Choosing **IGNORE** or **REVISIT** replaces it with **Save** so the record can be reviewed without creating a UTRANS road.
+
 ## Developer Set Up
 
 This project currently targets ArcGIS Pro v3.6. Make sure that your development machine has the same version of ArcGIS Pro installed.
