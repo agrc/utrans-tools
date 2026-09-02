@@ -22,5 +22,5 @@ class UTRANSPallet(Pallet):
                 "NationalGrid",
                 "AddressSystemQuadrants",
             ],
-            {"source_workspace": sgid, "destination_workspace": utrans},
+            {"source_workspace": str(sgid), "destination_workspace": str(utrans)},
         )
