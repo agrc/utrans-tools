@@ -1,4 +1,4 @@
-/* global $feature, $datastore, $layer, $map, FeatureSetByName, Intersects, First, Centroid, IIf, Buffer, Expects, Geometry, IsEmpty, Trim, Text, Count, Floor, Mid, Replace */
+/* global $feature, $datastore, $layer, $map, FeatureSetByName, Intersects, First, Centroid, IIf, Buffer, Expects, Geometry, IsEmpty, Trim, Text, Count, Floor, Mid, Replace, Find, Upper */
 // Ports the legacy UtransEditor getNewUniqueID logic, reading GRID1MIL/GRID100K from the USNG.
 // Grid-cell zone mismatches at the UTM 11/12 boundary are ignored since this ID is only eyeballed, not parsed.
 // FIELD: UNIQUE_ID
@@ -10,6 +10,17 @@ function trimCoordinate(value, leading) {
   var digits = Text(Floor(value + 0.5));
 
   return Mid(digits, leading, Count(digits) - leading - 1);
+}
+
+function isLettersOnly(value) {
+  var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (var index = 0; index < Count(value); index++) {
+    if (Find(Mid(value, index, 1), letters) == -1) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 // NAME/POSTDIR/POSTTYPE are computed directly because attribute rule execution order is not guaranteed,
@@ -24,11 +35,20 @@ function nameSuffix() {
   var posttype = Upper(Trim(IIf(IsEmpty($feature.POSTTYPE), '', Text($feature.POSTTYPE))));
 
   var value = '_' + name;
-  if (posttype != '') {
-    value += '_' + posttype;
-  }
-  if (postdir != '') {
-    value += '_' + postdir;
+  if (isLettersOnly(name)) {
+    if (posttype != '') {
+      value += '_' + posttype;
+    }
+    if (postdir != '') {
+      value += '_' + postdir;
+    }
+  } else {
+    if (postdir != '') {
+      value += '_' + postdir;
+    }
+    if (posttype != '') {
+      value += '_' + posttype;
+    }
   }
 
   return Replace(value, ' ', '_');
