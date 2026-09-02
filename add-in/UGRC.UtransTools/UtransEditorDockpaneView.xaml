@@ -490,7 +490,7 @@
             ItemsSource="{Binding CartocodeValues}"
             DisplayMemberPath="Description"
             SelectedValuePath="Code"
-            SelectedValue="{Binding RoadValueState.Cartocode}"
+            SelectedValue="{Binding RoadValueState.Cartocode, Mode=TwoWay}"
             Margin="3"
           />
         </GroupBox>
@@ -509,7 +509,7 @@
             ItemsSource="{Binding OnewayValues}"
             DisplayMemberPath="Description"
             SelectedValuePath="Code"
-            SelectedValue="{Binding RoadValueState.Oneway}"
+            SelectedValue="{Binding RoadValueState.Oneway, Mode=TwoWay}"
             Margin="3"
           />
         </GroupBox>
@@ -566,7 +566,7 @@
             ItemsSource="{Binding VerticalLevelValues}"
             DisplayMemberPath="Description"
             SelectedValuePath="Code"
-            SelectedValue="{Binding RoadValueState.VerticalLevel}"
+            SelectedValue="{Binding RoadValueState.VerticalLevel, Mode=TwoWay}"
             Margin="3"
           />
         </GroupBox>
@@ -588,7 +588,9 @@
           </GroupBox.Style>
           <ComboBox
             ItemsSource="{Binding SpeedLimitValues}"
-            SelectedItem="{Binding RoadValueState.SpeedLimit}"
+            DisplayMemberPath="Description"
+            SelectedValuePath="Code"
+            SelectedValue="{Binding RoadValueState.SpeedLimit, Mode=TwoWay}"
             Margin="3"
           />
         </GroupBox>
@@ -602,7 +604,7 @@
             ItemsSource="{Binding StatusValues}"
             DisplayMemberPath="Description"
             SelectedValuePath="Code"
-            SelectedValue="{Binding RoadValueState.Status}"
+            SelectedValue="{Binding RoadValueState.Status, Mode=TwoWay}"
             Margin="3"
           />
         </GroupBox>
