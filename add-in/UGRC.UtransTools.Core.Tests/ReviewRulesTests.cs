@@ -115,7 +115,7 @@ public sealed class ReviewRulesTests
     }
 
     [Fact]
-    public void Builds_road_payload_with_street_type_for_named_road()
+    public void Builds_road_payload()
     {
         var payload = ReviewRules.BuildRoadPayload(
             new Dictionary<string, object?>
@@ -127,28 +127,11 @@ public sealed class ReviewRulesTests
             new RoadReviewValues("11", "0", "0", "25", "Active")
         );
 
-        Assert.Equal("Main St", payload["FULLNAME"]);
         Assert.Equal("11", payload["CARTOCODE"]);
         Assert.Equal("0", payload["ONEWAY"]);
         Assert.Equal("0", payload["VERT_LEVEL"]);
         Assert.Equal("25", payload["SPEED_LMT"]);
         Assert.Equal("Active", payload["STATUS"]);
-    }
-
-    [Fact]
-    public void Builds_road_payload_with_direction_for_numeric_road()
-    {
-        var payload = ReviewRules.BuildRoadPayload(
-            new Dictionary<string, object?>
-            {
-                ["NAME"] = "200",
-                ["POSTTYPE"] = "St",
-                ["POSTDIR"] = "W",
-            },
-            new RoadReviewValues("11", "0", "0", "25", "Active")
-        );
-
-        Assert.Equal("200 W", payload["FULLNAME"]);
     }
 
     [Fact]

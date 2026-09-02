@@ -113,7 +113,6 @@ public static class ReviewRules
             ["SPEED_LMT"] = reviewValues.SpeedLimit,
             ["STATUS"] = reviewValues.Status,
         };
-        values["FULLNAME"] = BuildFullName(values);
 
         return new ReadOnlyDictionary<string, object?>(values);
     }
@@ -145,19 +144,4 @@ public static class ReviewRules
                 : new ReadOnlyDictionary<string, object?>(new Dictionary<string, object?>())
         );
     }
-
-    private static string BuildFullName(IReadOnlyDictionary<string, object?> values)
-    {
-        var name = GetText(values, "NAME");
-        var suffix = name.All(char.IsDigit)
-            ? GetText(values, "POSTDIR")
-            : GetText(values, "POSTTYPE");
-        return string.IsNullOrWhiteSpace(suffix) ? name : $"{name} {suffix}".Trim();
-    }
-
-    private static string GetText(IReadOnlyDictionary<string, object?> values, string fieldName) =>
-        values.TryGetValue(fieldName, out var value)
-            ? value?.ToString()?.Replace("'", string.Empty, StringComparison.Ordinal)
-                ?? string.Empty
-            : string.Empty;
 }
