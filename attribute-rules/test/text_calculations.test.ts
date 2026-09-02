@@ -24,30 +24,34 @@ test("remove_extra_whitespace returns an empty string for a missing NAME", () =>
   ).toBe("");
 });
 
-test("fullname_calculation combines normalized name parts", () => {
-  expect(
-    fullnameExecutor.execute({
-      $feature: feature({
-        NAME: "  O'MAIN  ",
-        POSTDIR: null,
-        POSTTYPE: "  RD  ",
-      }),
-    }),
-  ).toBe("OMAIN RD");
+test("fullname_calculation combines normalized uppercase name parts", () => {
+  expect(fullnameExecutor.execute({
+    "$feature": feature({ 
+      NAME: "  O'Main  ", 
+      POSTDIR: null, 
+      POSTTYPE: "  Rd  " 
+    })
+  })).toBe("OMAIN RD");
 });
 
 test("fullname_calculation includes both suffixes for numeric names", () => {
   expect(
     fullnameExecutor.execute({
-      $feature: feature({ NAME: "200", POSTDIR: "W", POSTTYPE: "St" }),
+      $feature: feature({ 
+        NAME: "200", 
+        POSTDIR: "W", 
+        POSTTYPE: "St" 
+      }),
     }),
-  ).toBe("200 W St");
+  ).toBe("200 W ST");
 });
 
 test("fullname_calculation omits missing name parts", () => {
-  expect(
-    fullnameExecutor.execute({
-      $feature: feature({ NAME: null, POSTDIR: " N ", POSTTYPE: null }),
-    }),
-  ).toBe("N");
+  expect(fullnameExecutor.execute({
+    "$feature": feature({ 
+      NAME: null, 
+      POSTDIR: " n ", 
+      POSTTYPE: null 
+    })
+  })).toBe("N");
 });

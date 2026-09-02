@@ -13,3 +13,7 @@ test("removes apostrophes from NAME", () => {
 test("leaves names without apostrophes unchanged", () => {
   expect(executor.execute({ "$feature": feature({ NAME: "WASHINGTON" }) })).toBe("WASHINGTON");
 });
+
+test("uppercases mixed-case names", () => {
+  expect(executor.execute({ "$feature": feature({ NAME: "O'Connell" }) })).toBe("OCONNELL");
+});

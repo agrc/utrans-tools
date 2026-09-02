@@ -6,7 +6,7 @@ function normalizePart(value) {
   while (Find("  ", part) > -1) {
     part = Replace(part, "  ", " ");
   }
-  return part;
+  return Upper(part);
 }
 
 var name = normalizePart(Replace(IIf(IsEmpty($feature.NAME), "", $feature.NAME), "'", ""));
@@ -24,5 +24,5 @@ if (!IsEmpty(posttype)) {
   Push(parts, posttype);
 }
 
-// Test case: NAME="  MAIN  ", POSTDIR=null, POSTTYPE="  RD  " -> "MAIN RD"
+// Test case: NAME="  Main  ", POSTDIR=null, POSTTYPE="  Rd  " -> "MAIN RD"
 return Concatenate(parts, " ");

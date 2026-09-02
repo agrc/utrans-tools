@@ -15,13 +15,13 @@ function trimCoordinate(value, leading) {
 // NAME/POSTDIR/POSTTYPE are computed directly because attribute rule execution order is not guaranteed,
 // so FULLNAME may still hold the pre-edit value.
 function nameSuffix() {
-  var name = Trim(IIf(IsEmpty($feature.NAME), '', Text($feature.NAME)));
+  var name = Upper(Trim(IIf(IsEmpty($feature.NAME), '', Text($feature.NAME))));
   if (name == '') {
     return '';
   }
 
-  var postdir = Trim(IIf(IsEmpty($feature.POSTDIR), '', Text($feature.POSTDIR)));
-  var posttype = Trim(IIf(IsEmpty($feature.POSTTYPE), '', Text($feature.POSTTYPE)));
+  var postdir = Upper(Trim(IIf(IsEmpty($feature.POSTDIR), '', Text($feature.POSTDIR))));
+  var posttype = Upper(Trim(IIf(IsEmpty($feature.POSTTYPE), '', Text($feature.POSTTYPE))));
 
   var value = '_' + name;
   if (posttype != '') {
@@ -54,4 +54,4 @@ var grid1mil = gridMatch.GRID1MIL;
 var grid100k = gridMatch.GRID100K;
 
 // Test case: midpoint 12T VK 3756 1234 on "GOLD KEY LN" -> "12TVK37561234_GOLD_KEY_LN"
-return Trim(grid1mil + grid100k + trimCoordinate(midpointGeom.x, 1) + trimCoordinate(midpointGeom.y, 2) + nameSuffix());
+return Upper(Trim(grid1mil + grid100k + trimCoordinate(midpointGeom.x, 1) + trimCoordinate(midpointGeom.y, 2) + nameSuffix()));
