@@ -52,7 +52,6 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
     {
         Selection = selection;
         var utransRoad = selection.UtransRoad;
-        var roadValues = utransRoad ?? selection.CountyRoad;
         Fields = new ObservableCollection<AttributeReviewField>(
             UtransEditorConfiguration
                 .EditableAddressFields.Select(field => CreateField(field, true))
@@ -63,21 +62,11 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
                 )
         );
 
-        Cartocode = string.IsNullOrWhiteSpace(roadValues.GetText("CARTOCODE"))
-            ? "11"
-            : roadValues.GetText("CARTOCODE");
-        Oneway = string.IsNullOrWhiteSpace(roadValues.GetText("ONEWAY"))
-            ? "0"
-            : roadValues.GetText("ONEWAY");
-        VerticalLevel = string.IsNullOrWhiteSpace(roadValues.GetText("VERT_LEVEL"))
-            ? "0"
-            : roadValues.GetText("VERT_LEVEL");
-        SpeedLimit = string.IsNullOrWhiteSpace(roadValues.GetText("SPEED_LMT"))
-            ? "25"
-            : roadValues.GetText("SPEED_LMT");
-        Status = string.IsNullOrWhiteSpace(roadValues.GetText("STATUS"))
-            ? "Active"
-            : roadValues.GetText("STATUS");
+        Cartocode = ResolveRoadFieldValue("CARTOCODE", "11");
+        Oneway = ResolveRoadFieldValue("ONEWAY", "0");
+        VerticalLevel = ResolveRoadFieldValue("VERT_LEVEL", "0");
+        SpeedLimit = ResolveRoadFieldValue("SPEED_LMT", "25");
+        Status = ResolveRoadFieldValue("STATUS", "Active");
         _initialCartocode = Cartocode;
         _initialOneway = Oneway;
         _initialVerticalLevel = VerticalLevel;
@@ -99,6 +88,13 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
                 selection.CountyRoad.GetText(fieldName),
                 utransRoad?.GetText(fieldName) ?? string.Empty,
                 isAddressRange
+            );
+
+        string ResolveRoadFieldValue(string fieldName, string defaultValue) =>
+            ReviewRules.ResolveRoadFieldValue(
+                selection.CountyRoad.GetText(fieldName),
+                utransRoad?.GetText(fieldName),
+                defaultValue
             );
     }
 
@@ -201,6 +197,35 @@ internal sealed class EditorReviewState : INotifyPropertyChanged
             Fields.Where(field => field.IsAddressRange).Select(field => field.FieldName)
         );
     }
+
+    internal void NormalizeCodedValues(
+        IEnumerable<CodedValueOption> cartocodeValues,
+        IEnumerable<CodedValueOption> onewayValues,
+        IEnumerable<CodedValueOption> verticalLevelValues,
+        IEnumerable<CodedValueOption> speedLimitValues,
+        IEnumerable<CodedValueOption> statusValues
+    )
+    {
+        Cartocode = NormalizeCodedValue(Cartocode, "11", cartocodeValues);
+        Oneway = NormalizeCodedValue(Oneway, "0", onewayValues);
+        VerticalLevel = NormalizeCodedValue(VerticalLevel, "0", verticalLevelValues);
+        SpeedLimit = NormalizeCodedValue(SpeedLimit, "25", speedLimitValues);
+        Status = NormalizeCodedValue(Status, "Active", statusValues);
+    }
+
+    private static string NormalizeCodedValue(
+        string value,
+        string defaultValue,
+        IEnumerable<CodedValueOption> options
+    ) =>
+        ReviewRules.NormalizeCodedValue(
+            value,
+            defaultValue,
+            new HashSet<string>(
+                options.Select(option => option.Code),
+                StringComparer.OrdinalIgnoreCase
+            )
+        );
 
     private void SetTrackedValue(
         ref string field,

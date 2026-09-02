@@ -162,6 +162,54 @@ public sealed class ReviewRulesTests
         Assert.False(ReviewRules.CanCreateNewUtransRoads([]));
     }
 
+    [Theory]
+    [InlineData("11", "9", "11")]
+    [InlineData("0", "1", "0")]
+    [InlineData("0", "2", "0")]
+    [InlineData("25", "15", "25")]
+    [InlineData("Active", "Retired", "Active")]
+    public void Prefers_primary_road_values_over_fallback_values(
+        string primaryValue,
+        string fallbackValue,
+        string defaultValue
+    )
+    {
+        var result = ReviewRules.ResolveRoadFieldValue(primaryValue, fallbackValue, defaultValue);
+
+        Assert.Equal(primaryValue, result);
+    }
+
+    [Theory]
+    [InlineData("", "15", "25", "15")]
+    [InlineData(" ", "", "25", "25")]
+    [InlineData("", null, "Active", "Active")]
+    public void Falls_back_when_county_road_value_is_blank(
+        string countyValue,
+        string? utransValue,
+        string defaultValue,
+        string expectedValue
+    )
+    {
+        var result = ReviewRules.ResolveRoadFieldValue(countyValue, utransValue, defaultValue);
+
+        Assert.Equal(expectedValue, result);
+    }
+
+    [Theory]
+    [InlineData("25", "25")]
+    [InlineData("0", "25")]
+    [InlineData("Unknown", "25")]
+    public void Normalizes_coded_values_to_allowed_values(string value, string expectedValue)
+    {
+        var result = ReviewRules.NormalizeCodedValue(
+            value,
+            "25",
+            new HashSet<string>(new[] { "5", "25", "80" }, StringComparer.OrdinalIgnoreCase)
+        );
+
+        Assert.Equal(expectedValue, result);
+    }
+
     [Fact]
     public void Transfers_editable_county_values_without_road_overrides()
     {

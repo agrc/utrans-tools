@@ -100,7 +100,16 @@ internal sealed class LayerValidationService
                 StringComparer.OrdinalIgnoreCase
             );
 
-            foreach (var fieldName in new[] { "CARTOCODE", "ONEWAY", "VERT_LEVEL", "STATUS" })
+            foreach (
+                var fieldName in new[]
+                {
+                    "CARTOCODE",
+                    "ONEWAY",
+                    "VERT_LEVEL",
+                    "SPEED_LMT",
+                    "STATUS",
+                }
+            )
             {
                 var field =
                     fields.FirstOrDefault(candidate =>

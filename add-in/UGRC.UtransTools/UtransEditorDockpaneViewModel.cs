@@ -146,7 +146,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
 
     public EditorReviewState AvailableReviewState => ReviewState ?? EmptyReviewState;
     public EditorReviewState RoadValueState =>
-        _newRoadValueState ?? ReviewState ?? EmptyReviewState;
+        HasReviewState ? ReviewState! : _newRoadValueState ?? ReviewState ?? EmptyReviewState;
 
     private bool IsChangeStatusCompleted =>
         string.Equals(ReviewState?.ChangeStatus, "COMPLETED", StringComparison.OrdinalIgnoreCase);
@@ -252,7 +252,7 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
     public IReadOnlyList<CodedValueOption> OnewayValues { get; private set; } = [];
     public IReadOnlyList<CodedValueOption> VerticalLevelValues { get; private set; } = [];
     public IReadOnlyList<CodedValueOption> StatusValues { get; private set; } = [];
-    public IReadOnlyList<string> SpeedLimitValues { get; } = CreateRange(5, 80, 5);
+    public IReadOnlyList<CodedValueOption> SpeedLimitValues { get; private set; } = [];
     public IReadOnlyList<string> ChangeStatusValues { get; } =
         new[] { "COMPLETED", "IGNORE", "REVISIT" };
 
@@ -414,7 +414,9 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
                 return;
             }
 
-            ReviewState = new EditorReviewState(selection);
+            var reviewState = new EditorReviewState(selection);
+            NormalizeCodedValues(reviewState);
+            ReviewState = reviewState;
             ChangeTypeMessage = selection.ChangeLabel;
             StatusMessage = $"{selection.ChangeLabel} DFC record {selection.ObjectId} loaded.";
         }
@@ -437,6 +439,10 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
             1 => new EditorReviewState(selections[0]),
             _ => new EditorReviewState(),
         };
+        if (_newRoadValueState is not null)
+        {
+            NormalizeCodedValues(_newRoadValueState);
+        }
         SelectedDfcObjectIds = string.Join(
             ", ",
             selections.Select(selection => selection.ObjectId)
@@ -470,12 +476,36 @@ internal sealed class UtransEditorDockpaneViewModel : DockPane, INotifyPropertyC
         CartocodeValues = options["CARTOCODE"];
         OnewayValues = options["ONEWAY"];
         VerticalLevelValues = options["VERT_LEVEL"];
+        SpeedLimitValues = options["SPEED_LMT"];
         StatusValues = options["STATUS"];
         _codedValueOptionsLoaded = true;
+        if (_newRoadValueState is not null)
+        {
+            NormalizeCodedValues(_newRoadValueState);
+            OnPropertyChanged(nameof(RoadValueState));
+        }
+
         OnPropertyChanged(nameof(CartocodeValues));
         OnPropertyChanged(nameof(OnewayValues));
         OnPropertyChanged(nameof(VerticalLevelValues));
+        OnPropertyChanged(nameof(SpeedLimitValues));
         OnPropertyChanged(nameof(StatusValues));
+    }
+
+    private void NormalizeCodedValues(EditorReviewState state)
+    {
+        if (!_codedValueOptionsLoaded)
+        {
+            return;
+        }
+
+        state.NormalizeCodedValues(
+            CartocodeValues,
+            OnewayValues,
+            VerticalLevelValues,
+            SpeedLimitValues,
+            StatusValues
+        );
     }
 
     private static IReadOnlyList<string> CreateRange(int start, int end)

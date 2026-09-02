@@ -48,7 +48,7 @@ internal sealed class UtransEditService
                             selection.CountyRoad,
                             utransFeatureClass,
                             roadValues,
-                            selections.Count > 1
+                            applyRoadValueOverrides: true
                         )
                     ),
                 })

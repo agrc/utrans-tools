@@ -57,6 +57,21 @@ public static class ReviewRules
     public static bool CanCreateNewUtransRoads(IReadOnlyCollection<DfcResultReview> selections) =>
         selections.Count > 0 && selections.All(selection => selection.IsUnlinkedNewRecord);
 
+    public static string ResolveRoadFieldValue(
+        string countyValue,
+        string? utransValue,
+        string defaultValue
+    ) =>
+        !string.IsNullOrWhiteSpace(countyValue) ? countyValue
+        : !string.IsNullOrWhiteSpace(utransValue) ? utransValue
+        : defaultValue;
+
+    public static string NormalizeCodedValue(
+        string value,
+        string defaultValue,
+        IReadOnlySet<string> allowedValues
+    ) => allowedValues.Contains(value) ? value : defaultValue;
+
     public static IReadOnlyDictionary<string, object?> BuildNewRoadPayload(
         IReadOnlyDictionary<string, object?> countyRoadValues,
         IEnumerable<string> editableFieldNames,
