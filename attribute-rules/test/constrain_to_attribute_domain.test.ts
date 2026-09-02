@@ -34,6 +34,10 @@ test("constrain_to_attribute_domain accepts a coded domain value", () => {
   expect(executor.execute({ "$feature": roadFeature({ SPEED_LMT: 35 }) })).toBe(true);
 });
 
+test("constrain_to_attribute_domain accepts an empty string", () => {
+  expect(executor.execute({ "$feature": roadFeature({ SPEED_LMT: "" }) })).toBe(true);
+});
+
 test("constrain_to_attribute_domain rejects an invalid coded domain value", () => {
   expect(executor.execute({ "$feature": roadFeature({ SPEED_LMT: 30 }) })).toEqual({
     errorMessage: "Invalid value [30] entered for field: SPEED_LMT"
