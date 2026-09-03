@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { feature, loadExecutor } from "./_helpers.js";
 
 const executor = await loadExecutor(
-  "calculation/Roads_Edit/remove_apostrophes_from_name.arcade",
+  "calculation/Roads_Edit/format_name.arcade",
   [{ name: "$feature", type: "feature" }]
 );
 
