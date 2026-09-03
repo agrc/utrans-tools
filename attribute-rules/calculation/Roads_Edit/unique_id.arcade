@@ -27,7 +27,7 @@ function isLettersOnly(value) {
 // NAME/POSTDIR/POSTTYPE are computed directly because attribute rule execution order is not guaranteed,
 // so FULLNAME may still hold the pre-edit value.
 function nameSuffix() {
-  var name = Upper(Trim(IIf(IsEmpty($feature.NAME), '', Text($feature.NAME))));
+  var name = Upper(Trim(Replace(IIf(IsEmpty($feature.NAME), '', Text($feature.NAME)), "'", '')));
   if (name == '') {
     return '';
   }
