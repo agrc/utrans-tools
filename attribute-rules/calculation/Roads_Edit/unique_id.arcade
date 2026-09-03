@@ -14,8 +14,9 @@ function trimCoordinate(value, leading) {
 
 function isLettersOnly(value) {
   var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  for (var index = 0; index < Count(value); index++) {
-    if (Find(Mid(value, index, 1), letters) == -1) {
+  var normalized = Replace(value, ' ', '');
+  for (var index = 0; index < Count(normalized); index++) {
+    if (Find(Mid(normalized, index, 1), letters) == -1) {
       return false;
     }
   }
