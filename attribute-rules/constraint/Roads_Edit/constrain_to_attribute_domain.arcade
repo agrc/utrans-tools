@@ -20,7 +20,7 @@ for (var i in fieldsToCheck) {
   var fieldName = fieldsToCheck[i];
   var val = $feature[fieldName];
   
-  // Skip null and empty-string values while data cleanup is in progress.
+  // Skip null and empty-string values
   if (IsEmpty(val) || val == '') { continue; }
   
   // Retrieve the domain assigned to this specific field
