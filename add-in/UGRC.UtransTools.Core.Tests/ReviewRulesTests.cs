@@ -10,13 +10,13 @@ public sealed class ReviewRulesTests
     [InlineData("123.5", true)]
     [InlineData("12A", false)]
     [InlineData("12-14", false)]
-    public void Validates_address_range_values(string value, bool isValid)
+    public void Validates_Address_Range_Values(string value, bool isValid)
     {
         Assert.Equal(isValid, ReviewRules.IsValidAddressRange(value));
     }
 
     [Fact]
-    public void Normalizes_edited_road_values_for_saving()
+    public void Normalizes_Edited_Road_Values_For_Saving()
     {
         var values = ReviewRules.NormalizeEditedRoadValues(
             new Dictionary<string, string> { ["NAME"] = " O'Brien ", ["L_F_ADD"] = " " },
@@ -28,7 +28,7 @@ public sealed class ReviewRulesTests
     }
 
     [Fact]
-    public void Creates_status_only_save_for_unlinked_record_with_ignore_status()
+    public void Creates_Status_Only_Save_For_Unlinked_Record_With_Ignore_Status()
     {
         var plan = ReviewRules.CreateSavePlan(
             ChangeStatus.Ignore,
@@ -42,7 +42,7 @@ public sealed class ReviewRulesTests
     }
 
     [Fact]
-    public void Creates_status_only_save_for_unlinked_record_with_revisit_status()
+    public void Creates_Status_Only_Save_For_Unlinked_Record_With_Revisit_Status()
     {
         var plan = ReviewRules.CreateSavePlan(
             ChangeStatus.Revisit,
@@ -56,7 +56,7 @@ public sealed class ReviewRulesTests
     }
 
     [Fact]
-    public void Creates_road_save_for_linked_record_with_completed_status()
+    public void Creates_Road_Save_For_Linked_Record_With_Completed_Status()
     {
         var plan = ReviewRules.CreateSavePlan(
             ChangeStatus.Completed,
@@ -70,7 +70,7 @@ public sealed class ReviewRulesTests
     }
 
     [Fact]
-    public void Creates_status_only_save_for_linked_record_with_revisit_status()
+    public void Creates_Status_Only_Save_For_Linked_Record_With_Revisit_Status()
     {
         var plan = ReviewRules.CreateSavePlan(
             ChangeStatus.Revisit,
@@ -84,7 +84,7 @@ public sealed class ReviewRulesTests
     }
 
     [Fact]
-    public void Creates_status_only_save_for_linked_record_with_ignore_status()
+    public void Creates_Status_Only_Save_For_Linked_Record_With_Ignore_Status()
     {
         var plan = ReviewRules.CreateSavePlan(
             ChangeStatus.Ignore,
@@ -98,7 +98,7 @@ public sealed class ReviewRulesTests
     }
 
     [Fact]
-    public void Rejects_completed_save_for_unlinked_record()
+    public void Rejects_Completed_Save_For_Unlinked_Record()
     {
         var exception = Assert.Throws<InvalidOperationException>(() =>
             ReviewRules.CreateSavePlan(
@@ -115,7 +115,7 @@ public sealed class ReviewRulesTests
     }
 
     [Fact]
-    public void Builds_road_payload()
+    public void Builds_Road_Payload()
     {
         var payload = ReviewRules.BuildRoadPayload(
             new Dictionary<string, object?>
@@ -135,7 +135,7 @@ public sealed class ReviewRulesTests
     }
 
     [Fact]
-    public void Allows_new_road_creation_only_for_unlinked_new_records()
+    public void Allows_New_Road_Creation_Only_For_Unlinked_New_Records()
     {
         var selections = new[] { new DfcResultReview("N", -1), new DfcResultReview("N", -1) };
 
@@ -151,7 +151,7 @@ public sealed class ReviewRulesTests
     [InlineData("0", "2", "0")]
     [InlineData("25", "15", "25")]
     [InlineData("Active", "Retired", "Active")]
-    public void Prefers_primary_road_values_over_fallback_values(
+    public void Prefers_Primary_Road_Values_Over_Fallback_Values(
         string primaryValue,
         string fallbackValue,
         string defaultValue
@@ -166,7 +166,7 @@ public sealed class ReviewRulesTests
     [InlineData("", "15", "25", "15")]
     [InlineData(" ", "", "25", "25")]
     [InlineData("", null, "Active", "Active")]
-    public void Falls_back_when_county_road_value_is_blank(
+    public void Falls_Back_When_County_Road_Value_Is_Blank(
         string countyValue,
         string? utransValue,
         string defaultValue,
@@ -182,7 +182,7 @@ public sealed class ReviewRulesTests
     [InlineData("25", "25")]
     [InlineData("0", "25")]
     [InlineData("Unknown", "25")]
-    public void Normalizes_coded_values_to_allowed_values(string value, string expectedValue)
+    public void Normalizes_Coded_Values_To_Allowed_Values(string value, string expectedValue)
     {
         var result = ReviewRules.NormalizeCodedValue(
             value,
@@ -194,7 +194,7 @@ public sealed class ReviewRulesTests
     }
 
     [Fact]
-    public void Transfers_editable_county_values_without_road_overrides()
+    public void Transfers_Editable_County_Values_Without_Road_Overrides()
     {
         var payload = ReviewRules.BuildNewRoadPayload(
             new Dictionary<string, object?>
@@ -215,7 +215,7 @@ public sealed class ReviewRulesTests
     }
 
     [Fact]
-    public void Builds_bulk_new_road_payload_from_editable_county_values_and_overrides()
+    public void Builds_Bulk_New_Road_Payload_From_Editable_County_Values_And_Overrides()
     {
         var payload = ReviewRules.BuildNewRoadPayload(
             new Dictionary<string, object?>
