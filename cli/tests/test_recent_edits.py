@@ -51,7 +51,7 @@ def test_main_rejects_invalid_feature_class_before_processing(
         assert all(call.args != (invalid_path,) for call in describe.call_args_list)
     else:
         assert data_type in output
-        assert "not just a geodatabase or feature dataset" in output
+        assert "Provide a path to a feature class." in output
     check_license.assert_not_called()
     run.assert_not_called()
 

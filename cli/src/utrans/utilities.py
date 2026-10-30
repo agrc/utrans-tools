@@ -31,9 +31,7 @@ def ensure_feature_class(path: str, option: str) -> None:
         raise RuntimeError(
             f"Invalid {option} path '{path}': expected a feature class, "
             f"but found {description.dataType}. "
-            "Provide the full path including the feature class name, "
-            "not just a geodatabase or feature dataset "
-            r"(for example, C:\data\roads.gdb\Roads)."
+            "Provide a path to a feature class."
         )
 
 
