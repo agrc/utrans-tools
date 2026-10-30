@@ -6,12 +6,12 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@arcgis/core": "^5.1.20"
+    "@arcgis/core": "^5.1.27"
   },
   "devDependencies": {
-    "@types/node": "^24.13.3",
+    "@types/node": "^24.19.2",
     "@ugrc/tsconfigs": "1.0.4",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   }
 }
