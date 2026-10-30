@@ -6,7 +6,7 @@ Tools for working with UTRANS data
 
 These are Arcade scripts for calculation and constraint rules on the UTRANS geodatabase in ArcGIS Pro. See its [README](attribute-rules/README.md) for deployment instructions.
 
-## `Get_Recent_Edits.py` script run example
+## `utrans` CLI
 
 This is a Python CLI tool for processing county-submitted data prior to ingestion into UTRANS. See its [README](cli/README.md) for installation, usage, and release instructions.
 

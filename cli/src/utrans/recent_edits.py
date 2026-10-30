@@ -15,7 +15,7 @@ from pathlib import Path
 import arcpy
 
 from utrans.profiles import load_profiles as load_shared_profiles
-from utrans.utilities import get_output_workspace, log
+from utrans.utilities import ensure_feature_class, get_output_workspace, log
 
 NUMERIC_TYPES = {"SmallInteger", "Integer", "Single", "Double", "BigInteger"}
 DEFAULT_SEARCH_DISTANCE = "200 Feet"
@@ -199,6 +199,8 @@ def resolve_required_inputs(args):
         raise RuntimeError(
             "Missing required input paths. Provide both --update-features and --base-features."
         )
+    ensure_feature_class(args.update_features, "--update-features")
+    ensure_feature_class(args.base_features, "--base-features")
     return args.county, args.update_features, args.base_features
 
 
