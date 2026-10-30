@@ -1,0 +1,36 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "utrans get-recent-edits",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "utrans.cli",
+      "console": "integratedTerminal",
+      "args": [
+        "get-recent-edits",
+        "--county",
+        "saltlake",
+        "--update-features",
+        "${input:updateFeaturesPath}",
+        "--base-features",
+        "${input:baseFeaturesPath}"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "updateFeaturesPath",
+      "type": "promptString",
+      "description": "Path to the updated features geodatabase"
+    },
+    {
+      "id": "baseFeaturesPath",
+      "type": "promptString",
+      "description": "Path to the base features geodatabase"
+    }
+  ]
+}
