@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/agrc/utrans-tools/compare/ugrc-utrans-tools-v1.1.0...ugrc-utrans-tools-v1.1.1) (2026-10-30)
+
+
+### Bug Fixes
+
+* **cli:** better data parameter validation ([9537e20](https://github.com/agrc/utrans-tools/commit/9537e207fc17cd933f7445e0f441a1f0c1efe2c7))
+
 ## [1.1.0](https://github.com/agrc/utrans-tools/compare/ugrc-utrans-tools-v1.0.1...ugrc-utrans-tools-v1.1.0) (2026-08-28)
 
 
