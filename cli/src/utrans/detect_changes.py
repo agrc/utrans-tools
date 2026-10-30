@@ -15,7 +15,7 @@ from utrans.profiles import format_county_help, load_profiles, resolve_county_pr
 from utrans.recent_edits import (
     ensure_detect_feature_changes_license,
 )
-from utrans.utilities import get_output_workspace, log
+from utrans.utilities import ensure_feature_class, get_output_workspace, log
 
 MATCH_FIELDS = "NAME NAME"
 COMPARE_FIELDS = (
@@ -179,6 +179,9 @@ def main(argv=None, *, prog: str | None = None):
         profiles = load_profiles(args.profiles)
         profile = resolve_county_profile(args.county, profiles)
         fips = extract_fips(profile.require("fips"))
+        ensure_feature_class(args.update_features, "--update-features")
+        ensure_feature_class(args.utrans_features, "--utrans-features")
+        ensure_feature_class(args.append_target, "--append-target")
         ensure_detect_feature_changes_license()
         run_detect_changes(
             args.update_features,

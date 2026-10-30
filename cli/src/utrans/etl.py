@@ -23,7 +23,7 @@ from utrans.profiles import (
     load_profiles,
     resolve_county_profile,
 )
-from utrans.utilities import get_output_workspace, log
+from utrans.utilities import ensure_feature_class, get_output_workspace, log
 
 ETL_OUTPUT_DATE_FORMAT = "%Y%m%d"
 COUNTY_BOUNDARY_NAMES = {
@@ -80,14 +80,11 @@ def run_etl(
     profile: CountyProfile,
 ) -> str:
     """Run the county transformation and export whole roads intersecting its boundary."""
+    ensure_feature_class(source_features, "--source-features")
+    ensure_feature_class(utrans_roads, "--utrans-roads")
+    ensure_feature_class(county_boundaries, "--county-boundaries")
     output_workspace = get_output_workspace(source_features)
     output_name = _default_output_name(county)
-    if not arcpy.Exists(source_features):
-        raise RuntimeError(f"Source features do not exist: {source_features}")
-    if not arcpy.Exists(utrans_roads):
-        raise RuntimeError(f"UTRANS roads do not exist: {utrans_roads}")
-    if not arcpy.Exists(county_boundaries):
-        raise RuntimeError(f"County boundaries do not exist: {county_boundaries}")
     if not arcpy.Exists(output_workspace):
         raise RuntimeError(f"Output workspace does not exist: {output_workspace}")
 
