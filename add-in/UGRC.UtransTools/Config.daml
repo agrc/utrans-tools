@@ -36,7 +36,7 @@
                 loadOnClick="true"
                 smallImage="Images\AddInDesktop16.png"
                 largeImage="Images\AddInDesktop32.png"
-				keytip="UTRANS Editor Pane"/>
+        keytip="UTRANS Editor Pane"/>
       </controls>
 
        <dockPanes>
